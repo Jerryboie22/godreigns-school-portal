@@ -30,6 +30,7 @@ import {
 const AdminCMS = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
@@ -63,6 +64,14 @@ const AdminCMS = () => {
         .order('created_at', { ascending: false });
       
       if (postsData) setPosts(postsData);
+
+      // Fetch gallery images count
+      const { data: galleryData } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (galleryData) setGalleryImages(galleryData);
 
       // Fetch teachers
       const { data: teachersData } = await supabase
@@ -223,12 +232,58 @@ const AdminCMS = () => {
   };
 
   const handleFileUpload = async (files: File[]) => {
-    // Implement file upload to Supabase storage
-    toast({
-      title: "Upload Started",
-      description: `Uploading ${files.length} file(s)...`,
-    });
-    // This would integrate with Supabase storage
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+        
+        // Upload to Supabase storage
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(`gallery/${fileName}`, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data } = supabase.storage
+          .from('documents')
+          .getPublicUrl(`gallery/${fileName}`);
+
+        // Insert into gallery_images table
+        const { error: dbError } = await supabase
+          .from('gallery_images')
+          .insert([{
+            title: file.name.split('.')[0] || 'Untitled',
+            image_url: data.publicUrl,
+            description: `Uploaded via admin panel`,
+            category: 'General',
+            uploaded_by: (await supabase.auth.getUser()).data.user?.id
+          }]);
+
+        if (dbError) throw dbError;
+        
+        return { fileName, url: data.publicUrl };
+      });
+
+      const results = await Promise.all(uploadPromises);
+      
+      await fetchData(); // Refresh data
+      
+      toast({
+        title: "Upload Successful",
+        description: `Successfully uploaded ${results.length} image(s) to gallery!`,
+      });
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload images",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
@@ -753,15 +808,23 @@ const AdminCMS = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                       <span>Total Blog Posts</span>
-                      <span className="font-bold">{analytics.publishedPosts || 0}</span>
+                      <span className="font-bold">{posts.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Published Posts</span>
+                      <span className="font-bold">{posts.filter(p => p.status === 'published').length}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                       <span>Gallery Images</span>
-                      <span className="font-bold">{analytics.galleryImages || 0}</span>
+                      <span className="font-bold">{galleryImages.length}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                      <span>Page Views (Month)</span>
-                      <span className="font-bold">{analytics.monthlyViews || 0}</span>
+                      <span>Teachers</span>
+                      <span className="font-bold">{teachers.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Page Views</span>
+                      <span className="font-bold">{analytics.totalViews || 0}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                       <span>Total Students</span>

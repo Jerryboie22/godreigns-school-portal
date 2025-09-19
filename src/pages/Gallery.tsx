@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
+// Fallback images
 import gallery1 from "@/assets/gallery1.jpg";
 import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
@@ -29,10 +32,48 @@ const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ["All", "Academic Events", "Awards", "Campus Life", "Sports", "Cultural Activities"];
+  useAnalytics();
 
-  const galleryItems = [
+  const categories = ["All", "Academic Events", "Awards", "Campus Life", "Sports", "Cultural Activities", "General"];
+
+  useEffect(() => {
+    fetchGalleryImages();
+  }, []);
+
+  const fetchGalleryImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching gallery images:', error);
+        setGalleryImages(fallbackGalleryItems);
+      } else if (data && data.length > 0) {
+        const formattedImages = data.map((img, index) => ({
+          id: img.id,
+          src: img.image_url,
+          title: img.title,
+          category: img.category || 'General',
+          description: img.description || ''
+        }));
+        setGalleryImages(formattedImages);
+      } else {
+        setGalleryImages(fallbackGalleryItems);
+      }
+    } catch (error) {
+      console.error('Error fetching gallery images:', error);
+      setGalleryImages(fallbackGalleryItems);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fallbackGalleryItems = [
     {
       id: 1,
       src: gallery1,
@@ -168,7 +209,10 @@ const Gallery = () => {
     }
   ];
 
-  const filteredItems = galleryItems.filter(item => {
+  // Use database images if available, fallback to static images
+  const allGalleryItems = galleryImages.length > 0 ? galleryImages : fallbackGalleryItems;
+
+  const filteredItems = allGalleryItems.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
@@ -208,6 +252,17 @@ const Gallery = () => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedImage]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
