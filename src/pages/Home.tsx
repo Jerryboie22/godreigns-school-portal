@@ -142,6 +142,14 @@ const Home = () => {
                   Learn More
                 </Button>
               </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8 bg-gradient-primary hover:bg-white/20 border-white"
+                onClick={() => setShowSuccessModal(true)}
+              >
+                🏆 View Achievement
+              </Button>
             </div>
           </div>
         </div>
