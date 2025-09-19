@@ -14,6 +14,7 @@ const Navigation = () => {
     { label: "Admissions", path: "/admissions" },
     { label: "Library", path: "/library" },
     { label: "E-Learning", path: "/e-learning" },
+    { label: "Portals", path: "/portals" },
     { label: "Gallery", path: "/gallery" },
     { label: "Blog", path: "/blog" },
     { label: "Contact", path: "/contact" }
@@ -22,7 +23,22 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="bg-background border-b border-border shadow-soft sticky top-0 z-50">
+    <>
+      {/* Top Contact Bar */}
+      <div className="bg-primary/5 py-2 text-sm">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <img src={logo} alt="Logo" className="h-6 w-6" />
+            <span className="text-sm font-medium text-primary">Our God Reigns Crystal School</span>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            📞 <a href="tel:+2348027625129" className="hover:text-primary">+234 802 762 5129</a> | 
+            📞 <a href="tel:+2348033089735" className="hover:text-primary">+234 803 308 9735</a> | 
+            ✉️ <a href="mailto:ogrcs@yahoo.com" className="hover:text-primary">ogrcs@yahoo.com</a>
+          </div>
+        </div>
+      </div>
+      <header className="bg-background border-b border-border shadow-soft sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center space-x-3">
@@ -80,6 +96,7 @@ const Navigation = () => {
         )}
       </div>
     </header>
+    </>
   );
 };
 

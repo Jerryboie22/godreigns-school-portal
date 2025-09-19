@@ -50,59 +50,9 @@ const Gallery = () => {
     {
       id: 5,
       src: awardCeremony,
-      title: "LearnAfrica Excellence Awards 2024",
+      title: "LearnAfrica Excellence Awards 2024", 
       category: "Awards",
       description: "Students receiving recognition for outstanding academic performance"
-    },
-    // Additional placeholder items for demonstration
-    {
-      id: 6,
-      src: gallery1,
-      title: "Mathematics Competition",
-      category: "Academic Events",
-      description: "Students participating in inter-school mathematics competition"
-    },
-    {
-      id: 7,
-      src: gallery2,
-      title: "Inter-House Sports",
-      category: "Sports",
-      description: "Annual sports competition showcasing athletic talents"
-    },
-    {
-      id: 8,
-      src: gallery3,
-      title: "Science Fair Exhibition",
-      category: "Academic Events",
-      description: "Students presenting innovative science projects"
-    },
-    {
-      id: 9,
-      src: achievement,
-      title: "Graduation Ceremony",
-      category: "Academic Events",
-      description: "Celebrating our graduating class and their achievements"
-    },
-    {
-      id: 10,
-      src: awardCeremony,
-      title: "Christmas Carol Service",
-      category: "Cultural Activities",
-      description: "Annual Christmas celebration with the school community"
-    },
-    {
-      id: 11,
-      src: gallery1,
-      title: "Debate Competition",
-      category: "Academic Events",
-      description: "Students showcasing their public speaking and critical thinking skills"
-    },
-    {
-      id: 12,
-      src: gallery2,
-      title: "Art & Craft Exhibition",
-      category: "Cultural Activities",
-      description: "Creative works by our talented students on display"
     }
   ];
 

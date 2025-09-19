@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Search, Clock, Users, Wifi, Computer, Book, Newspaper } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
+import libraryInterior from "@/assets/library-interior.jpg";
 
 const Library = () => {
   const facilities = [
@@ -76,16 +77,26 @@ const Library = () => {
       {/* Library Overview */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Welcome to Our Library</h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Our state-of-the-art library serves as the intellectual heart of Our God Reigns Crystal School, 
-              providing students and staff with access to a vast collection of books, digital resources, 
-              and comfortable study spaces designed to enhance learning and research.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+              <div>
+                <h2 className="text-3xl font-bold text-primary mb-4">Welcome to Our Library</h2>
+                <p className="text-lg text-muted-foreground mb-8">
+                  Our state-of-the-art library serves as the intellectual heart of Our God Reigns Crystal School, 
+                  providing students and staff with access to a vast collection of books, digital resources, 
+                  and comfortable study spaces designed to enhance learning and research.
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={libraryInterior} 
+                  alt="Modern Library Interior"
+                  className="rounded-lg shadow-elegant max-w-lg w-full"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {facilities.map((facility, index) => {
               const Icon = facility.icon;
               return (
@@ -102,6 +113,7 @@ const Library = () => {
                 </Card>
               );
             })}
+          </div>
           </div>
         </div>
       </section>
