@@ -105,25 +105,45 @@ const AdminPortal = () => {
                   <CardTitle className="text-primary">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Enroll New Student
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Users className="h-4 w-4 mr-2" />
-                    Add Staff Member
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/admin/cms'}
+                  >
                     <FileText className="h-4 w-4 mr-2" />
-                    Generate Report
+                    Manage Content (CMS)
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/blog'}
+                  >
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    View Blog Posts
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/gallery'}
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Manage Gallery
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/contact'}
+                  >
                     <Calendar className="h-4 w-4 mr-2" />
-                    Schedule Meeting
+                    View Contact Messages
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/portals'}
+                  >
                     <BarChart3 className="h-4 w-4 mr-2" />
-                    View Analytics
+                    All Portals
                   </Button>
                 </CardContent>
               </Card>

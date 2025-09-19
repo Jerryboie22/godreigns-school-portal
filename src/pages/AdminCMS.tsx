@@ -17,7 +17,8 @@ import {
   Settings,
   Upload,
   Eye,
-  Save
+  Save,
+  GraduationCap
 } from "lucide-react";
 
 const AdminCMS = () => {
@@ -49,12 +50,35 @@ const AdminCMS = () => {
 
   const handleCreatePost = () => {
     if (newPost.title && newPost.content) {
-      setPosts([...posts, {
+      const post = {
         id: Date.now(),
         ...newPost,
         date: new Date().toISOString().split('T')[0]
-      }]);
+      };
+      setPosts([...posts, post]);
       setNewPost({ title: '', content: '', image: '', status: 'draft' });
+      // Here you would typically save to your database
+      alert('Post created successfully!');
+    }
+  };
+
+  const handlePublishPost = (id: number) => {
+    setPosts(posts.map(post => 
+      post.id === id ? { ...post, status: 'published' } : post
+    ));
+    alert('Post published successfully!');
+  };
+
+  const handleEditPost = (id: number) => {
+    const post = posts.find(p => p.id === id);
+    if (post) {
+      setNewPost({
+        title: post.title,
+        content: post.content,
+        image: post.image,
+        status: post.status
+      });
+      handleDeletePost(id);
     }
   };
 
@@ -178,16 +202,35 @@ const AdminCMS = () => {
                             </div>
                           </div>
                           <div className="flex gap-2 ml-4">
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => window.open(`/blog/${post.id}`, '_blank')}
+                            >
                               <Eye className="h-3 w-3" />
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Edit className="h-3 w-3" />
                             </Button>
                             <Button 
                               size="sm" 
                               variant="outline"
+                              onClick={() => handleEditPost(post.id)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            {post.status === 'draft' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handlePublishPost(post.id)}
+                                className="text-green-600"
+                              >
+                                Publish
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="outline"
                               onClick={() => handleDeletePost(post.id)}
+                              className="text-red-600"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -203,66 +246,237 @@ const AdminCMS = () => {
 
           {/* Gallery Management */}
           <TabsContent value="gallery">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Image className="h-5 w-5" />
-                  Gallery Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground mb-4">Upload new images to gallery</p>
-                  <Button>Choose Files</Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Image className="h-5 w-5" />
+                    Gallery Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">Upload new images to gallery</p>
+                    <Button>Choose Files</Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gallery Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/gallery'}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Gallery
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <Upload className="h-4 w-4 mr-2" />
+                    Bulk Image Upload
+                  </Button>
+                  <Button className="w-full justify-start" variant="outline">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Gallery Settings
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Events Management */}
           <TabsContent value="events">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Events Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Events management functionality coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Plus className="h-5 w-5" />
+                    Create New Event
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Input placeholder="Event title..." />
+                  <Textarea placeholder="Event description..." rows={4} />
+                  <Input type="date" placeholder="Event date" />
+                  <Input placeholder="Event location..." />
+                  <Button className="w-full">Create Event</Button>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Upcoming Events
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="p-3 border rounded-lg">
+                      <h4 className="font-semibold">Academic Session Opening</h4>
+                      <p className="text-sm text-muted-foreground">September 15, 2025</p>
+                    </div>
+                    <div className="p-3 border rounded-lg">
+                      <h4 className="font-semibold">Parent-Teacher Meeting</h4>
+                      <p className="text-sm text-muted-foreground">October 10, 2025</p>
+                    </div>
+                    <Button variant="outline" className="w-full">View All Events</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Users Management */}
           <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  User Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">User management functionality coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    User Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4 mb-6">
+                    <Input placeholder="Search users..." className="flex-1" />
+                    <Button>Search</Button>
+                    <Button variant="outline">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add User
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-semibold">Admin User</p>
+                        <p className="text-sm text-muted-foreground">admin@ogrcschool.com</p>
+                      </div>
+                      <Badge>Administrator</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-semibold">John Teacher</p>
+                        <p className="text-sm text-muted-foreground">john@ogrcschool.com</p>
+                      </div>
+                      <Badge variant="secondary">Teacher</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Portal Access</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/portal/admin'}
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Admin Portal
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/portal/staff'}
+                  >
+                    <GraduationCap className="h-4 w-4 mr-2" />
+                    Staff Portal
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/portals'}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    All Portals
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Analytics */}
           <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart className="h-5 w-5" />
-                  Analytics & Reports
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Analytics dashboard coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart className="h-5 w-5" />
+                    Site Statistics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Total Blog Posts</span>
+                      <span className="font-bold">23</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Gallery Images</span>
+                      <span className="font-bold">145</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Page Views (Month)</span>
+                      <span className="font-bold">2,847</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                      <span>Active Users</span>
+                      <span className="font-bold">156</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Links</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/blog'}
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    View Website Blog
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/gallery'}
+                  >
+                    <Image className="h-4 w-4 mr-2" />
+                    View Website Gallery
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/contact'}
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Contact Messages
+                  </Button>
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => window.location.href = '/portal/admin'}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin Portal
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

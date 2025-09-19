@@ -46,8 +46,9 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPost />} />
-        <Route path="/portals/admin" element={<AdminPortal />} />
-        <Route path="/admin/cms" element={<AdminCMS />} />
+              <Route path="/portal/admin" element={<AdminPortal />} />
+              <Route path="/portals/admin" element={<AdminPortal />} />
+              <Route path="/admin/cms" element={<AdminCMS />} />
               <Route path="/portal/staff" element={<StaffPortal />} />
               <Route path="/portal/parent" element={<ParentPortal />} />
               <Route path="/portal/student" element={<StudentPortal />} />
