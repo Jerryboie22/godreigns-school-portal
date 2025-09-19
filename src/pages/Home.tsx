@@ -32,6 +32,7 @@ import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
 import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
 import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
+import graduands from "@/assets/graduands.jpg";
 
 const Home = () => {
   const [currentGalleryImage, setCurrentGalleryImage] = useState(0);
@@ -200,8 +201,53 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Graduation Success Section */}
+      <section className="py-16 bg-gradient-to-br from-emerald-50 via-green-50 to-yellow-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="flex justify-center">
+                <img 
+                  src={graduands} 
+                  alt="Our God Reigns Crystal School Graduates"
+                  className="rounded-lg shadow-elegant w-full max-w-lg"
+                />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-emerald-800 mb-4">Celebrating Our Graduates</h2>
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  Our graduates represent the pinnacle of academic excellence and moral integrity. Each year, 
+                  we celebrate their achievements as they transition to the next phase of their educational journey, 
+                  equipped with knowledge, character, and the light to illuminate the world.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <Award className="h-5 w-5 text-yellow-600" />
+                    <span className="text-gray-700">Outstanding WAEC & NECO Performance</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <BookOpen className="h-5 w-5 text-emerald-600" />
+                    <span className="text-gray-700">Comprehensive Academic Foundation</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Heart className="h-5 w-5 text-red-500" />
+                    <span className="text-gray-700">Strong Christian Values & Character</span>
+                  </div>
+                </div>
+                <Link to="/gallery" className="inline-block mt-6">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                    View More Achievements
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* About Our School */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
+      <section className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
@@ -230,7 +276,7 @@ const Home = () => {
               </div>
               <div className="flex justify-center">
                 <img 
-                  src={achievement} 
+                  src={studentsGroup} 
                   alt="Our God Reigns Crystal School Students"
                   className="rounded-lg shadow-elegant w-full max-w-md"
                 />

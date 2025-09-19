@@ -211,12 +211,25 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-primary text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">School Gallery</h1>
-            <p className="text-xl text-white/90">Capturing moments of excellence and growth</p>
+      {/* Header with Achievement Theme */}
+      <div className="relative bg-gradient-to-br from-purple-600 via-blue-700 to-indigo-800 text-white py-16">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">School Gallery</h1>
+                <p className="text-xl text-white/90 mb-6">Capturing moments of excellence and growth</p>
+                <p className="text-white/80">Celebrating achievements, culture, and academic excellence</p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={necoExcellenceAwards} 
+                  alt="NECO Excellence Awards"
+                  className="rounded-lg shadow-2xl w-full max-w-lg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

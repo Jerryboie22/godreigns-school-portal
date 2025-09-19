@@ -7,6 +7,9 @@ import logo from "@/assets/logo.jpeg";
 import chairman from "@/assets/chairman.jpg";
 import proprietress from "@/assets/proprietress.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
+import principalNew from "@/assets/principal-new.jpg";
+import vicePrincipalNew from "@/assets/vice-principal-new.jpg";
+import galleryImage from "@/assets/gallery1.jpg";
 
 const About = () => {
   const values = [
@@ -58,13 +61,13 @@ const About = () => {
     {
       name: "Pastor Joseph Oladele",
       position: "Principal",
-      image: null,
+      image: principalNew,
       description: "With extensive experience in educational administration, Pastor Oladele ensures academic excellence while maintaining our core values."
     },
     {
       name: "Mrs Abosede Taiwo",
       position: "Vice Principal",
-      image: null,
+      image: vicePrincipalNew,
       description: "Supporting the academic vision and ensuring smooth daily operations for optimal learning experiences."
     }
   ];
@@ -205,11 +208,13 @@ const About = () => {
                           alt={leader.name}
                           className="w-full h-48 md:h-full object-cover"
                         />
-                      ) : (
-                        <div className="w-full h-48 md:h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                          <Users className="h-16 w-16 text-primary opacity-50" />
-                        </div>
-                      )}
+                       ) : (
+                        <img 
+                          src={galleryImage} 
+                          alt={leader.name}
+                          className="w-full h-48 md:h-full object-cover"
+                        />
+                       )}
                     </div>
                     <div className="md:w-2/3 p-6">
                       <h3 className="text-xl font-bold text-primary mb-2">{leader.name}</h3>

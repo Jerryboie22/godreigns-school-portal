@@ -65,13 +65,28 @@ const Library = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-hero text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Library</h1>
-          <p className="text-xl mb-2">Gateway to Knowledge</p>
-          <p className="text-lg opacity-90">Fostering Academic Excellence Through Research and Reading</p>
+      {/* Hero Section with Library Theme */}
+      <section className="relative bg-gradient-to-br from-amber-600 via-yellow-700 to-orange-800 text-white py-16">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center lg:text-left">
+                <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16 mx-auto lg:mx-0 mb-4" />
+                <h1 className="text-4xl font-bold mb-4">Library</h1>
+                <p className="text-xl mb-2 text-yellow-200">Gateway to Knowledge</p>
+                <p className="text-lg opacity-90 mb-6">Fostering Academic Excellence Through Research and Reading</p>
+                <p className="text-white/80">Discover a world of learning in our modern library facility</p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={libraryInterior} 
+                  alt="Modern Library Interior"
+                  className="rounded-lg shadow-2xl w-full max-w-lg"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

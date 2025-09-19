@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpeg";
 import principal from "@/assets/principal.jpg";
 import vicePrincipal from "@/assets/vice-principal.jpg";
+import admissionFlyer from "@/assets/admission-flyer.jpg";
+import graduands from "@/assets/graduands.jpg";
 
 const Admissions = () => {
   const admissionSteps = [
@@ -46,29 +48,82 @@ const Admissions = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-hero text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-4">Admissions</h1>
-          <p className="text-xl mb-2">Admission in Progress</p>
-          <p className="text-lg opacity-90">Into JSS & SSS Classes</p>
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-white/10 rounded-lg p-4">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2" />
-              <p className="font-semibold">Quality Teaching</p>
+      {/* Hero Section with Graduation Image */}
+      <section className="relative bg-gradient-to-br from-emerald-600 via-green-700 to-yellow-500 text-white py-20">
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16 mx-auto lg:mx-0 mb-4" />
+              <h1 className="text-4xl lg:text-5xl font-bold mb-4">Admissions Open</h1>
+              <p className="text-2xl mb-2 text-yellow-200">2025/2026 Academic Session</p>
+              <p className="text-xl mb-6">Into JSS & SSS Classes</p>
+              <div className="grid grid-cols-2 gap-4 text-center mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-sm">Quality Teaching</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-sm">Affordable Fee</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-sm">Computer Based Education</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-sm">Conducive Learning</p>
+                </div>
+              </div>
             </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2" />
-              <p className="font-semibold">Affordable Fee</p>
+            <div className="flex justify-center">
+              <img 
+                src={graduands} 
+                alt="Our God Reigns Crystal School Graduates"
+                className="rounded-lg shadow-2xl w-full max-w-lg"
+              />
             </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2" />
-              <p className="font-semibold">Computer Based Education</p>
-            </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2" />
-              <p className="font-semibold">Conducive Learning Environment</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Admission Flyer Section */}
+      <section className="py-16 bg-gradient-to-br from-red-50 via-green-50 to-yellow-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold text-primary mb-8">Join Our School Family</h2>
+            <div className="bg-white rounded-lg shadow-elegant p-8">
+              <img 
+                src={admissionFlyer} 
+                alt="Our God Reigns Crystal School - Admission Flyer"
+                className="w-full max-w-md mx-auto rounded-lg shadow-lg"
+              />
+              <div className="mt-6 text-left max-w-2xl mx-auto">
+                <h3 className="text-2xl font-bold text-primary mb-4">Why Choose Our God Reigns Crystal School?</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-muted-foreground">Quality Teaching with experienced educators</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-muted-foreground">Affordable Fee structure for all families</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-muted-foreground">Computer Based Education with modern facilities</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-muted-foreground">Conducive Learning Environment</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-muted-foreground">Character development with Christian values</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

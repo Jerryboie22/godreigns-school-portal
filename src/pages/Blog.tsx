@@ -177,12 +177,25 @@ Remember, at Our God Reigns Crystal School, every student is destined to be a "L
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-primary text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">School Blog</h1>
-            <p className="text-xl text-white/90">Stay updated with the latest news, events, and achievements</p>
+      {/* Header with Blog Theme */}
+      <div className="relative bg-gradient-to-br from-orange-600 via-red-700 to-pink-800 text-white py-16">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">School Blog</h1>
+                <p className="text-xl text-white/90 mb-6">Stay updated with the latest news, events, and achievements</p>
+                <p className="text-white/80">Celebrating our students' success and school community</p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={awardWinner} 
+                  alt="Award Winner Emmanuella"
+                  className="rounded-lg shadow-2xl w-full max-w-lg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

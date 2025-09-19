@@ -17,6 +17,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -107,12 +108,25 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-primary text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-            <p className="text-xl text-white/90">Get in touch with Our God Reigns Crystal School</p>
+      {/* Header with Contact Theme */}
+      <div className="relative bg-gradient-to-br from-teal-600 via-cyan-700 to-blue-800 text-white py-16">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+                <p className="text-xl text-white/90 mb-6">Get in touch with Our God Reigns Crystal School</p>
+                <p className="text-white/80">We're here to answer your questions and support your educational journey</p>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={officialAwardCeremony} 
+                  alt="School Officials"
+                  className="rounded-lg shadow-2xl w-full max-w-lg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
