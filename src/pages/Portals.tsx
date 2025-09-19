@@ -258,12 +258,16 @@ const Portals = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8">
-                Request Access
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8">
-                Contact Support
-              </Button>
+              <a href="mailto:ogrcs@yahoo.com?subject=Portal Access Request&body=Dear Management, I would like to request access to the school portal. Please provide me with login credentials.">
+                <Button size="lg" className="text-lg px-8">
+                  Request Access
+                </Button>
+              </a>
+              <Link to="/contact">
+                <Button size="lg" variant="outline" className="text-lg px-8">
+                  Contact Support
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

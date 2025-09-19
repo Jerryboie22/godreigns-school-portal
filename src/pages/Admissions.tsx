@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, FileText, UserCheck, Calendar, BookOpen, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpeg";
 import principal from "@/assets/principal.jpg";
 import vicePrincipal from "@/assets/vice-principal.jpg";
@@ -249,12 +250,21 @@ const Admissions = () => {
           <h2 className="text-3xl font-bold text-primary mb-4">Ready to Apply?</h2>
           <p className="text-lg text-muted-foreground mb-8">Join the Our God Reigns Crystal School family today</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Download Application Form
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Schedule Visit
-            </Button>
+            <a href="mailto:ogrcs@yahoo.com?subject=Application Form Request&body=Dear Management, I would like to request an application form for admission. Please send me the necessary documents.">
+              <Button size="lg" className="text-lg px-8">
+                Request Application Form
+              </Button>
+            </a>
+            <a href="tel:+2348147059222">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Schedule Visit
+              </Button>
+            </a>
+            <Link to="/school-fees">
+              <Button size="lg" variant="secondary" className="text-lg px-8">
+                View School Fees
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

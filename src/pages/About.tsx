@@ -269,6 +269,11 @@ const About = () => {
                   Contact Us
                 </Button>
               </Link>
+              <Link to="/portals">
+                <Button size="lg" variant="secondary" className="text-lg px-8">
+                  Access Portals
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

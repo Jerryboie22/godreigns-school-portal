@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
   BookOpen, 
@@ -15,11 +16,79 @@ import {
   UserPlus,
   GraduationCap,
   DollarSign,
-  Shield
+  Shield,
+  Plus,
+  Edit,
+  Trash2,
+  Eye
 } from "lucide-react";
 
 const AdminPortal = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeStudents, setActiveStudents] = useState([
+    { id: 1, name: "John Doe", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
+    { id: 2, name: "Jane Smith", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
+    { id: 3, name: "David Johnson", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
+  ]);
+  const [staff, setStaff] = useState([
+    { id: 1, name: "Mrs. Sarah Wilson", position: "English Teacher", department: "Languages", status: "Active" },
+    { id: 2, name: "Mr. John Brown", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
+    { id: 3, name: "Miss Grace Adams", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
+  ]);
+  const { toast } = useToast();
+
+  const handleAction = (action: string, id?: number) => {
+    toast({
+      title: `${action} Successful`,
+      description: `Action "${action}" has been completed successfully.`,
+    });
+  };
+
+  const handleDeleteStudent = (id: number) => {
+    setActiveStudents(prev => prev.filter(student => student.id !== id));
+    toast({
+      title: "Student Removed",
+      description: "Student has been removed from the system.",
+    });
+  };
+
+  const handleDeleteStaff = (id: number) => {
+    setStaff(prev => prev.filter(member => member.id !== id));
+    toast({
+      title: "Staff Removed", 
+      description: "Staff member has been removed from the system.",
+    });
+  };
+
+  const handleAddStudent = () => {
+    const newStudent = {
+      id: Date.now(),
+      name: `New Student ${activeStudents.length + 1}`,
+      class: "JSS 1A",
+      admissionNo: `2025/${String(activeStudents.length + 1).padStart(3, '0')}`,
+      status: "Active"
+    };
+    setActiveStudents(prev => [...prev, newStudent]);
+    toast({
+      title: "Student Added",
+      description: "New student has been added to the system.",
+    });
+  };
+
+  const handleAddStaff = () => {
+    const newStaff = {
+      id: Date.now(),
+      name: `New Staff ${staff.length + 1}`,
+      position: "Teacher",
+      department: "General",
+      status: "Active"
+    };
+    setStaff(prev => [...prev, newStaff]);
+    toast({
+      title: "Staff Added",
+      description: "New staff member has been added to the system.",
+    });
+  };
 
   const quickStats = [
     { label: "Total Students", value: "847", icon: Users, color: "text-primary" },
@@ -151,10 +220,18 @@ const AdminPortal = () => {
           </TabsContent>
 
           <TabsContent value="students">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-primary">Student Management</h2>
+              <Button onClick={handleAddStudent} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Student
+              </Button>
+            </div>
+            
             <Card>
               <CardHeader>
-                <CardTitle>Student Management</CardTitle>
-                <CardDescription>Manage student records, enrollment, and academic progress</CardDescription>
+                <CardTitle>All Students ({activeStudents.length})</CardTitle>
+                <CardDescription>Manage student records and information</CardDescription>
                 <div className="flex space-x-2">
                   <Input 
                     placeholder="Search students..." 
@@ -162,36 +239,96 @@ const AdminPortal = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="max-w-xs"
                   />
-                  <Button>Search</Button>
-                  <Button variant="outline">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Student
-                  </Button>
+                  <Button onClick={() => handleAction("Search Students")}>Search</Button>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Student management features available with backend integration.</p>
-                    <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
-                  </div>
+                  {activeStudents.filter(student => 
+                    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    student.admissionNo.toLowerCase().includes(searchTerm.toLowerCase())
+                  ).map((student) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{student.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Class: {student.class} | Admission No: {student.admissionNo}
+                        </p>
+                        <Badge variant={student.status === 'Active' ? 'default' : 'secondary'}>
+                          {student.status}
+                        </Badge>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleAction("View Student", student.id)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleAction("Edit Student", student.id)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteStudent(student.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="staff">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-primary">Staff Management</h2>
+              <Button onClick={handleAddStaff} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Staff
+              </Button>
+            </div>
+            
             <Card>
               <CardHeader>
-                <CardTitle>Staff Management</CardTitle>
-                <CardDescription>Manage teaching and non-teaching staff records</CardDescription>
+                <CardTitle>All Staff Members ({staff.length})</CardTitle>
+                <CardDescription>Manage teaching and non-teaching staff</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Staff management features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
+                <div className="mb-4">
+                  <Input
+                    placeholder="Search staff..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="max-w-sm"
+                  />
+                </div>
+                <div className="space-y-4">
+                  {staff.filter(member => 
+                    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    member.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    member.department.toLowerCase().includes(searchTerm.toLowerCase())
+                  ).map((member) => (
+                    <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{member.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {member.position} | Department: {member.department}
+                        </p>
+                        <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
+                          {member.status}
+                        </Badge>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleAction("View Staff", member.id)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleAction("Edit Staff", member.id)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteStaff(member.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

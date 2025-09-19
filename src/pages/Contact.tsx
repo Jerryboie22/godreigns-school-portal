@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   MapPin, 
   Phone, 
@@ -300,18 +301,24 @@ const Contact = () => {
                 <CardTitle className="text-accent">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="h-4 w-4 mr-2" />
-                  Schedule a Visit
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Apply for Admission
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Parent Portal
-                </Button>
+                <a href="tel:+2348147059222">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Schedule a Visit
+                  </Button>
+                </a>
+                <Link to="/admissions">
+                  <Button variant="outline" className="w-full justify-start">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Apply for Admission
+                  </Button>
+                </Link>
+                <Link to="/portal/parent">
+                  <Button variant="outline" className="w-full justify-start">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Parent Portal
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>

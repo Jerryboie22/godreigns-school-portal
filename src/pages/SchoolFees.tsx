@@ -331,12 +331,16 @@ const SchoolFees = () => {
             Thank you and God bless - Management
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Download Fee Structure
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Contact Bursary
-            </Button>
+            <a href={`data:text/plain;charset=utf-8,${encodeURIComponent('School Fee Structure 2025/2026\nOur God Reigns Crystal School\n\nJSS 1: ₦100,500 (Fresh Students)\nJSS 2: ₦175,500 (Fresh), ₦115,500 (Returning)\nSSS 1 Science: ₦185,500 (Fresh)\nSSS 1 Others: ₦179,500 (Fresh)\nSSS 2 Science: ₦195,500 (Fresh), ₦122,500 (Returning)\nSSS 2 Others: ₦122,500 (Returning)\n\nBoarding Fees: ₦200,000\nUniforms: ₦50,000\n\nBank Details:\nAccount Name: OUR GOD REIGNS CRYSTAL SCHOOL\nAccount Number: 0029836079\nBank: ACCESS BANK PLC')}`} download="School_Fee_Structure_2025_2026.txt">
+              <Button size="lg" className="text-lg px-8">
+                Download Fee Structure
+              </Button>
+            </a>
+            <a href="tel:+2348027625129">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Contact Bursary
+              </Button>
+            </a>
           </div>
         </div>
       </section>

@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Search, Clock, Users, Wifi, Computer, Book, Newspaper } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpeg";
 import libraryInterior from "@/assets/library-interior.jpg";
 
@@ -259,12 +260,16 @@ const Library = () => {
           <h2 className="text-3xl font-bold text-primary mb-4">Visit Our Library Today</h2>
           <p className="text-lg text-muted-foreground mb-8">Discover the joy of learning in our modern library facility</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8">
-              Library Membership
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Book Catalog
-            </Button>
+            <a href="mailto:ogrcs@yahoo.com?subject=Library Membership Request&body=Dear Librarian, I would like to request library membership. Please provide me with the necessary information and forms.">
+              <Button size="lg" className="text-lg px-8">
+                Library Membership
+              </Button>
+            </a>
+            <Link to="/e-learning">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Digital Resources
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

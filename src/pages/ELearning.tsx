@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Monitor, Wifi, Play, Download, Users, BookOpen, Video, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpeg";
 
 const ELearning = () => {
@@ -71,12 +72,16 @@ const ELearning = () => {
           <p className="text-xl mb-2">Digital Education Excellence</p>
           <p className="text-lg opacity-90">Learn Anywhere, Anytime with Our Advanced E-Learning System</p>
           <div className="mt-8">
-            <Button size="lg" variant="secondary" className="text-lg px-8 mr-4">
-              Student Login
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 border-white">
-              Teacher Portal
-            </Button>
+            <Link to="/portal/student">
+              <Button size="lg" variant="secondary" className="text-lg px-8 mr-4">
+                Student Login
+              </Button>
+            </Link>
+            <Link to="/portal/staff">
+              <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 border-white">
+                Teacher Portal
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -252,12 +257,19 @@ const ELearning = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8">
-                Get Started Free
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8">
-                Watch Demo
-              </Button>
+              <Link to="/portal/student">
+                <Button size="lg" className="text-lg px-8">
+                  Get Started Free
+                </Button>
+              </Link>
+              <a href="#learning-tools" onClick={(e) => {
+                e.preventDefault();
+                document.querySelector('#learning-tools')?.scrollIntoView({ behavior: 'smooth' });
+              }}>
+                <Button size="lg" variant="outline" className="text-lg px-8">
+                  View Features
+                </Button>
+              </a>
             </div>
           </div>
         </div>

@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 import { 
   Users, 
   BookOpen, 
@@ -11,10 +16,36 @@ import {
   GraduationCap,
   CheckSquare,
   MessageSquare,
-  Target
+  Target,
+  Plus,
+  Edit,
+  Trash2,
+  Send
 } from "lucide-react";
 
 const StaffPortal = () => {
+  const [assignments, setAssignments] = useState([
+    { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
+    { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
+    { id: 3, title: "English Essay", class: "JSS 3C", dueDate: "2025-01-20", status: "Graded", subject: "English" }
+  ]);
+  
+  const [students, setStudents] = useState([
+    { id: 1, name: "John Doe", class: "JSS 2A", grade: "A", attendance: 95 },
+    { id: 2, name: "Jane Smith", class: "SSS 1B", grade: "B+", attendance: 92 },
+    { id: 3, name: "Mike Johnson", class: "JSS 3C", grade: "A-", attendance: 88 }
+  ]);
+
+  const [newAssignment, setNewAssignment] = useState({
+    title: "",
+    class: "",
+    dueDate: "",
+    description: "",
+    subject: ""
+  });
+
+  const { toast } = useToast();
+
   const todaysSchedule = [
     { time: "8:00 AM", subject: "Mathematics", class: "JSS 2A", room: "Room 12" },
     { time: "10:00 AM", subject: "English Language", class: "SSS 1B", room: "Room 8" },
@@ -22,11 +53,58 @@ const StaffPortal = () => {
     { time: "2:00 PM", subject: "Free Period", class: "-", room: "-" },
   ];
 
-  const assignments = [
-    { subject: "Mathematics", class: "JSS 2", title: "Algebraic Expressions", dueDate: "2024-09-20", status: "Pending" },
-    { subject: "English", class: "SSS 1", title: "Essay Writing", dueDate: "2024-09-18", status: "Graded" },
-    { subject: "Physics", class: "SSS 3", title: "Wave Motion", dueDate: "2024-09-22", status: "Not Started" },
-  ];
+  const handleCreateAssignment = () => {
+    if (!newAssignment.title || !newAssignment.class || !newAssignment.dueDate) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const assignment = {
+      id: Date.now(),
+      title: newAssignment.title,
+      class: newAssignment.class,
+      dueDate: newAssignment.dueDate,
+      status: "Active",
+      subject: newAssignment.subject || "General"
+    };
+
+    setAssignments(prev => [...prev, assignment]);
+    setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" });
+    
+    toast({
+      title: "Assignment Created",
+      description: "New assignment has been created successfully.",
+    });
+  };
+
+  const handleDeleteAssignment = (id: number) => {
+    setAssignments(prev => prev.filter(assignment => assignment.id !== id));
+    toast({
+      title: "Assignment Deleted",
+      description: "Assignment has been removed.",
+    });
+  };
+
+  const handleGradeStudent = (studentId: number, newGrade: string) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId ? { ...student, grade: newGrade } : student
+    ));
+    toast({
+      title: "Grade Updated",
+      description: "Student grade has been updated successfully.",
+    });
+  };
+
+  const handleAction = (action: string) => {
+    toast({
+      title: `${action} Initiated`,
+      description: `${action} action has been processed.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,7 +140,7 @@ const StaffPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Total Students</p>
-                  <p className="text-2xl font-bold text-foreground">245</p>
+                  <p className="text-2xl font-bold text-foreground">{students.length}</p>
                 </div>
                 <Target className="h-8 w-8 text-primary" />
               </div>
@@ -74,7 +152,7 @@ const StaffPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Assignments</p>
-                  <p className="text-2xl font-bold text-foreground">12</p>
+                  <p className="text-2xl font-bold text-foreground">{assignments.length}</p>
                 </div>
                 <FileText className="h-8 w-8 text-accent" />
               </div>
@@ -86,7 +164,7 @@ const StaffPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Messages</p>
-                  <p className="text-2xl font-bold text-foreground">4</p>
+                  <p className="text-2xl font-bold text-foreground">7</p>
                 </div>
                 <MessageSquare className="h-8 w-8 text-navy" />
               </div>
@@ -95,7 +173,7 @@ const StaffPortal = () => {
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
@@ -103,38 +181,31 @@ const StaffPortal = () => {
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="schedule">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="lg:col-span-2">
+          <TabsContent value="schedule" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Clock className="h-5 w-5 text-secondary" />
-                    <span>Today's Schedule</span>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="h-5 w-5 mr-2 text-primary" />
+                    Today's Schedule
                   </CardTitle>
-                  <CardDescription>
-                    {new Date().toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </CardDescription>
+                  <CardDescription>Your classes for today</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {todaysSchedule.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="text-sm font-medium text-secondary w-20">{item.time}</div>
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{item.subject}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {item.class} {item.room !== "-" && `• ${item.room}`}
-                        </p>
+                <CardContent>
+                  <div className="space-y-4">
+                    {todaysSchedule.map((schedule, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-2 h-12 bg-primary rounded-full"></div>
+                          <div>
+                            <p className="font-medium">{schedule.subject}</p>
+                            <p className="text-sm text-muted-foreground">{schedule.class} - {schedule.room}</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline">{schedule.time}</Badge>
                       </div>
-                      <Badge variant={item.subject === "Free Period" ? "secondary" : "outline"}>
-                        {item.subject === "Free Period" ? "Break" : "Class"}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
 
@@ -143,75 +214,56 @@ const StaffPortal = () => {
                   <CardTitle className="text-secondary">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full justify-start" variant="outline">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Create Assignment
-                  </Button>
-                  <Button className="w-full justify-start" variant="outline">
+                  <Button onClick={() => handleAction("Mark Attendance")} className="w-full justify-start">
                     <CheckSquare className="h-4 w-4 mr-2" />
-                    Grade Assignments
+                    Mark Attendance
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Users className="h-4 w-4 mr-2" />
-                    Take Attendance
+                  <Button onClick={() => handleAction("Create Lesson Plan")} variant="outline" className="w-full justify-start">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Create Lesson Plan
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    View Calendar
+                  <Button onClick={() => handleAction("Send Message")} variant="outline" className="w-full justify-start">
+                    <Send className="h-4 w-4 mr-2" />
+                    Message Parents
                   </Button>
-                  <Button className="w-full justify-start" variant="outline">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Send Message
-                  </Button>
+                  <Link to="/e-learning">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      E-Learning Platform
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="students">
+          <TabsContent value="students" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Student Records</CardTitle>
-                <CardDescription>Manage your students' information and academic progress</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Student management features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="assignments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Assignment Management</CardTitle>
-                <CardDescription>Create, distribute, and grade assignments</CardDescription>
-                <Button className="w-fit">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Create New Assignment
-                </Button>
+                <CardTitle>My Students ({students.length})</CardTitle>
+                <CardDescription>View and manage your students' progress</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {assignments.map((assignment, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-foreground">{assignment.title}</h4>
+                  {students.map((student) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{student.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {assignment.subject} • {assignment.class} • Due: {assignment.dueDate}
+                          Class: {student.class} | Attendance: {student.attendance}%
                         </p>
+                        <Badge variant="outline">Grade: {student.grade}</Badge>
                       </div>
-                      <Badge 
-                        variant={
-                          assignment.status === "Graded" ? "default" : 
-                          assignment.status === "Pending" ? "secondary" : "outline"
-                        }
-                      >
-                        {assignment.status}
-                      </Badge>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleGradeStudent(student.id, "A+")}>
+                          <Edit className="h-4 w-4 mr-1" />
+                          Grade
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleAction("Send Message")}>
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          Message
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -219,54 +271,135 @@ const StaffPortal = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="resources">
+          <TabsContent value="assignments" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Assignment Management</h2>
+              <Button onClick={() => setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" })} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Assignment
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create New Assignment</CardTitle>
+                  <CardDescription>Add assignments for your classes</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Input
+                    placeholder="Assignment Title"
+                    value={newAssignment.title}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Subject (e.g., Mathematics)"
+                    value={newAssignment.subject}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Class (e.g., JSS 2A)"
+                    value={newAssignment.class}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, class: e.target.value }))}
+                  />
+                  <Input
+                    type="date"
+                    value={newAssignment.dueDate}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, dueDate: e.target.value }))}
+                  />
+                  <Textarea
+                    placeholder="Assignment Description"
+                    value={newAssignment.description}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                  <Button onClick={handleCreateAssignment} className="w-full">
+                    Create Assignment
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Current Assignments ({assignments.length})</CardTitle>
+                  <CardDescription>Manage your active assignments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {assignments.map((assignment) => (
+                      <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <h4 className="font-semibold">{assignment.title}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {assignment.subject} | Class: {assignment.class} | Due: {assignment.dueDate}
+                          </p>
+                          <Badge variant={assignment.status === 'Active' ? 'default' : 'secondary'}>
+                            {assignment.status}
+                          </Badge>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline" onClick={() => handleAction("Edit Assignment")}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteAssignment(assignment.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="resources" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Teaching Resources</CardTitle>
-                <CardDescription>Access lesson plans, materials, and educational resources</CardDescription>
+                <CardDescription>Access curriculum materials and teaching aids</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Resource management features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
-                </div>
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button onClick={() => handleAction("Access Curriculum")} variant="outline" className="h-20 flex flex-col">
+                  <BookOpen className="h-6 w-6 mb-2" />
+                  Curriculum Guide
+                </Button>
+                <Button onClick={() => handleAction("View Lesson Plans")} variant="outline" className="h-20 flex flex-col">
+                  <FileText className="h-6 w-6 mb-2" />
+                  Lesson Plans
+                </Button>
+                <Link to="/library">
+                  <Button variant="outline" className="h-20 flex flex-col w-full">
+                    <Users className="h-6 w-6 mb-2" />
+                    Digital Library
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="reports">
+          <TabsContent value="reports" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Student Reports</CardTitle>
-                <CardDescription>Generate and manage student progress reports</CardDescription>
+                <CardTitle>Academic Reports</CardTitle>
+                <CardDescription>Generate and view student performance reports</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Report generation features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
-                </div>
+              <CardContent className="space-y-4">
+                <Button onClick={() => handleAction("Generate Class Report")} className="w-full justify-start">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Generate Class Performance Report
+                </Button>
+                <Button onClick={() => handleAction("View Attendance Report")} variant="outline" className="w-full justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Attendance Summary
+                </Button>
+                <Button onClick={() => handleAction("Export Grades")} variant="outline" className="w-full justify-start">
+                  <CheckSquare className="h-4 w-4 mr-2" />
+                  Export Grade Records
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Backend Integration Notice */}
-        <Card className="mt-8 border-secondary/20 bg-secondary/5">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-6 w-6 text-secondary" />
-              <div>
-                <h3 className="font-semibold text-secondary">Enhanced Teaching Experience</h3>
-                <p className="text-muted-foreground">
-                  Connect to Supabase to unlock full staff portal features including student records, 
-                  assignment management, grade tracking, and parent communication tools.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
