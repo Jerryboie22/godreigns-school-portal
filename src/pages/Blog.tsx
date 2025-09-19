@@ -1,4 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAnalytics } from "@/hooks/useAnalytics";
+
+const Blog = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useAnalytics(); // Track page visits
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+      
+      if (data) setPosts(data);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +58,15 @@ const Blog = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", "Academics", "Awards", "Campus Life", "Events", "News", "Sports"];
+
+  // Use database posts if available, fallback to static posts
+  const allPosts = posts.length > 0 ? posts.map(post => ({
+    ...post,
+    date: post.created_at,
+    author: "School Administration",
+    readTime: "3 min read",
+    featured: post.featured || false
+  })) : blogPosts;
 
   const blogPosts = [
     {
@@ -165,14 +204,14 @@ Remember, at Our God Reigns Crystal School, every student is destined to be a "L
     }
   ];
 
-  const filteredPosts = blogPosts.filter(post => {
+  const filteredPosts = allPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPost = blogPosts.find(post => post.featured);
+  const featuredPost = allPosts.find(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);
 
   return (

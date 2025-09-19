@@ -197,6 +197,36 @@ export type Database = {
           },
         ]
       }
+      gallery_images: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          title: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          title: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          title?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       parents: {
         Row: {
           created_at: string
@@ -232,6 +262,48 @@ export type Database = {
           },
         ]
       }
+      posts: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured: boolean | null
+          id: string
+          image: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -262,6 +334,36 @@ export type Database = {
           phone?: string | null
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_analytics: {
+        Row: {
+          id: string
+          ip_address: string | null
+          page_path: string
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+          visit_timestamp: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          page_path: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visit_timestamp?: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          page_path?: string
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visit_timestamp?: string
         }
         Relationships: []
       }

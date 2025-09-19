@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Trophy, X, Star, Award } from "lucide-react";
+import awardWinner from "@/assets/award-winner-emmanuella.jpg";
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -40,6 +41,15 @@ const SuccessModal = ({
         </DialogHeader>
         
         <div className="text-center space-y-6">
+          {/* Award Winner Image */}
+          <div className="flex justify-center mb-4">
+            <img 
+              src={awardWinner}
+              alt="Miss Adeyemo Emmanuella Adedamola - NECO Excellence Award Winner"
+              className="w-48 h-48 object-cover rounded-lg shadow-elegant border-4 border-primary/20"
+            />
+          </div>
+          
           <p className="text-muted-foreground leading-relaxed">{message}</p>
           
           <div className="bg-muted/30 p-4 rounded-lg">

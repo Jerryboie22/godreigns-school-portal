@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, GraduationCap, LogOut } from "lucide-react";
+import { Eye, EyeOff, GraduationCap, LogOut, ArrowLeft, Home } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 import EmailVerification from "./EmailVerification";
 
 interface AuthGuardProps {
@@ -13,17 +15,18 @@ interface AuthGuardProps {
   portalType: "admin" | "staff" | "parent" | "student";
 }
 
-interface User {
+interface UserProfile {
   id: string;
   email: string;
-  name: string;
-  portalType: "admin" | "staff" | "parent" | "student";
-  verified: boolean;
+  full_name: string;
+  role: string;
 }
 
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [pendingVerification, setPendingVerification] = useState<string | null>(null);
@@ -38,65 +41,78 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    const checkAuth = () => {
-      const userData = localStorage.getItem("userData");
-      if (userData) {
-        const parsed = JSON.parse(userData);
-        if (parsed.verified && parsed.portalType === portalType) {
-          setUser(parsed);
-          setIsAuthenticated(true);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileData && profileData.role === portalType) {
+            setProfile(profileData);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+            setProfile(null);
+          }
+        } else {
+          setIsAuthenticated(false);
+          setProfile(null);
         }
+        setLoading(false);
       }
-      setLoading(false);
-    };
-    
-    checkAuth();
-  }, [portalType]);
-
-  const mockUsers = [
-    { id: "1", email: "admin@ogrcs.edu.ng", password: "admin123", name: "Administrator", portalType: "admin" as const, verified: true },
-    { id: "2", email: "teacher@ogrcs.edu.ng", password: "teacher123", name: "Adebayo Ogundimu", portalType: "staff" as const, verified: true },
-    { id: "3", email: "parent@ogrcs.edu.ng", password: "parent123", name: "Mr. Olumide Adeyemi", portalType: "parent" as const, verified: true },
-    { id: "4", email: "student@ogrcs.edu.ng", password: "student123", name: "Funmi Adebayo", portalType: "student" as const, verified: true },
-  ];
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const user = mockUsers.find(
-      u => u.email === loginData.email && 
-           u.password === loginData.password && 
-           u.portalType === portalType
     );
 
-    if (user) {
-      if (!user.verified) {
-        setPendingVerification(user.email);
-        toast({
-          title: "Email Verification Required",
-          description: "Please verify your email before accessing the portal.",
-          variant: "destructive"
-        });
-        return;
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (!session) {
+        setLoading(false);
       }
+    });
 
-      localStorage.setItem("userData", JSON.stringify(user));
-      setUser(user);
-      setIsAuthenticated(true);
-      toast({
-        title: "Login Successful",
-        description: `Welcome back, ${user.name}!`,
+    return () => subscription.unsubscribe();
+  }, [portalType]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
       });
-    } else {
+
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
+      }
+    } catch (error) {
       toast({
         title: "Login Failed",
-        description: "Invalid credentials or unauthorized access to this portal.",
+        description: "An unexpected error occurred.",
         variant: "destructive",
       });
     }
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (signupData.password !== signupData.confirmPassword) {
@@ -117,54 +133,81 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
       return;
     }
 
-    const existingUser = mockUsers.find(u => u.email === signupData.email);
-    if (existingUser) {
+    try {
+      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      
+      const { error } = await supabase.auth.signUp({
+        email: signupData.email,
+        password: signupData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: signupData.name,
+            role: portalType
+          }
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Signup Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        setPendingVerification(signupData.email);
+        toast({
+          title: "Verification Email Sent",
+          description: "Please check your email to verify your account.",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Email Already Exists",
-        description: "An account with this email already exists. Please login instead.",
+        title: "Signup Failed",
+        description: "An unexpected error occurred.",
         variant: "destructive"
       });
-      return;
     }
-
-    setPendingVerification(signupData.email);
-    toast({
-      title: "Verification Email Sent",
-      description: "Please check your email and enter the verification code.",
-    });
   };
 
   const handleVerificationComplete = () => {
-    const newUser: User = {
-      id: Date.now().toString(),
-      email: pendingVerification!,
-      name: signupData.name,
-      portalType,
-      verified: true
-    };
-
-    localStorage.setItem("userData", JSON.stringify(newUser));
-    setUser(newUser);
-    setIsAuthenticated(true);
     setPendingVerification(null);
-    
     toast({
-      title: "Account Created Successfully",
-      description: `Welcome to ${portalType} portal, ${newUser.name}!`,
+      title: "Email Verified",
+      description: "Your account has been verified successfully.",
     });
   };
 
-  const handleResendVerification = () => {
-    toast({
-      title: "Verification Email Sent",
-      description: "A new verification code has been sent to your email.",
-    });
+  const handleResendVerification = async () => {
+    if (pendingVerification) {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: pendingVerification,
+        options: {
+          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Verification Email Sent",
+          description: "A new verification code has been sent to your email.",
+        });
+      }
+    }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userData");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
     setUser(null);
+    setProfile(null);
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
@@ -249,9 +292,8 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
                 </form>
                 
                 <div className="bg-muted/50 p-3 rounded-lg text-xs text-muted-foreground">
-                  <p className="font-medium mb-1">Demo Credentials:</p>
-                  <p>Email: {portalType}@ogrcs.edu.ng</p>
-                  <p>Password: {portalType}123</p>
+                  <p className="font-medium mb-1">Create an account to access the portal</p>
+                  <p>Or contact admin for existing account access</p>
                 </div>
               </TabsContent>
               
@@ -345,13 +387,23 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             <GraduationCap className="h-6 w-6 text-primary" />
             <div>
               <h1 className="font-semibold capitalize">{portalType} Portal</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
+              <p className="text-sm text-muted-foreground">Welcome back, {profile?.full_name}</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={() => window.history.back()}>
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => window.location.href = '/'}>
+              <Home className="h-4 w-4 mr-1" />
+              Home
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
       {children}
