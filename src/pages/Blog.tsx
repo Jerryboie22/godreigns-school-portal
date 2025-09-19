@@ -6,6 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Search, ArrowRight, Filter, Clock, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import awardCeremony from "@/assets/award-ceremony.jpg";
+import gallery1 from "@/assets/gallery1.jpg";
+import culturalDance from "@/assets/cultural-dance.jpg";
+import studentsGroup from "@/assets/students-group.jpg";
+import achievementStudents from "@/assets/achievement-students.jpg";
+import necoAwards from "@/assets/neco-awards.jpg";
+
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -15,39 +22,39 @@ const Blog = () => {
   const blogPosts = [
     {
       id: 1,
-      title: "Our God Reigns Crystal School Wins NECO Excellence Awards 2024",
-      excerpt: "We are thrilled to announce that our students have once again excelled in the prestigious NECO Excellence Awards, bringing home multiple accolades that showcase our commitment to academic excellence...",
-      content: `We are proud to celebrate the outstanding achievements of our students at the 2024 NECO Excellence Awards. This recognition is a testament to the hard work, dedication, and excellence that defines Our God Reigns Crystal School.
+      title: "NECO Excellence Awards 2025: Miss Adeyemo Emmanuella Adedamola Wins Best Female SSCE Candidate",
+      excerpt: "We are thrilled to announce that our student, Miss Adeyemo Emmanuella Adedamola, has been awarded the Best Female Senior School Certificate Examination (SSCE) candidate in Nigeria for 2025, showcasing our commitment to academic excellence in the 2025/2026 session...",
+      content: `We are proud to celebrate the outstanding achievements of our student at the 2025 NECO Excellence Awards. This recognition is a testament to the hard work, dedication, and excellence that defines Our God Reigns Crystal School.
 
-Our student, Miss Adeyemo Emmanuella Adedamola, was awarded the Best Female Senior School Certificate Examination (SSCE) candidate in Nigeria for 2024. This remarkable achievement highlights not only her personal dedication but also the quality of education we provide at Our God Reigns Crystal School.
+Our student, Miss Adeyemo Emmanuella Adedamola, was awarded the Best Female Senior School Certificate Examination (SSCE) candidate in Nigeria for 2025. This remarkable achievement highlights not only her personal dedication but also the quality of education we provide at Our God Reigns Crystal School during the 2025/2026 academic session.
 
 The award ceremony was a moment of immense pride for our entire school community. Seeing our students recognized on a national level reinforces our mission to provide education that truly makes our students "Light to the World."
 
-We congratulate all our students, teachers, and staff who contributed to this success. This achievement motivates us to continue striving for excellence in all aspects of education.`,
-      date: "2024-09-15",
+We congratulate all our students, teachers, and staff who contributed to this success. This achievement motivates us to continue striving for excellence in all aspects of education as we continue the 2025/2026 academic session.`,
+      date: "2025-09-15",
       category: "Awards",
       author: "School Administration",
       readTime: "3 min read",
       featured: true,
-      image: "/placeholder-award.jpg"
+      image: necoAwards
     },
     {
       id: 2,
-      title: "Welcome to New Academic Session 2024/2025",
-      excerpt: "As we commence another academic year, we extend a warm welcome to all returning students, new students, and their families. This session promises to be filled with learning, growth, and exciting opportunities...",
-      content: `Welcome to the 2024/2025 academic session at Our God Reigns Crystal School! We are excited to begin another year of academic excellence and character development.
+      title: "Welcome to Academic Session 2025/2026: A New Beginning",
+      excerpt: "As we commence the 2025/2026 academic year, we extend a warm welcome to all returning students, new students, and their families. This session promises to be filled with learning, growth, and exciting opportunities as we continue our mission as 'Light to the World'...",
+      content: `Welcome to the 2025/2026 academic session at Our God Reigns Crystal School! We are excited to begin another year of academic excellence and character development.
 
-This session brings new opportunities for learning, personal growth, and character development. We have introduced enhanced learning programs, updated our facilities, and welcomed new qualified teachers to our team.
+This session brings new opportunities for learning, personal growth, and character development. We have introduced enhanced learning programs, updated our facilities, and welcomed new qualified teachers to our team for the 2025/2026 academic year.
 
 Parents are reminded that registration is ongoing for new students, and all returning students should complete their registration process by the specified deadlines. Our administrative team is available to assist with any enrollment or academic questions.
 
-We look forward to a productive and successful academic year together!`,
-      date: "2024-09-10",
+We look forward to a productive and successful 2025/2026 academic year together!`,
+      date: "2025-09-10",
       category: "Academics",
       author: "Principal's Office",
       readTime: "2 min read",
       featured: false,
-      image: "/placeholder-classroom.jpg"
+      image: gallery1
     },
     {
       id: 3,
@@ -201,7 +208,11 @@ These achievements reinforce our position as a leading educational institution a
           <Card className="mb-12 overflow-hidden hover:shadow-elegant transition-all duration-300">
             <div className="md:flex">
               <div className="md:w-1/2">
-                <div className="h-64 md:h-full bg-gradient-primary"></div>
+                <img 
+                  src={featuredPost.image} 
+                  alt={featuredPost.title}
+                  className="h-64 md:h-full w-full object-cover"
+                />
               </div>
               <div className="md:w-1/2 p-8">
                 <div className="flex items-center space-x-4 mb-4">
@@ -245,7 +256,13 @@ These achievements reinforce our position as a leading educational institution a
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {regularPosts.map(post => (
             <Card key={post.id} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-              <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-t-lg"></div>
+              <div className="h-48 overflow-hidden rounded-t-lg">
+                <img 
+                  src={post.image} 
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <Badge variant="secondary">{post.category}</Badge>

@@ -10,6 +10,11 @@ import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
 import achievement from "@/assets/achievement.jpg";
 import awardCeremony from "@/assets/award-ceremony.jpg";
+import culturalDance from "@/assets/cultural-dance.jpg";
+import studentsGroup from "@/assets/students-group.jpg";
+import achievementStudents from "@/assets/achievement-students.jpg";
+import necoAwards from "@/assets/neco-awards.jpg";
+import necoExcellence from "@/assets/neco-excellence.jpg";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
