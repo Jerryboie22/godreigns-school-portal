@@ -7,9 +7,12 @@ export const useAnalytics = () => {
       const sessionId = Date.now().toString();
       
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
         await supabase.from('site_analytics').insert({
           page_path: window.location.pathname,
           session_id: sessionId,
+          user_id: user?.id || null,
           user_agent: navigator.userAgent
         });
       } catch (error) {

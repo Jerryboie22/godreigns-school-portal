@@ -197,7 +197,8 @@ Remember, at Our God Reigns Crystal School, every student is destined to be a "L
     date: post.created_at,
     author: "School Administration",
     readTime: "3 min read",
-    featured: post.featured || false
+    featured: post.featured || false,
+    image: post.image || awardCeremony
   })) : blogPosts;
 
   const filteredPosts = allPosts.filter(post => {

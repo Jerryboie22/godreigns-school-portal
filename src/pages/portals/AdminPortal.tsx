@@ -225,7 +225,7 @@ const AdminPortalContent = () => {
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => window.location.href = '/admin/cms'}
+                    onClick={() => window.location.href = '/admin-cms'}
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Manage Content (CMS)
@@ -459,10 +459,39 @@ const AdminPortalContent = () => {
                 <CardDescription>Manage curriculum, assessments, and academic records</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Academic management features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Button 
+                    onClick={() => window.location.href = '/portal/staff'}
+                    className="h-24 text-left flex-col items-start p-4"
+                  >
+                    <BookOpen className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">Staff Portal</div>
+                      <div className="text-xs opacity-75">Manage teaching</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/library'}
+                    className="h-24 text-left flex-col items-start p-4" 
+                    variant="outline"
+                  >
+                    <Calendar className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">Library</div>
+                      <div className="text-xs">Manage resources</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/e-learning'}
+                    className="h-24 text-left flex-col items-start p-4" 
+                    variant="outline"
+                  >
+                    <BarChart3 className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">E-Learning</div>
+                      <div className="text-xs">Online platform</div>
+                    </div>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -475,10 +504,39 @@ const AdminPortalContent = () => {
                 <CardDescription>Manage fees, payments, and financial records</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Financial management features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Button 
+                    onClick={() => window.location.href = '/school-fees'}
+                    className="h-24 text-left flex-col items-start p-4"
+                  >
+                    <DollarSign className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">School Fees</div>
+                      <div className="text-xs opacity-75">Payment portal</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    onClick={() => window.location.href = '/portal/parent'}
+                    className="h-24 text-left flex-col items-start p-4" 
+                    variant="outline"
+                  >
+                    <BarChart3 className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">Parent Portal</div>
+                      <div className="text-xs">Fee tracking</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    onClick={() => handleAction("Generate Financial Report")}
+                    className="h-24 text-left flex-col items-start p-4" 
+                    variant="outline"
+                  >
+                    <BookOpen className="h-6 w-6 mb-2" />
+                    <div>
+                      <div className="font-semibold">Reports</div>
+                      <div className="text-xs">Financial data</div>
+                    </div>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -491,10 +549,65 @@ const AdminPortalContent = () => {
                 <CardDescription>Configure system preferences and security settings</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>System configuration features available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable full functionality.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-primary">Content Management</h3>
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={() => window.location.href = '/admin-cms'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        CMS Dashboard
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/gallery'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Gallery Management
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/blog'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Bell className="h-4 w-4 mr-2" />
+                        Blog Posts
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-primary">Portal Access</h3>
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={() => window.location.href = '/portals'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        All Portals
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/contact'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Contact Messages
+                      </Button>
+                      <Button 
+                        onClick={() => window.location.href = '/about'}
+                        className="w-full justify-start" 
+                        variant="outline"
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        About Page
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -507,10 +620,9 @@ const AdminPortalContent = () => {
             <div className="flex items-center space-x-3">
               <Shield className="h-6 w-6 text-primary" />
               <div>
-                <h3 className="font-semibold text-primary">Full Portal Functionality Available</h3>
+                <h3 className="font-semibold text-primary">Admin Dashboard</h3>
                 <p className="text-muted-foreground">
-                  Connect your Lovable project to Supabase to enable complete admin portal functionality 
-                  including user management, data storage, and real-time updates.
+                  You have full access to all administrative functions. Use the tabs above to manage different aspects of the school system.
                 </p>
               </div>
             </div>

@@ -444,12 +444,29 @@ const AdminCMS = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FileUpload 
-                    onUpload={handleFileUpload}
-                    multiple={true}
-                    accept="image/*"
-                    maxSize={10}
-                  />
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
+                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Upload images to the gallery. Drag and drop or click to select files.
+                    </p>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          handleFileUpload(Array.from(e.target.files));
+                        }
+                      }}
+                      className="hidden"
+                      id="gallery-upload"
+                    />
+                    <Button asChild variant="outline">
+                      <label htmlFor="gallery-upload" className="cursor-pointer">
+                        Choose Files
+                      </label>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
               
@@ -468,13 +485,26 @@ const AdminCMS = () => {
                   </Button>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Bulk Image Upload</label>
-                    <FileUpload 
-                      onUpload={handleFileUpload}
-                      multiple={true}
-                      accept="image/*"
-                      maxSize={10}
-                      className="min-h-0"
-                    />
+                    <div className="border border-dashed border-muted-foreground/25 rounded-lg p-4">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            handleFileUpload(Array.from(e.target.files));
+                          }
+                        }}
+                        className="hidden"
+                        id="bulk-upload"
+                      />
+                      <Button asChild variant="outline" className="w-full">
+                        <label htmlFor="bulk-upload" className="cursor-pointer">
+                          <Upload className="h-4 w-4 mr-2" />
+                          Select Multiple Images
+                        </label>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
