@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { AuthGuard } from "@/components/AuthGuard";
+import { LessonPlanModal } from "@/components/LessonPlanModal";
+import { AttendanceModal } from "@/components/AttendanceModal";
+import { MessageModal } from "@/components/MessageModal";
 import { 
   Users, 
   BookOpen, 
@@ -20,10 +24,12 @@ import {
   Plus,
   Edit,
   Trash2,
-  Send
+  Send,
+  Download,
+  Eye
 } from "lucide-react";
 
-const StaffPortal = () => {
+const StaffPortalContent = () => {
   const [assignments, setAssignments] = useState([
     { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
     { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
@@ -33,7 +39,28 @@ const StaffPortal = () => {
   const [students, setStudents] = useState([
     { id: 1, name: "Adebayo Oladimeji", class: "JSS 2A", grade: "A", attendance: 95 },
     { id: 2, name: "Chinyere Okafor", class: "SSS 1B", grade: "B+", attendance: 92 },
-    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", grade: "A-", attendance: 88 }
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", grade: "A-", attendance: 88 },
+    { id: 4, name: "Fatima Mohammed", class: "JSS 2A", grade: "B+", attendance: 90 },
+    { id: 5, name: "Kemi Adebowale", class: "SSS 1A", grade: "A-", attendance: 93 },
+    { id: 6, name: "Chioma Okwu", class: "JSS 3B", grade: "B", attendance: 87 },
+    { id: 7, name: "Ibrahim Suleiman", class: "SSS 2A", grade: "A", attendance: 96 },
+    { id: 8, name: "Blessing Eze", class: "JSS 1A", grade: "B+", attendance: 89 }
+  ]);
+
+  const [lessonPlans, setLessonPlans] = useState([
+    { id: 1, title: "Introduction to Quadratic Equations", subject: "Mathematics", class: "JSS 2A", date: "2025-01-22", duration: "45 minutes", objectives: "Students will understand basic quadratic equations", activities: "Interactive whiteboard demonstration", materials: "Textbook, calculator", assessment: "Class participation and quiz" },
+    { id: 2, title: "Newton's Laws of Motion", subject: "Physics", class: "SSS 1B", date: "2025-01-23", duration: "60 minutes", objectives: "Explain the three laws of motion", activities: "Practical experiments", materials: "Lab equipment", assessment: "Lab report" }
+  ]);
+
+  const [attendanceRecords, setAttendanceRecords] = useState([
+    { id: 1, class: "JSS 2A", subject: "Mathematics", date: "2025-01-20", presentCount: 28, totalCount: 30 },
+    { id: 2, class: "SSS 1B", subject: "Physics", date: "2025-01-20", presentCount: 25, totalCount: 27 },
+    { id: 3, class: "JSS 3C", subject: "English", date: "2025-01-19", presentCount: 32, totalCount: 35 }
+  ]);
+
+  const [messages, setMessages] = useState([
+    { id: 1, type: "academic_progress", subject: "Math Progress Update", recipientCount: 5, sentAt: "2025-01-20T10:30:00Z" },
+    { id: 2, type: "assignment_reminder", subject: "Physics Assignment Due Tomorrow", recipientCount: 12, sentAt: "2025-01-19T14:15:00Z" }
   ]);
 
   const [newAssignment, setNewAssignment] = useState({
@@ -50,6 +77,12 @@ const StaffPortal = () => {
   const [editingStudent, setEditingStudent] = useState<number | null>(null);
   const [assignmentForm, setAssignmentForm] = useState({ title: "", class: "", dueDate: "", subject: "" });
   const [studentGradeForm, setStudentGradeForm] = useState({ grade: "" });
+
+  // Modal states
+  const [showLessonPlanModal, setShowLessonPlanModal] = useState(false);
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedLessonPlan, setSelectedLessonPlan] = useState<any>(null);
 
   const todaysSchedule = [
     { time: "8:00 AM", subject: "Mathematics", class: "JSS 2A", room: "Room 12" },
@@ -141,6 +174,119 @@ const StaffPortal = () => {
     });
   };
 
+  const handleCreateLessonPlan = () => {
+    setSelectedLessonPlan(null);
+    setShowLessonPlanModal(true);
+  };
+
+  const handleEditLessonPlan = (lessonPlan: any) => {
+    setSelectedLessonPlan(lessonPlan);
+    setShowLessonPlanModal(true);
+  };
+
+  const handleSaveLessonPlan = (lessonPlanData: any) => {
+    if (selectedLessonPlan) {
+      setLessonPlans(prev => prev.map(lp => 
+        lp.id === selectedLessonPlan.id ? { ...lp, ...lessonPlanData } : lp
+      ));
+    } else {
+      const newLessonPlan = {
+        id: Date.now(),
+        ...lessonPlanData
+      };
+      setLessonPlans(prev => [...prev, newLessonPlan]);
+    }
+  };
+
+  const handleDeleteLessonPlan = (id: number) => {
+    setLessonPlans(prev => prev.filter(lp => lp.id !== id));
+    toast({
+      title: "Lesson Plan Deleted",
+      description: "Lesson plan has been removed.",
+    });
+  };
+
+  const handleMarkAttendance = () => {
+    setShowAttendanceModal(true);
+  };
+
+  const handleSaveAttendance = (attendanceData: any) => {
+    const newRecord = {
+      id: Date.now(),
+      ...attendanceData
+    };
+    setAttendanceRecords(prev => [...prev, newRecord]);
+  };
+
+  const handleSendMessage = () => {
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessageData = (messageData: any) => {
+    const newMessage = {
+      id: Date.now(),
+      ...messageData,
+      recipientCount: messageData.recipients.length
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const handleExportGrades = () => {
+    // Create CSV data
+    const csvData = [
+      ["Student Name", "Class", "Grade", "Attendance %"],
+      ...students.map(student => [
+        student.name,
+        student.class,
+        student.grade,
+        student.attendance
+      ])
+    ];
+
+    const csvContent = csvData.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `grades_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Grades Exported",
+      description: "Grade records have been downloaded as CSV file.",
+    });
+  };
+
+  const handleGenerateAttendanceReport = () => {
+    // Create attendance summary report
+    const reportData = [
+      ["Class", "Subject", "Date", "Present", "Total", "Attendance %"],
+      ...attendanceRecords.map(record => [
+        record.class,
+        record.subject,
+        record.date,
+        record.presentCount,
+        record.totalCount,
+        `${Math.round((record.presentCount / record.totalCount) * 100)}%`
+      ])
+    ];
+
+    const csvContent = reportData.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `attendance_report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Report Generated",
+      description: "Attendance report has been downloaded.",
+    });
+  };
+
   const handleAction = (action: string) => {
     toast({
       title: `${action} Initiated`,
@@ -215,11 +361,13 @@ const StaffPortal = () => {
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
+            <TabsTrigger value="lessons">Lesson Plans</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
@@ -256,15 +404,15 @@ const StaffPortal = () => {
                   <CardTitle className="text-secondary">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button onClick={() => handleAction("Mark Attendance")} className="w-full justify-start">
+                  <Button onClick={handleMarkAttendance} className="w-full justify-start">
                     <CheckSquare className="h-4 w-4 mr-2" />
                     Mark Attendance
                   </Button>
-                  <Button onClick={() => handleAction("Create Lesson Plan")} variant="outline" className="w-full justify-start">
+                  <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
                     <BookOpen className="h-4 w-4 mr-2" />
                     Create Lesson Plan
                   </Button>
-                  <Button onClick={() => handleAction("Send Message")} variant="outline" className="w-full justify-start">
+                  <Button onClick={handleSendMessage} variant="outline" className="w-full justify-start">
                     <Send className="h-4 w-4 mr-2" />
                     Message Parents
                   </Button>
@@ -318,7 +466,7 @@ const StaffPortal = () => {
                           <Edit className="h-4 w-4 mr-1" />
                           Grade
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleAction("Send Message")}>
+                        <Button size="sm" variant="outline" onClick={handleSendMessage}>
                           <MessageSquare className="h-4 w-4 mr-1" />
                           Message
                         </Button>
@@ -476,6 +624,139 @@ const StaffPortal = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="lessons" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Lesson Plans ({lessonPlans.length})</h2>
+              <Button onClick={handleCreateLessonPlan} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Lesson Plan
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {lessonPlans.map((lessonPlan) => (
+                <Card key={lessonPlan.id} className="hover:shadow-elegant transition-all duration-300">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg">{lessonPlan.title}</CardTitle>
+                        <CardDescription>{lessonPlan.subject} - {lessonPlan.class}</CardDescription>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditLessonPlan(lessonPlan)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteLessonPlan(lessonPlan.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Date:</span>
+                        <span>{lessonPlan.date}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Duration:</span>
+                        <span>{lessonPlan.duration}</span>
+                      </div>
+                      <div className="mt-3">
+                        <p className="text-sm text-muted-foreground mb-1">Objectives:</p>
+                        <p className="text-sm">{lessonPlan.objectives}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="attendance" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Attendance Records</h2>
+              <Button onClick={handleMarkAttendance} className="flex items-center">
+                <CheckSquare className="h-4 w-4 mr-2" />
+                Mark Attendance
+              </Button>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Attendance ({attendanceRecords.length})</CardTitle>
+                <CardDescription>Track student attendance across your classes</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {attendanceRecords.map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{record.class} - {record.subject}</h3>
+                        <p className="text-sm text-muted-foreground">Date: {record.date}</p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Present</p>
+                          <p className="font-bold text-green-600">{record.presentCount}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Total</p>
+                          <p className="font-bold">{record.totalCount}</p>
+                        </div>
+                        <Badge variant={
+                          ((record.presentCount / record.totalCount) * 100) >= 85 ? "default" : 
+                          ((record.presentCount / record.totalCount) * 100) >= 70 ? "secondary" : "destructive"
+                        }>
+                          {Math.round((record.presentCount / record.totalCount) * 100)}%
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="messages" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Messages to Parents</h2>
+              <Button onClick={handleSendMessage} className="flex items-center">
+                <Send className="h-4 w-4 mr-2" />
+                Send Message
+              </Button>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Sent Messages ({messages.length})</CardTitle>
+                <CardDescription>Track your communication with parents</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {messages.map((message) => (
+                    <div key={message.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{message.subject}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {message.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} • 
+                          Sent: {new Date(message.sentAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">{message.recipientCount} recipients</Badge>
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="reports" className="space-y-6">
             <Card>
               <CardHeader>
@@ -487,12 +768,12 @@ const StaffPortal = () => {
                   <FileText className="h-4 w-4 mr-2" />
                   Generate Class Performance Report
                 </Button>
-                <Button onClick={() => handleAction("View Attendance Report")} variant="outline" className="w-full justify-start">
+                <Button onClick={handleGenerateAttendanceReport} variant="outline" className="w-full justify-start">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Attendance Summary
+                  Generate Attendance Report
                 </Button>
-                <Button onClick={() => handleAction("Export Grades")} variant="outline" className="w-full justify-start">
-                  <CheckSquare className="h-4 w-4 mr-2" />
+                <Button onClick={handleExportGrades} variant="outline" className="w-full justify-start">
+                  <Download className="h-4 w-4 mr-2" />
                   Export Grade Records
                 </Button>
               </CardContent>
@@ -500,7 +781,35 @@ const StaffPortal = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <LessonPlanModal
+        isOpen={showLessonPlanModal}
+        onClose={() => setShowLessonPlanModal(false)}
+        onSave={handleSaveLessonPlan}
+        lessonPlan={selectedLessonPlan}
+      />
+
+      <AttendanceModal
+        isOpen={showAttendanceModal}
+        onClose={() => setShowAttendanceModal(false)}
+        onSave={handleSaveAttendance}
+      />
+
+      <MessageModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        onSend={handleSendMessageData}
+      />
     </div>
+  );
+};
+
+const StaffPortal = () => {
+  return (
+    <AuthGuard portalType="staff">
+      <StaffPortalContent />
+    </AuthGuard>
   );
 };
 

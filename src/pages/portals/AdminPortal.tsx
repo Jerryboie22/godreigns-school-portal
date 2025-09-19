@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthGuard } from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,7 @@ import {
   Eye
 } from "lucide-react";
 
-const AdminPortal = () => {
+const AdminPortalContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeStudents, setActiveStudents] = useState([
     { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
@@ -517,6 +518,14 @@ const AdminPortal = () => {
         </Card>
       </div>
     </div>
+  );
+};
+
+const AdminPortal = () => {
+  return (
+    <AuthGuard portalType="admin">
+      <AdminPortalContent />
+    </AuthGuard>
   );
 };
 

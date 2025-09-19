@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthGuard } from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,7 +20,7 @@ import {
   Edit
 } from "lucide-react";
 
-const StudentPortal = () => {
+const StudentPortalContent = () => {
   const [studentInfo, setStudentInfo] = useState({
     name: "Adebayo Olamide",
     class: "SSS 2B",
@@ -383,6 +384,14 @@ const StudentPortal = () => {
         </Card>
       </div>
     </div>
+  );
+};
+
+const StudentPortal = () => {
+  return (
+    <AuthGuard portalType="student">
+      <StudentPortalContent />
+    </AuthGuard>
   );
 };
 
