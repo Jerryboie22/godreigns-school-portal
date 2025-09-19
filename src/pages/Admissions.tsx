@@ -55,25 +55,25 @@ const Admissions = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16 mx-auto lg:mx-0 mb-4" />
-              <h1 className="text-4xl lg:text-5xl font-bold mb-4">Admissions Open</h1>
-              <p className="text-2xl mb-2 text-yellow-200">2025/2026 Academic Session</p>
-              <p className="text-xl mb-6">Into JSS & SSS Classes</p>
-              <div className="grid grid-cols-2 gap-4 text-center mb-8">
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-semibold text-sm">Quality Teaching</p>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Admissions Open</h1>
+              <p className="text-xl md:text-2xl mb-2 text-yellow-200">2025/2026 Academic Session</p>
+              <p className="text-lg md:text-xl mb-6">Into JSS & SSS Classes</p>
+              <div className="grid grid-cols-2 gap-3 md:gap-4 text-center mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/20">
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-xs md:text-sm">Quality Teaching</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-semibold text-sm">Affordable Fee</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/20">
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-xs md:text-sm">Affordable Fee</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-semibold text-sm">Computer Based Education</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/20">
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-xs md:text-sm">Computer Based Education</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                  <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-                  <p className="font-semibold text-sm">Conducive Learning</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 md:p-4 border border-white/20">
+                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 mx-auto mb-2" />
+                  <p className="font-semibold text-xs md:text-sm">Conducive Learning</p>
                 </div>
               </div>
             </div>
@@ -102,25 +102,25 @@ const Admissions = () => {
               <div className="mt-6 text-left max-w-2xl mx-auto">
                 <h3 className="text-2xl font-bold text-primary mb-4">Why Choose Our God Reigns Crystal School?</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-muted-foreground">Quality Teaching with experienced educators</span>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground text-sm md:text-base">Quality Teaching with experienced educators</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-muted-foreground">Affordable Fee structure for all families</span>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground text-sm md:text-base">Affordable Fee structure for all families</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-muted-foreground">Computer Based Education with modern facilities</span>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground text-sm md:text-base">Computer Based Education with modern facilities</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-muted-foreground">Conducive Learning Environment</span>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground text-sm md:text-base">Conducive Learning Environment</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <span className="text-muted-foreground">Character development with Christian values</span>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-muted-foreground text-sm md:text-base">Character development with Christian values</span>
                   </div>
                 </div>
               </div>

@@ -169,17 +169,19 @@ const Home = () => {
                   <h3 className="text-2xl font-semibold mb-4 text-accent-foreground">JSS & SSS Classes</h3>
                   <p className="text-lg mb-6 opacity-95">Join Our God Reigns Crystal School for the 2025/2026 academic session</p>
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Phone className="h-4 w-4" />
-                      <span>08027625129, 08033089735</span>
+                      <a href="tel:+2348027625129" className="hover:underline">08027625129</a>
+                      <span>,</span>
+                      <a href="tel:+2348033089735" className="hover:underline">08033089735</a>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Mail className="h-4 w-4" />
-                      <span>ogrcs@yahoo.com</span>
+                      <a href="mailto:ogrcs@yahoo.com" className="hover:underline">ogrcs@yahoo.com</a>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm">23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
+                    <div className="flex items-start space-x-2">
+                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm break-words">23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
                     </div>
                   </div>
                   <Link to="/admissions">
@@ -325,13 +327,13 @@ const Home = () => {
               <div>
                 <h2 className="text-3xl font-bold text-primary mb-6">Proprietress Welcome Address - 2025/2026 Session</h2>
                 <div className="prose prose-lg">
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
                     "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
                   </p>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
                     "To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome."
                   </p>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
                     "You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords. The start of a new academic year is always a season of fresh opportunities."
                   </p>
                   {showFullAddress && (

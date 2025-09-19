@@ -54,11 +54,15 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-yellow-300" />
-                <p>08027625129, 08033089735</p>
+                <div className="flex flex-wrap gap-1">
+                  <a href="tel:+2348027625129" className="hover:text-yellow-300 transition-colors">08027625129</a>
+                  <span>,</span>
+                  <a href="tel:+2348033089735" className="hover:text-yellow-300 transition-colors">08033089735</a>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 text-yellow-300" />
-                <p>ogrcs@yahoo.com</p>
+                <a href="mailto:ogrcs@yahoo.com" className="hover:text-yellow-300 transition-colors">ogrcs@yahoo.com</a>
               </div>
             </div>
             

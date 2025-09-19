@@ -17,7 +17,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
+import proprietress from "@/assets/proprietress.jpg";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -121,8 +121,8 @@ const Contact = () => {
               </div>
               <div className="flex justify-center">
                 <img 
-                  src={officialAwardCeremony} 
-                  alt="School Officials"
+                  src={proprietress} 
+                  alt="Our God Reigns Crystal School Leadership"
                   className="rounded-lg shadow-2xl w-full max-w-lg"
                 />
               </div>
