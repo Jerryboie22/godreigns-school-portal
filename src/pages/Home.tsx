@@ -9,6 +9,8 @@ import { ChevronLeft, ChevronRight, Users, Award, BookOpen, Shield, Heart, Targe
 import logo from "@/assets/logo.jpeg";
 import proprietress from "@/assets/proprietress.jpg";
 import chairman from "@/assets/chairman.jpg";
+import principal from "@/assets/principal.jpg";
+import vicePrincipal from "@/assets/vice-principal.jpg";
 import gallery1 from "@/assets/gallery1.jpg";
 import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
@@ -89,14 +91,16 @@ const Home = () => {
                 <h2 className="text-3xl font-bold text-primary mb-6">Proprietress' Welcome Address</h2>
                 <div className="prose prose-lg">
                   <p className="text-muted-foreground mb-4">
-                    "Welcome to Our God Reigns Crystal School, where excellence meets purpose. As the Proprietress, 
-                    I am committed to providing quality education that shapes not just brilliant minds, but 
-                    character-driven individuals who will be lights in their communities."
+                    "It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session. To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday."
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    "To our new students and parents joining our school family for the first time, we say a heartfelt welcome. You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords."
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    "The start of a new academic year is always a season of fresh opportunities. It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential."
                   </p>
                   <p className="text-muted-foreground mb-6">
-                    "Our school stands as a beacon of hope, combining academic excellence with strong moral 
-                    foundations rooted in Christian values. We believe every child is uniquely gifted, 
-                    and we are here to nurture and develop those gifts to their fullest potential."
+                    "My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency. With God on our side, this year will be filled with testimonies of growth and achievement."
                   </p>
                   <div className="flex items-center space-x-4">
                     <div>
@@ -136,8 +140,7 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  To be a leading educational institution that produces academically excellent and morally upright individuals 
-                  who serve as beacons of light in their communities and the world at large.
+                  To provide qualitative and affordable education. To raise God fearing leaders.
                 </p>
               </CardContent>
             </Card>
@@ -151,8 +154,8 @@ const Home = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  To provide quality education that combines academic excellence with strong Christian values, 
-                  nurturing young minds to become responsible leaders and positive change agents in society.
+                  To maintain high standard at all times. To always ensure that our services are not overpriced. 
+                  To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
                 </p>
               </CardContent>
             </Card>
@@ -168,21 +171,7 @@ const Home = () => {
             <p className="text-lg text-muted-foreground">Comprehensive education from foundation to senior secondary</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="text-center p-6 group hover:shadow-elegant transition-all duration-300">
-              <CardHeader>
-                <div className="mx-auto bg-primary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <BookOpen className="h-8 w-8 text-primary group-hover:text-white" />
-                </div>
-                <CardTitle className="text-primary">Nursery & Primary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Strong foundation in basic learning skills with emphasis on character development and Christian values.
-                </p>
-              </CardContent>
-            </Card>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             <Card className="text-center p-6 group hover:shadow-elegant transition-all duration-300">
               <CardHeader>
                 <div className="mx-auto bg-secondary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-white transition-colors">
@@ -435,23 +424,29 @@ const Home = () => {
 
             <Card className="text-center group hover:shadow-elegant transition-all duration-300">
               <CardContent className="p-6">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 bg-primary/10 flex items-center justify-center">
-                  <Users className="h-12 w-12 text-primary" />
-                </div>
+                <img 
+                  src={principal} 
+                  alt="Pastor Joseph Oladele"
+                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                />
                 <h3 className="text-lg font-semibold text-primary mb-1">Pastor Joseph Oladele</h3>
                 <p className="text-accent font-medium mb-2">Principal</p>
-                <p className="text-sm text-muted-foreground">Academic leadership and guidance</p>
+                <p className="text-sm text-muted-foreground mb-2">Academic leadership and guidance</p>
+                <a href="tel:+2348147059222" className="text-xs text-primary hover:underline">📞 +234 814 705 9222</a>
               </CardContent>
             </Card>
 
             <Card className="text-center group hover:shadow-elegant transition-all duration-300">
               <CardContent className="p-6">
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 bg-secondary/10 flex items-center justify-center">
-                  <Users className="h-12 w-12 text-secondary" />
-                </div>
+                <img 
+                  src={vicePrincipal} 
+                  alt="Mrs Abosede Taiwo"
+                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                />
                 <h3 className="text-lg font-semibold text-primary mb-1">Mrs Abosede Taiwo</h3>
                 <p className="text-accent font-medium mb-2">Vice Principal</p>
-                <p className="text-sm text-muted-foreground">Supporting academic excellence</p>
+                <p className="text-sm text-muted-foreground mb-2">Supporting academic excellence</p>
+                <a href="tel:+2348067795900" className="text-xs text-primary hover:underline">📞 +234 806 779 5900</a>
               </CardContent>
             </Card>
           </div>
