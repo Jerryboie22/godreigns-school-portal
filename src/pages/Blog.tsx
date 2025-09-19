@@ -46,119 +46,122 @@ We congratulate all our students, teachers, and staff who contributed to this su
       author: "School Administration",
       readTime: "3 min read",
       featured: true,
-      image: awardWinner
+      image: necoExcellenceAwards
     },
     {
       id: 2,
-      title: "Welcome to Academic Session 2025/2026: A New Beginning",
-      excerpt: "As we commence the 2025/2026 academic year, we extend a warm welcome to all returning students, new students, and their families. This session promises to be filled with learning, growth, and exciting opportunities as we continue our mission as 'Light to the World'...",
-      content: `Welcome to the 2025/2026 academic session at Our God Reigns Crystal School! We are excited to begin another year of academic excellence and character development.
+      title: "Million Naira Achievement Fund Launch for 2025/2026 Session", 
+      excerpt: "Our God Reigns Crystal School launches the Million Naira Achievement Fund to support exceptional students and academic programs for the 2025/2026 academic session, reinforcing our commitment to excellence...",
+      content: `We are excited to announce the launch of our Million Naira Achievement Fund for the 2025/2026 academic session. This initiative demonstrates our commitment to supporting academic excellence and recognizing outstanding achievements.
 
-This session brings new opportunities for learning, personal growth, and character development. We have introduced enhanced learning programs, updated our facilities, and welcomed new qualified teachers to our team for the 2025/2026 academic year.
+The fund will provide financial support for:
+- Outstanding students pursuing higher education
+- Academic excellence scholarships
+- Educational materials and resources
+- Special recognition awards for exceptional performance
 
-Parents are reminded that registration is ongoing for new students, and all returning students should complete their registration process by the specified deadlines. Our administrative team is available to assist with any enrollment or academic questions.
+This investment in our students' futures reflects our belief that every child deserves the opportunity to excel and become a "Light to the World."
 
-We look forward to a productive and successful 2025/2026 academic year together!`,
-      date: "2025-09-10",
-      category: "Academics",
-      author: "Principal's Office",
+Applications for the achievement fund are now open for the 2025/2026 academic session. Eligible students will be selected based on academic performance, character development, and leadership potential.`,
+      date: "2025-09-12",
+      category: "News",
+      author: "Management",
       readTime: "2 min read",
       featured: false,
-      image: gallery1
+      image: millionNaira
     },
     {
       id: 3,
-      title: "Building Character Through Campus Life Activities",
-      excerpt: "Character development is at the core of our educational philosophy. Through various campus life activities, our students learn valuable life lessons that extend far beyond the classroom...",
-      content: `At Our God Reigns Crystal School, we believe that education extends far beyond academic learning. Character development is integral to our mission of producing well-rounded individuals who will be positive influences in society.
+      title: "Award Ceremony Officials Visit - 2025/2026 Session Recognition",
+      excerpt: "Distinguished officials visit our school for the annual award ceremony, recognizing outstanding academic performance and moral excellence during the 2025/2026 academic session...",
+      content: `We were honored to host distinguished officials at our annual award ceremony for the 2025/2026 academic session. The ceremony recognized exceptional academic achievements and character development among our students.
 
-Our campus life activities are carefully designed to instill values such as leadership, teamwork, integrity, and service to others. Through inter-house competitions, cultural celebrations, community service projects, and leadership opportunities, students develop essential life skills.
+The visiting officials commended our school's commitment to excellence and the outstanding performance of our students. They noted the balanced approach we take in developing both academic competence and strong moral character.
 
-Recent activities have included:
-- Inter-house sports competitions promoting teamwork and healthy competition
-- Cultural day celebrations showcasing our rich heritage
-- Community outreach programs teaching service and empathy
-- Leadership workshops for senior students
+Key highlights of the ceremony included:
+- Recognition of top-performing students
+- Awards for character development
+- Appreciation for dedicated teachers and staff
+- Presentation of academic achievement certificates
 
-These activities complement our academic programs and help students develop into confident, capable, and caring individuals ready to make a positive impact in the world.`,
-      date: "2024-09-05",
-      category: "Campus Life",
-      author: "Student Affairs",
-      readTime: "4 min read",
+This recognition reinforces our position as a leading educational institution in Nigeria and our mission to be a "Light to the World" through quality education.`,
+      date: "2025-09-08",
+      category: "Awards",
+      author: "Event Coordinator",
+      readTime: "3 min read",
       featured: false,
-      image: "/placeholder-campus.jpg"
+      image: awardCeremonyOfficials
     },
     {
       id: 4,
-      title: "Inter-House Sports Competition 2024: Unity in Diversity",
-      excerpt: "The annual inter-house sports competition brought together students from all levels in a celebration of athleticism, teamwork, and school spirit...",
-      content: `The 2024 Inter-House Sports Competition was a spectacular display of athletic prowess, school spirit, and unity. Students from all houses came together to compete in various sporting events while maintaining the values of fair play and sportsmanship.
+      title: "Cultural Heritage Celebration 2025/2026",
+      excerpt: "Our students showcase their rich cultural heritage through dance, drama, and artistic expressions during our annual cultural week celebration for the 2025/2026 session...",
+      content: `Our annual Cultural Heritage Celebration for the 2025/2026 academic session was a spectacular showcase of Nigerian culture and traditions. Students from all levels participated enthusiastically in various cultural activities.
 
-The competition featured events including track and field, football, basketball, volleyball, and traditional games. Each house demonstrated exceptional preparation and team spirit throughout the event.
+The celebration featured:
+- Traditional dance performances from different Nigerian cultures
+- Drama presentations highlighting moral values
+- Art exhibitions displaying student creativity
+- Cultural dress parade showcasing Nigerian attire
+- Poetry recitations in local languages
 
-Highlights included:
-- Record-breaking performances in track events
-- Exceptional teamwork in relay races
-- Outstanding displays of sportsmanship
-- Active participation from students across all levels
+This event not only celebrates our rich heritage but also instills pride in our students about their cultural identity. It aligns with our mission to develop well-rounded individuals who are proud of their roots while being prepared for global opportunities.
 
-The competition concluded with an awards ceremony celebrating not just the winners, but all participants who embodied the school's values of excellence, integrity, and unity.
-
-Congratulations to all participants and winners! The event truly showcased what it means to be part of the Our God Reigns Crystal School family.`,
-      date: "2024-08-30",
-      category: "Sports",
-      author: "Sports Department",
-      readTime: "3 min read",
+The celebration was a testament to the diverse talents of our students and their commitment to preserving and promoting Nigerian culture.`,
+      date: "2025-09-05",
+      category: "Campus Life", 
+      author: "Cultural Affairs",
+      readTime: "4 min read",
       featured: false,
-      image: "/placeholder-sports.jpg"
+      image: culturalDance
     },
     {
       id: 5,
-      title: "Parent-Teacher Conference: Strengthening Home-School Partnership",
-      excerpt: "Building strong partnerships between home and school is essential for student success. Our upcoming parent-teacher conference provides an opportunity for meaningful dialogue...",
-      content: `We invite all parents and guardians to participate in our upcoming Parent-Teacher Conference scheduled for September 25, 2024. This conference is a vital opportunity to strengthen the partnership between home and school in supporting your child's academic and personal development.
+      title: "Certificate Presentation Ceremony - Academic Excellence 2025/2026",
+      excerpt: "Annual certificate presentation ceremony recognizing academic achievements and character development of our graduating students for the 2025/2026 session...",
+      content: `Our annual Certificate Presentation Ceremony for the 2025/2026 academic session was a proud moment for students, parents, and staff. The ceremony celebrated the academic achievements and character development of our students.
 
-During the conference, parents will have the opportunity to:
-- Meet with subject teachers to discuss academic progress
-- Review assessment results and areas for improvement
-- Discuss your child's social and emotional development
-- Learn about upcoming academic programs and activities
-- Provide feedback on school programs and policies
+Certificates were awarded for:
+- Outstanding academic performance across all subjects
+- Leadership and character development
+- Community service and social responsibility
+- Special talents and achievements
+- Perfect attendance and dedication
 
-The conference will be held from 10:00 AM to 4:00 PM in our main hall. Individual appointments with teachers can be scheduled through the school office.
+The ceremony featured inspiring speeches from the proprietress, principal, and distinguished guests who encouraged students to continue striving for excellence in all their endeavors.
 
-We encourage all parents to attend as your involvement is crucial to your child's success. Together, we can ensure that every student reaches their full potential and truly becomes a "Light to the World."`,
-      date: "2024-08-25",
-      category: "Events",
-      author: "Parent Relations",
-      readTime: "2 min read",
-      featured: false,
-      image: "/placeholder-conference.jpg"
-    },
-    {
-      id: 6,
-      title: "Academic Excellence: Our WAEC Results Shine Bright",
-      excerpt: "Our students have once again demonstrated exceptional performance in the West African Examinations Council (WAEC) examinations, maintaining our reputation for academic excellence...",
-      content: `We are delighted to announce the outstanding performance of our students in the 2024 West African Senior School Certificate Examination (WASSCE). Our results continue to reflect our commitment to academic excellence and quality education.
-
-Key highlights of our performance include:
-- 98% pass rate in English Language
-- 95% pass rate in Mathematics  
-- 92% overall pass rate across all subjects
-- 15 students achieved distinctions in 7 or more subjects
-- Exceptional performance in Sciences and Mathematics
-
-These results are a testament to the dedication of our students, the expertise of our teaching staff, and the supportive learning environment we have created. Our comprehensive approach to education, combining rigorous academics with character development, continues to produce well-rounded graduates.
-
-We congratulate all our students for their hard work and dedication. Special recognition goes to our teachers who have consistently gone above and beyond to ensure student success.
-
-These achievements reinforce our position as a leading educational institution and our mission to be a "Light to the World" through academic excellence.`,
-      date: "2024-08-20",
+Parents and guardians expressed their appreciation for the quality education and character formation provided by Our God Reigns Crystal School. The event concluded with a commitment from all stakeholders to continue supporting academic excellence and moral development.`,
+      date: "2025-09-03",
       category: "Academics",
       author: "Academic Office",
       readTime: "3 min read",
-      featured: true,
-      image: "/placeholder-results.jpg"
+      featured: false,
+      image: certificatePresentation
+    },
+    {
+      id: 6,
+      title: "Welcome New Students - 2025/2026 Academic Session",
+      excerpt: "Welcome to Academic Session 2025/2026! Our new students begin their journey of academic excellence and character building at Our God Reigns Crystal School...",
+      content: `We extend a warm welcome to all new students joining Our God Reigns Crystal School for the 2025/2026 academic session. Your enrollment marks the beginning of an exciting journey of learning, growth, and character development.
+
+New Student Orientation includes:
+- Introduction to school values and expectations
+- Academic program overview and course selection
+- Campus tour and facility orientation
+- Meet and greet with teachers and staff
+- Uniform fitting and school supplies
+
+Our comprehensive orientation program ensures that every new student transitions smoothly into our school community. We are committed to providing a supportive environment where each student can discover their potential and excel academically.
+
+To our returning students, welcome back! Together with our new students, let's make the 2025/2026 academic session one of outstanding achievement and growth.
+
+Remember, at Our God Reigns Crystal School, every student is destined to be a "Light to the World."`,
+      date: "2025-09-01",
+      category: "Academics",
+      author: "Student Affairs",
+      readTime: "2 min read",
+      featured: false,
+      image: studentsGroup
     }
   ];
 

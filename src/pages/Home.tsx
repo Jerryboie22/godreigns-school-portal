@@ -279,51 +279,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* About Section with Flyer Design */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">About Our God Reigns Crystal School</h2>
-            <p className="text-xl text-muted-foreground mb-8">A place for academic and moral excellence - Light to the World</p>
-            <div className="bg-accent/20 rounded-lg p-6 mb-8">
-              <h3 className="text-2xl font-bold text-primary mb-2">Admission in Progress</h3>
-              <p className="text-lg text-primary">into JSS & SSS Classes</p>
-              <p className="text-sm text-muted-foreground mt-2">Academic Session 2025/2026</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Eye className="h-6 w-6 text-primary" />
-                  <CardTitle className="text-primary">Our Vision</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  To provide qualitative and affordable education. To raise God fearing leaders.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="p-6 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Target className="h-6 w-6 text-accent" />
-                  <CardTitle className="text-primary">Our Mission</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  To maintain high standard at all times. To always ensure that our services are not overpriced. 
-                  To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Academic Programs */}
       <section className="py-16 bg-muted/30">
