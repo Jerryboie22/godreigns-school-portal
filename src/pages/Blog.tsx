@@ -12,6 +12,16 @@ import culturalDance from "@/assets/cultural-dance.jpg";
 import studentsGroup from "@/assets/students-group.jpg";
 import achievementStudents from "@/assets/achievement-students.jpg";
 import necoAwards from "@/assets/neco-awards.jpg";
+import necoExcellence from "@/assets/neco-excellence.jpg";
+import studentGroupBlue from "@/assets/student-group-blue.jpg";
+import studentsPurple from "@/assets/students-purple-uniforms.jpg";
+import awardWinner from "@/assets/award-winner-emmanuella.jpg";
+import necoExcellenceAwards from "@/assets/neco-excellence-awards.jpg";
+import millionNaira from "@/assets/million-naira-cheque.jpg";
+import certificatePresentation from "@/assets/certificate-presentation.jpg";
+import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
+import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
+import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +46,7 @@ We congratulate all our students, teachers, and staff who contributed to this su
       author: "School Administration",
       readTime: "3 min read",
       featured: true,
-      image: necoAwards
+      image: awardWinner
     },
     {
       id: 2,

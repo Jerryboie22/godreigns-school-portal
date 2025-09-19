@@ -15,6 +15,15 @@ import studentsGroup from "@/assets/students-group.jpg";
 import achievementStudents from "@/assets/achievement-students.jpg";
 import necoAwards from "@/assets/neco-awards.jpg";
 import necoExcellence from "@/assets/neco-excellence.jpg";
+import studentGroupBlue from "@/assets/student-group-blue.jpg";
+import studentsPurple from "@/assets/students-purple-uniforms.jpg";
+import awardWinner from "@/assets/award-winner-emmanuella.jpg";
+import necoExcellenceAwards from "@/assets/neco-excellence-awards.jpg";
+import millionNaira from "@/assets/million-naira-cheque.jpg";
+import certificatePresentation from "@/assets/certificate-presentation.jpg";
+import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
+import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
+import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
@@ -58,6 +67,104 @@ const Gallery = () => {
       title: "LearnAfrica Excellence Awards 2024", 
       category: "Awards",
       description: "Students receiving recognition for outstanding academic performance"
+    },
+    {
+      id: 6,
+      src: culturalDance,
+      title: "Traditional Dance Performance",
+      category: "Cultural Activities",
+      description: "Students performing traditional Nigerian dances during cultural week"
+    },
+    {
+      id: 7,
+      src: studentsGroup,
+      title: "Class of 2025/2026",
+      category: "Campus Life",
+      description: "New students beginning their academic journey"
+    },
+    {
+      id: 8,
+      src: achievementStudents,
+      title: "Academic Excellence Recognition",
+      category: "Awards",
+      description: "Students celebrating their outstanding academic achievements"
+    },
+    {
+      id: 9,
+      src: necoAwards,
+      title: "NECO Awards Ceremony",
+      category: "Awards",
+      description: "Annual NECO awards recognizing exceptional student performance"
+    },
+    {
+      id: 10,
+      src: necoExcellence,
+      title: "NECO Excellence Awards",
+      category: "Awards",
+      description: "Students receiving national recognition for academic excellence"
+    },
+    {
+      id: 11,
+      src: studentGroupBlue,
+      title: "Students in Blue Uniforms",
+      category: "Campus Life",
+      description: "Students proudly wearing their school uniforms"
+    },
+    {
+      id: 12,
+      src: studentsPurple,
+      title: "Students in Purple Uniforms",
+      category: "Campus Life",
+      description: "Students showcasing school spirit in their uniforms"
+    },
+    {
+      id: 13,
+      src: awardWinner,
+      title: "Emmanuella - National Award Winner",
+      category: "Awards",
+      description: "Miss Adeyemo Emmanuella with her national award recognition"
+    },
+    {
+      id: 14,
+      src: necoExcellenceAwards,
+      title: "NECO Excellence Awards Ceremony",
+      category: "Awards",
+      description: "Official ceremony recognizing academic excellence"
+    },
+    {
+      id: 15,
+      src: millionNaira,
+      title: "Million Naira Achievement Fund",
+      category: "Awards",
+      description: "Launch of the million naira achievement fund for students"
+    },
+    {
+      id: 16,
+      src: certificatePresentation,
+      title: "Certificate Presentation",
+      category: "Academic Events",
+      description: "Annual certificate presentation ceremony"
+    },
+    {
+      id: 17,
+      src: awardCeremonyOfficials,
+      title: "Award Ceremony Officials",
+      category: "Awards",
+      description: "Distinguished officials at the award ceremony"
+    },
+    {
+      id: 18,
+      src: awardCeremonyPresentation,
+      title: "Award Ceremony Presentation",
+      category: "Awards",
+      description: "Official presentation during the award ceremony"
+    },
+    {
+      id: 19,
+      src: officialAwardCeremony,
+      title: "Official Award Ceremony",
+      category: "Awards",
+      description: "Annual official award ceremony celebrating achievements"
     }
   ];
 

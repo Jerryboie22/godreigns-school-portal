@@ -17,12 +17,46 @@ import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
 import achievement from "@/assets/achievement.jpg";
 import awardCeremony from "@/assets/award-ceremony.jpg";
+import culturalDance from "@/assets/cultural-dance.jpg";
+import studentsGroup from "@/assets/students-group.jpg";
+import achievementStudents from "@/assets/achievement-students.jpg";
+import necoAwards from "@/assets/neco-awards.jpg";
+import necoExcellence from "@/assets/neco-excellence.jpg";
+import studentGroupBlue from "@/assets/student-group-blue.jpg";
+import studentsPurple from "@/assets/students-purple-uniforms.jpg";
+import awardWinner from "@/assets/award-winner-emmanuella.jpg";
+import necoExcellenceAwards from "@/assets/neco-excellence-awards.jpg";
+import millionNaira from "@/assets/million-naira-cheque.jpg";
+import certificatePresentation from "@/assets/certificate-presentation.jpg";
+import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
+import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
+import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 
 const Home = () => {
   const [currentGalleryImage, setCurrentGalleryImage] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFullAddress, setShowFullAddress] = useState(false);
-  const galleryImages = [gallery1, gallery2, gallery3, achievement, awardCeremony];
+  const galleryImages = [
+    gallery1, 
+    gallery2, 
+    gallery3, 
+    achievement, 
+    awardCeremony,
+    culturalDance,
+    studentsGroup,
+    achievementStudents,
+    necoAwards,
+    necoExcellence,
+    studentGroupBlue,
+    studentsPurple,
+    awardWinner,
+    necoExcellenceAwards,
+    millionNaira,
+    certificatePresentation,
+    awardCeremonyOfficials,
+    awardCeremonyPresentation,
+    officialAwardCeremony
+  ];
 
   const nextImage = () => {
     setCurrentGalleryImage((prev) => (prev + 1) % galleryImages.length);
@@ -36,26 +70,50 @@ const Home = () => {
     {
       id: 1,
       title: "NECO Excellence Awards 2025/2026: Our Students Shine",
-      excerpt: "Celebrating our students' outstanding achievements at the NECO Excellence Awards for the 2025/2026 academic session...",
+      excerpt: "Celebrating our students' outstanding achievements at the NECO Excellence Awards for the 2025/2026 academic session. Emmanuella receives special recognition for academic excellence...",
       date: "2025-09-15",
       category: "Awards",
-      image: awardCeremony
+      image: awardWinner
     },
     {
       id: 2,
-      title: "Welcome to Academic Session 2025/2026", 
-      excerpt: "A warm welcome to all students and parents as we begin another year of academic excellence and character building...",
-      date: "2025-09-10",
-      category: "Academics",
-      image: gallery1
+      title: "Million Naira Achievement Fund Launch", 
+      excerpt: "Our God Reigns Crystal School launches the Million Naira Achievement Fund to support exceptional students and academic programs for the 2025/2026 session...",
+      date: "2025-09-12",
+      category: "News",
+      image: millionNaira
     },
     {
       id: 3,
       title: "Cultural Heritage Celebration 2025",
-      excerpt: "Our students showcase their rich cultural heritage through dance, drama, and artistic expressions...",
-      date: "2025-09-05",
+      excerpt: "Our students showcase their rich cultural heritage through dance, drama, and artistic expressions during our annual cultural week celebration...",
+      date: "2025-09-10",
       category: "Campus Life", 
-      image: gallery2
+      image: culturalDance
+    },
+    {
+      id: 4,
+      title: "Certificate Presentation Ceremony",
+      excerpt: "Annual certificate presentation ceremony recognizing academic achievements and character development of our graduating students...",
+      date: "2025-09-08",
+      category: "Academics",
+      image: certificatePresentation
+    },
+    {
+      id: 5,
+      title: "New Student Orientation 2025/2026",
+      excerpt: "Welcome to Academic Session 2025/2026! Our new students begin their journey of academic excellence and character building...",
+      date: "2025-09-05",
+      category: "Academics",
+      image: studentsGroup
+    },
+    {
+      id: 6,
+      title: "Award Ceremony Officials Visit",
+      excerpt: "Distinguished officials visit our school for the annual award ceremony, recognizing outstanding academic performance and moral excellence...",
+      date: "2025-09-03",
+      category: "Awards",
+      image: awardCeremonyOfficials
     }
   ];
 
@@ -89,55 +147,71 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Quick Access & Contact Info */}
-      <section className="py-12 bg-muted/30">
+      {/* About Our School */}
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-primary text-center mb-8">Quick Access & Contact Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                <div className="bg-primary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Phone className="h-8 w-8 text-primary" />
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary mb-4">About Our God Reigns Crystal School</h2>
+              <p className="text-xl text-muted-foreground">A place for academic and moral excellence - Light to the World</p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="bg-accent/20 rounded-lg p-6 mb-8">
+                  <h3 className="text-2xl font-bold text-primary mb-2">Admission in Progress</h3>
+                  <p className="text-lg text-primary">into JSS & SSS Classes</p>
+                  <p className="text-sm text-muted-foreground mt-2">Academic Session 2025/2026</p>
                 </div>
-                <h3 className="font-semibold text-primary mb-2">Contact Us</h3>
-                <div className="space-y-1 text-sm">
-                  <a href="tel:+2348027625129" className="block text-muted-foreground hover:text-primary transition-colors">
-                    +234 802 762 5129
-                  </a>
-                  <a href="tel:+2348033089735" className="block text-muted-foreground hover:text-primary transition-colors">
-                    +234 803 308 9735
-                  </a>
-                </div>
-              </Card>
-
-              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                <div className="bg-accent/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Mail className="h-8 w-8 text-accent" />
-                </div>
-                <h3 className="font-semibold text-primary mb-2">Email</h3>
-                <a href="mailto:ogrcs@yahoo.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  ogrcs@yahoo.com
-                </a>
-              </Card>
-
-              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                <div className="bg-secondary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-secondary" />
-                </div>
-                <h3 className="font-semibold text-primary mb-2">Address</h3>
-                <p className="text-sm text-muted-foreground">
-                  23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State
+                <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                  Our God Reigns Crystal School stands as a beacon of excellence in education, dedicated to nurturing young minds 
+                  with both academic knowledge and moral values. We provide a comprehensive learning environment where students 
+                  develop critical thinking skills, character, and leadership qualities that will serve them throughout their lives.
                 </p>
+                <Link to="/about">
+                  <Button className="text-lg px-6">
+                    Learn More About Us
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={achievement} 
+                  alt="Our God Reigns Crystal School Students"
+                  className="rounded-lg shadow-elegant w-full max-w-md"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+              <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <Eye className="h-6 w-6 text-primary" />
+                    <CardTitle className="text-primary">Our Vision</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    To provide qualitative and affordable education. To raise God fearing leaders.
+                  </p>
+                </CardContent>
               </Card>
 
-              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                <div className="bg-navy/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <CreditCard className="h-8 w-8 text-navy" />
-                </div>
-                <h3 className="font-semibold text-primary mb-2">Pay Fees</h3>
-                <Link to="/school-fees" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Online Payment Portal
-                </Link>
+              <Card className="p-6 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <Target className="h-6 w-6 text-accent" />
+                    <CardTitle className="text-primary">Our Mission</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    To maintain high standard at all times. To always ensure that our services are not overpriced. 
+                    To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
+                  </p>
+                </CardContent>
               </Card>
             </div>
           </div>
@@ -145,12 +219,12 @@ const Home = () => {
       </section>
 
       {/* Proprietress Welcome Address */}
-      <section className="py-16">
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold text-primary mb-6">Proprietress' Welcome Address - 2025/2026 Session</h2>
+                <h2 className="text-3xl font-bold text-primary mb-6">Proprietress Welcome Address - 2025/2026 Session</h2>
                 <div className="prose prose-lg">
                   <p className="text-muted-foreground mb-4">
                     "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
@@ -440,8 +514,8 @@ const Home = () => {
             <p className="text-lg text-muted-foreground">Stay updated with school news and events</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {blogPosts.map((post) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {blogPosts.slice(0, 3).map((post) => (
               <Card key={post.id} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
                 <div className="h-48 overflow-hidden rounded-t-lg">
                   <img 
