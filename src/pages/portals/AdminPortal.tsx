@@ -26,14 +26,14 @@ import {
 const AdminPortal = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeStudents, setActiveStudents] = useState([
-    { id: 1, name: "John Doe", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
-    { id: 2, name: "Jane Smith", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
-    { id: 3, name: "David Johnson", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
+    { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
+    { id: 2, name: "Chinyere Okafor", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
   ]);
   const [staff, setStaff] = useState([
-    { id: 1, name: "Mrs. Sarah Wilson", position: "English Teacher", department: "Languages", status: "Active" },
-    { id: 2, name: "Mr. John Brown", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
-    { id: 3, name: "Miss Grace Adams", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
+    { id: 1, name: "Mrs. Folake Adebisi", position: "English Teacher", department: "Languages", status: "Active" },
+    { id: 2, name: "Mr. Chukwuma Okonkwo", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
+    { id: 3, name: "Miss Aisha Bello", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
   ]);
   const { toast } = useToast();
 
@@ -60,10 +60,15 @@ const AdminPortal = () => {
     });
   };
 
+  const [editingStudent, setEditingStudent] = useState<number | null>(null);
+  const [editingStaff, setEditingStaff] = useState<number | null>(null);
+  const [studentForm, setStudentForm] = useState({ name: "", class: "", admissionNo: "", status: "" });
+  const [staffForm, setStaffForm] = useState({ name: "", position: "", department: "", status: "" });
+
   const handleAddStudent = () => {
     const newStudent = {
       id: Date.now(),
-      name: `New Student ${activeStudents.length + 1}`,
+      name: `Kemi Adeyemi`,
       class: "JSS 1A",
       admissionNo: `2025/${String(activeStudents.length + 1).padStart(3, '0')}`,
       status: "Active"
@@ -78,7 +83,7 @@ const AdminPortal = () => {
   const handleAddStaff = () => {
     const newStaff = {
       id: Date.now(),
-      name: `New Staff ${staff.length + 1}`,
+      name: `Dr. Musa Ibrahim`,
       position: "Teacher",
       department: "General",
       status: "Active"
@@ -90,6 +95,48 @@ const AdminPortal = () => {
     });
   };
 
+  const handleEditStudent = (student: any) => {
+    setEditingStudent(student.id);
+    setStudentForm({
+      name: student.name,
+      class: student.class,
+      admissionNo: student.admissionNo,
+      status: student.status
+    });
+  };
+
+  const handleSaveStudent = (id: number) => {
+    setActiveStudents(prev => prev.map(student => 
+      student.id === id ? { ...student, ...studentForm } : student
+    ));
+    setEditingStudent(null);
+    toast({
+      title: "Student Updated",
+      description: "Student information has been updated successfully.",
+    });
+  };
+
+  const handleEditStaff = (staffMember: any) => {
+    setEditingStaff(staffMember.id);
+    setStaffForm({
+      name: staffMember.name,
+      position: staffMember.position,
+      department: staffMember.department,
+      status: staffMember.status
+    });
+  };
+
+  const handleSaveStaff = (id: number) => {
+    setStaff(prev => prev.map(member => 
+      member.id === id ? { ...member, ...staffForm } : member
+    ));
+    setEditingStaff(null);
+    toast({
+      title: "Staff Updated",
+      description: "Staff information has been updated successfully.",
+    });
+  };
+
   const quickStats = [
     { label: "Total Students", value: "847", icon: Users, color: "text-primary" },
     { label: "Total Staff", value: "42", icon: GraduationCap, color: "text-secondary" },
@@ -98,9 +145,9 @@ const AdminPortal = () => {
   ];
 
   const recentActivities = [
-    { action: "New student enrolled", details: "John Doe - JSS 1A", time: "2 hours ago" },
+    { action: "New student enrolled", details: "Adebayo Oladimeji - JSS 1A", time: "2 hours ago" },
     { action: "Staff meeting scheduled", details: "Mathematics Department", time: "4 hours ago" },
-    { action: "Fee payment received", details: "₦45,000 from Mary Johnson", time: "6 hours ago" },
+    { action: "Fee payment received", details: "₦45,000 from Chinyere Okafor", time: "6 hours ago" },
     { action: "Report generated", details: "Monthly academic performance", time: "1 day ago" },
   ];
 
@@ -250,25 +297,60 @@ const AdminPortal = () => {
                     student.admissionNo.toLowerCase().includes(searchTerm.toLowerCase())
                   ).map((student) => (
                     <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div>
-                        <h3 className="font-semibold">{student.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Class: {student.class} | Admission No: {student.admissionNo}
-                        </p>
-                        <Badge variant={student.status === 'Active' ? 'default' : 'secondary'}>
-                          {student.status}
-                        </Badge>
-                      </div>
+                      {editingStudent === student.id ? (
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            value={studentForm.name}
+                            onChange={(e) => setStudentForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Student Name"
+                          />
+                          <div className="flex space-x-2">
+                            <Input
+                              value={studentForm.class}
+                              onChange={(e) => setStudentForm(prev => ({ ...prev, class: e.target.value }))}
+                              placeholder="Class"
+                            />
+                            <Input
+                              value={studentForm.admissionNo}
+                              onChange={(e) => setStudentForm(prev => ({ ...prev, admissionNo: e.target.value }))}
+                              placeholder="Admission No"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <h3 className="font-semibold">{student.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Class: {student.class} | Admission No: {student.admissionNo}
+                          </p>
+                          <Badge variant={student.status === 'Active' ? 'default' : 'secondary'}>
+                            {student.status}
+                          </Badge>
+                        </div>
+                      )}
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleAction("View Student", student.id)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleAction("Edit Student", student.id)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteStudent(student.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {editingStudent === student.id ? (
+                          <>
+                            <Button size="sm" onClick={() => handleSaveStudent(student.id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleAction("View Student", student.id)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleEditStudent(student)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteStudent(student.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -307,25 +389,60 @@ const AdminPortal = () => {
                     member.department.toLowerCase().includes(searchTerm.toLowerCase())
                   ).map((member) => (
                     <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div>
-                        <h3 className="font-semibold">{member.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {member.position} | Department: {member.department}
-                        </p>
-                        <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
-                          {member.status}
-                        </Badge>
-                      </div>
+                      {editingStaff === member.id ? (
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            value={staffForm.name}
+                            onChange={(e) => setStaffForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Staff Name"
+                          />
+                          <div className="flex space-x-2">
+                            <Input
+                              value={staffForm.position}
+                              onChange={(e) => setStaffForm(prev => ({ ...prev, position: e.target.value }))}
+                              placeholder="Position"
+                            />
+                            <Input
+                              value={staffForm.department}
+                              onChange={(e) => setStaffForm(prev => ({ ...prev, department: e.target.value }))}
+                              placeholder="Department"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <h3 className="font-semibold">{member.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {member.position} | Department: {member.department}
+                          </p>
+                          <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
+                            {member.status}
+                          </Badge>
+                        </div>
+                      )}
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleAction("View Staff", member.id)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => handleAction("Edit Staff", member.id)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteStaff(member.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {editingStaff === member.id ? (
+                          <>
+                            <Button size="sm" onClick={() => handleSaveStaff(member.id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingStaff(null)}>
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleAction("View Staff", member.id)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleEditStaff(member)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteStaff(member.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}

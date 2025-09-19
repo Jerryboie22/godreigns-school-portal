@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { 
   Heart, 
@@ -13,16 +15,19 @@ import {
   Clock,
   FileText,
   User,
-  Phone
+  Phone,
+  Edit
 } from "lucide-react";
 
 const ParentPortal = () => {
-  const childInfo = {
-    name: "Sarah Johnson",
+  const [childInfo, setChildInfo] = useState({
+    name: "Chioma Okafor",
     class: "JSS 2A",
     admissionNumber: "OGR/2023/1234",
     photo: "/placeholder-student.jpg"
-  };
+  });
+  const [editingChild, setEditingChild] = useState(false);
+  const [childForm, setChildForm] = useState({ name: "", class: "" });
 
   const recentGrades = [
     { subject: "Mathematics", score: "85%", grade: "B+", date: "2024-09-15" },
@@ -30,6 +35,16 @@ const ParentPortal = () => {
     { subject: "Basic Science", score: "78%", grade: "B", date: "2024-09-10" },
     { subject: "Social Studies", score: "88%", grade: "B+", date: "2024-09-08" },
   ];
+
+  const handleEditChild = () => {
+    setEditingChild(true);
+    setChildForm({ name: childInfo.name, class: childInfo.class });
+  };
+
+  const handleSaveChild = () => {
+    setChildInfo(prev => ({ ...prev, ...childForm }));
+    setEditingChild(false);
+  };
 
   const upcomingEvents = [
     { event: "Parent-Teacher Conference", date: "2024-09-25", time: "10:00 AM" },
@@ -62,9 +77,15 @@ const ParentPortal = () => {
         {/* Student Overview */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-3">
-              <User className="h-6 w-6 text-accent" />
-              <span>Student Information</span>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <User className="h-6 w-6 text-accent" />
+                <span>Student Information</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={editingChild ? handleSaveChild : handleEditChild}>
+                <Edit className="h-4 w-4 mr-2" />
+                {editingChild ? 'Save' : 'Edit'}
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -75,17 +96,38 @@ const ParentPortal = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
                 <div>
                   <p className="text-sm text-muted-foreground">Student Name</p>
-                  <p className="font-medium text-foreground">{childInfo.name}</p>
+                  {editingChild ? (
+                    <Input
+                      value={childForm.name}
+                      onChange={(e) => setChildForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Student Name"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{childInfo.name}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Class</p>
-                  <p className="font-medium text-foreground">{childInfo.class}</p>
+                  {editingChild ? (
+                    <Input
+                      value={childForm.class}
+                      onChange={(e) => setChildForm(prev => ({ ...prev, class: e.target.value }))}
+                      placeholder="Class"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{childInfo.class}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Admission Number</p>
                   <p className="font-medium text-foreground">{childInfo.admissionNumber}</p>
                 </div>
               </div>
+              {editingChild && (
+                <Button variant="outline" onClick={() => setEditingChild(false)}>
+                  Cancel
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

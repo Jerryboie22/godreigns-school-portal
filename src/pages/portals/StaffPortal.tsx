@@ -31,9 +31,9 @@ const StaffPortal = () => {
   ]);
   
   const [students, setStudents] = useState([
-    { id: 1, name: "John Doe", class: "JSS 2A", grade: "A", attendance: 95 },
-    { id: 2, name: "Jane Smith", class: "SSS 1B", grade: "B+", attendance: 92 },
-    { id: 3, name: "Mike Johnson", class: "JSS 3C", grade: "A-", attendance: 88 }
+    { id: 1, name: "Adebayo Oladimeji", class: "JSS 2A", grade: "A", attendance: 95 },
+    { id: 2, name: "Chinyere Okafor", class: "SSS 1B", grade: "B+", attendance: 92 },
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", grade: "A-", attendance: 88 }
   ]);
 
   const [newAssignment, setNewAssignment] = useState({
@@ -45,6 +45,11 @@ const StaffPortal = () => {
   });
 
   const { toast } = useToast();
+
+  const [editingAssignment, setEditingAssignment] = useState<number | null>(null);
+  const [editingStudent, setEditingStudent] = useState<number | null>(null);
+  const [assignmentForm, setAssignmentForm] = useState({ title: "", class: "", dueDate: "", subject: "" });
+  const [studentGradeForm, setStudentGradeForm] = useState({ grade: "" });
 
   const todaysSchedule = [
     { time: "8:00 AM", subject: "Mathematics", class: "JSS 2A", room: "Room 12" },
@@ -86,6 +91,43 @@ const StaffPortal = () => {
     toast({
       title: "Assignment Deleted",
       description: "Assignment has been removed.",
+    });
+  };
+
+  const handleEditAssignment = (assignment: any) => {
+    setEditingAssignment(assignment.id);
+    setAssignmentForm({
+      title: assignment.title,
+      class: assignment.class,
+      dueDate: assignment.dueDate,
+      subject: assignment.subject
+    });
+  };
+
+  const handleSaveAssignment = (id: number) => {
+    setAssignments(prev => prev.map(assignment => 
+      assignment.id === id ? { ...assignment, ...assignmentForm } : assignment
+    ));
+    setEditingAssignment(null);
+    toast({
+      title: "Assignment Updated",
+      description: "Assignment has been updated successfully.",
+    });
+  };
+
+  const handleEditStudentGrade = (student: any) => {
+    setEditingStudent(student.id);
+    setStudentGradeForm({ grade: student.grade });
+  };
+
+  const handleSaveStudentGrade = (studentId: number) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId ? { ...student, grade: studentGradeForm.grade } : student
+    ));
+    setEditingStudent(null);
+    toast({
+      title: "Grade Updated",
+      description: "Student grade has been updated successfully.",
     });
   };
 
@@ -252,10 +294,27 @@ const StaffPortal = () => {
                         <p className="text-sm text-muted-foreground">
                           Class: {student.class} | Attendance: {student.attendance}%
                         </p>
-                        <Badge variant="outline">Grade: {student.grade}</Badge>
+                        {editingStudent === student.id ? (
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Input
+                              value={studentGradeForm.grade}
+                              onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
+                              placeholder="Enter grade"
+                              className="w-20"
+                            />
+                            <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <Badge variant="outline">Grade: {student.grade}</Badge>
+                        )}
                       </div>
                       <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleGradeStudent(student.id, "A+")}>
+                        <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
                           <Edit className="h-4 w-4 mr-1" />
                           Grade
                         </Button>
@@ -327,22 +386,62 @@ const StaffPortal = () => {
                   <div className="space-y-3">
                     {assignments.map((assignment) => (
                       <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <h4 className="font-semibold">{assignment.title}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {assignment.subject} | Class: {assignment.class} | Due: {assignment.dueDate}
-                          </p>
-                          <Badge variant={assignment.status === 'Active' ? 'default' : 'secondary'}>
-                            {assignment.status}
-                          </Badge>
-                        </div>
+                        {editingAssignment === assignment.id ? (
+                          <div className="flex-1 space-y-2 mr-4">
+                            <Input
+                              value={assignmentForm.title}
+                              onChange={(e) => setAssignmentForm(prev => ({ ...prev, title: e.target.value }))}
+                              placeholder="Assignment Title"
+                            />
+                            <div className="flex space-x-2">
+                              <Input
+                                value={assignmentForm.subject}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, subject: e.target.value }))}
+                                placeholder="Subject"
+                              />
+                              <Input
+                                value={assignmentForm.class}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, class: e.target.value }))}
+                                placeholder="Class"
+                              />
+                              <Input
+                                type="date"
+                                value={assignmentForm.dueDate}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, dueDate: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <h4 className="font-semibold">{assignment.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {assignment.subject} | Class: {assignment.class} | Due: {assignment.dueDate}
+                            </p>
+                            <Badge variant={assignment.status === 'Active' ? 'default' : 'secondary'}>
+                              {assignment.status}
+                            </Badge>
+                          </div>
+                        )}
                         <div className="flex space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => handleAction("Edit Assignment")}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDeleteAssignment(assignment.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {editingAssignment === assignment.id ? (
+                            <>
+                              <Button size="sm" onClick={() => handleSaveAssignment(assignment.id)}>
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingAssignment(null)}>
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button size="sm" variant="outline" onClick={() => handleEditAssignment(assignment)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteAssignment(assignment.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}

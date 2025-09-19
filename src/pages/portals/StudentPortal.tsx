@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { 
   BookOpen, 
   Calendar, 
@@ -13,16 +15,19 @@ import {
   Target,
   Award,
   GraduationCap,
-  Download
+  Download,
+  Edit
 } from "lucide-react";
 
 const StudentPortal = () => {
-  const studentInfo = {
-    name: "John Adebayo",
+  const [studentInfo, setStudentInfo] = useState({
+    name: "Adebayo Olamide",
     class: "SSS 2B",
     admissionNumber: "OGR/2022/0567",
     currentTerm: "First Term 2024/2025"
-  };
+  });
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", class: "" });
 
   const currentGrades = [
     { subject: "Mathematics", currentGrade: "B+", percentage: 85, target: "A" },
@@ -41,12 +46,22 @@ const StudentPortal = () => {
   ];
 
   const schedule = [
-    { time: "8:00 - 9:00", subject: "Mathematics", teacher: "Mr. Adebisi", room: "Room 15" },
-    { time: "9:00 - 10:00", subject: "English Language", teacher: "Mrs. Okafor", room: "Room 8" },
+    { time: "8:00 - 9:00", subject: "Mathematics", teacher: "Mr. Chukwuma Adebisi", room: "Room 15" },
+    { time: "9:00 - 10:00", subject: "English Language", teacher: "Mrs. Folake Okafor", room: "Room 8" },
     { time: "10:00 - 10:30", subject: "Break", teacher: "-", room: "-" },
-    { time: "10:30 - 11:30", subject: "Physics", teacher: "Dr. Mensah", room: "Lab 2" },
-    { time: "11:30 - 12:30", subject: "Chemistry", teacher: "Mrs. Balogun", room: "Lab 1" },
+    { time: "10:30 - 11:30", subject: "Physics", teacher: "Dr. Kwame Mensah", room: "Lab 2" },
+    { time: "11:30 - 12:30", subject: "Chemistry", teacher: "Mrs. Aisha Balogun", room: "Lab 1" },
   ];
+
+  const handleEditProfile = () => {
+    setEditingProfile(true);
+    setProfileForm({ name: studentInfo.name, class: studentInfo.class });
+  };
+
+  const handleSaveProfile = () => {
+    setStudentInfo(prev => ({ ...prev, ...profileForm }));
+    setEditingProfile(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,9 +81,15 @@ const StudentPortal = () => {
         {/* Student Overview */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-3">
-              <User className="h-6 w-6 text-navy" />
-              <span>Student Profile</span>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <User className="h-6 w-6 text-navy" />
+                <span>Student Profile</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={editingProfile ? handleSaveProfile : handleEditProfile}>
+                <Edit className="h-4 w-4 mr-2" />
+                {editingProfile ? 'Save' : 'Edit'}
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -79,17 +100,38 @@ const StudentPortal = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
                 <div>
                   <p className="text-sm text-muted-foreground">Student Name</p>
-                  <p className="font-medium text-foreground">{studentInfo.name}</p>
+                  {editingProfile ? (
+                    <Input
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Student Name"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{studentInfo.name}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Class</p>
-                  <p className="font-medium text-foreground">{studentInfo.class}</p>
+                  {editingProfile ? (
+                    <Input
+                      value={profileForm.class}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, class: e.target.value }))}
+                      placeholder="Class"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{studentInfo.class}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Current Term</p>
                   <p className="font-medium text-foreground">{studentInfo.currentTerm}</p>
                 </div>
               </div>
+              {editingProfile && (
+                <Button variant="outline" onClick={() => setEditingProfile(false)}>
+                  Cancel
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>
