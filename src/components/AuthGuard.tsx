@@ -1,88 +1,87 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Eye, EyeOff } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, GraduationCap, LogOut } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import EmailVerification from "./EmailVerification";
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  portalType: "staff" | "admin" | "parent" | "student";
+  portalType: "admin" | "staff" | "parent" | "student";
 }
 
 interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  portalType: "admin" | "staff" | "parent" | "student";
+  verified: boolean;
 }
 
-export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
+const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [pendingVerification, setPendingVerification] = useState<string | null>(null);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signupData, setSignupData] = useState({ 
-    name: "", 
-    email: "", 
-    password: "", 
+  const [signupData, setSignupData] = useState({
+    name: "",
+    email: "",
+    password: "",
     confirmPassword: "",
-    employeeId: "",
-    subject: ""
+    studentId: "", // For students
+    childName: "", // For parents
   });
-  const { toast } = useToast();
 
-  // Check for existing authentication on component mount
   useEffect(() => {
     const checkAuth = () => {
-      const user = localStorage.getItem(`${portalType}_user`);
-      if (user) {
-        setIsAuthenticated(true);
+      const userData = localStorage.getItem("userData");
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        if (parsed.verified && parsed.portalType === portalType) {
+          setUser(parsed);
+          setIsAuthenticated(true);
+        }
       }
       setLoading(false);
     };
-
+    
     checkAuth();
   }, [portalType]);
 
-  // Mock users database
-  const mockUsers = {
-    staff: [
-      { id: "1", email: "teacher@school.com", password: "teacher123", name: "Mrs. Adunni Oladele", role: "Mathematics Teacher" },
-      { id: "2", email: "physics@school.com", password: "physics123", name: "Mr. Chike Nwosu", role: "Physics Teacher" },
-    ],
-    admin: [
-      { id: "1", email: "admin@school.com", password: "admin123", name: "Mr. Tunde Balogun", role: "School Administrator" },
-    ],
-    parent: [
-      { id: "1", email: "parent@email.com", password: "parent123", name: "Mrs. Folake Adebayo", role: "Parent" },
-    ],
-    student: [
-      { id: "1", email: "student@school.com", password: "student123", name: "Adebayo Oladimeji", role: "Student - JSS 2A" },
-    ]
-  };
+  const mockUsers = [
+    { id: "1", email: "admin@ogrcs.edu.ng", password: "admin123", name: "Administrator", portalType: "admin" as const, verified: true },
+    { id: "2", email: "teacher@ogrcs.edu.ng", password: "teacher123", name: "Adebayo Ogundimu", portalType: "staff" as const, verified: true },
+    { id: "3", email: "parent@ogrcs.edu.ng", password: "parent123", name: "Mr. Olumide Adeyemi", portalType: "parent" as const, verified: true },
+    { id: "4", email: "student@ogrcs.edu.ng", password: "student123", name: "Funmi Adebayo", portalType: "student" as const, verified: true },
+  ];
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!loginData.email || !loginData.password) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both email and password.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Check credentials against mock database
-    const users = mockUsers[portalType];
-    const user = users.find(u => u.email === loginData.email && u.password === loginData.password);
+    const user = mockUsers.find(
+      u => u.email === loginData.email && 
+           u.password === loginData.password && 
+           u.portalType === portalType
+    );
 
     if (user) {
-      const userData = { id: user.id, email: user.email, name: user.name, role: user.role };
-      localStorage.setItem(`${portalType}_user`, JSON.stringify(userData));
+      if (!user.verified) {
+        setPendingVerification(user.email);
+        toast({
+          title: "Email Verification Required",
+          description: "Please verify your email before accessing the portal.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      localStorage.setItem("userData", JSON.stringify(user));
+      setUser(user);
       setIsAuthenticated(true);
       toast({
         title: "Login Successful",
@@ -91,8 +90,8 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     } else {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
-        variant: "destructive"
+        description: "Invalid credentials or unauthorized access to this portal.",
+        variant: "destructive",
       });
     }
   };
@@ -100,19 +99,10 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!signupData.name || !signupData.email || !signupData.password) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (signupData.password !== signupData.confirmPassword) {
       toast({
         title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        description: "Passwords do not match.",
         variant: "destructive"
       });
       return;
@@ -120,48 +110,61 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
     if (signupData.password.length < 6) {
       toast({
-        title: "Weak Password",
+        title: "Password Too Short",
         description: "Password must be at least 6 characters long.",
         variant: "destructive"
       });
       return;
     }
 
-    // Check if user already exists
-    const users = mockUsers[portalType];
-    const existingUser = users.find(u => u.email === signupData.email);
-
+    const existingUser = mockUsers.find(u => u.email === signupData.email);
     if (existingUser) {
       toast({
-        title: "Account Exists",
+        title: "Email Already Exists",
         description: "An account with this email already exists. Please login instead.",
         variant: "destructive"
       });
       return;
     }
 
-    // Create new user
-    const newUser = {
+    setPendingVerification(signupData.email);
+    toast({
+      title: "Verification Email Sent",
+      description: "Please check your email and enter the verification code.",
+    });
+  };
+
+  const handleVerificationComplete = () => {
+    const newUser: User = {
       id: Date.now().toString(),
-      email: signupData.email,
+      email: pendingVerification!,
       name: signupData.name,
-      role: `${portalType.charAt(0).toUpperCase() + portalType.slice(1)} - ${signupData.subject || 'General'}`
+      portalType,
+      verified: true
     };
 
-    localStorage.setItem(`${portalType}_user`, JSON.stringify(newUser));
+    localStorage.setItem("userData", JSON.stringify(newUser));
+    setUser(newUser);
     setIsAuthenticated(true);
+    setPendingVerification(null);
     
     toast({
-      title: "Account Created",
-      description: `Welcome to the ${portalType} portal, ${signupData.name}!`,
+      title: "Account Created Successfully",
+      description: `Welcome to ${portalType} portal, ${newUser.name}!`,
+    });
+  };
+
+  const handleResendVerification = () => {
+    toast({
+      title: "Verification Email Sent",
+      description: "A new verification code has been sent to your email.",
     });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem(`${portalType}_user`);
+    localStorage.removeItem("userData");
     setIsAuthenticated(false);
-    setLoginData({ email: "", password: "" });
-    setSignupData({ name: "", email: "", password: "", confirmPassword: "", employeeId: "", subject: "" });
+    setUser(null);
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
@@ -170,28 +173,34 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
         <div className="text-center">
-          <GraduationCap className="h-12 w-12 mx-auto mb-4 text-primary animate-pulse" />
+          <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
+  if (pendingVerification) {
+    return (
+      <EmailVerification
+        email={pendingVerification}
+        onVerificationComplete={handleVerificationComplete}
+        onResendEmail={handleResendVerification}
+      />
+    );
+  }
+
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <GraduationCap className="h-12 w-12 text-primary" />
-            </div>
-            <CardTitle className="text-2xl">
-              {portalType.charAt(0).toUpperCase() + portalType.slice(1)} Portal
-            </CardTitle>
+            <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4" />
+            <CardTitle className="capitalize">{portalType} Portal Access</CardTitle>
             <CardDescription>
-              Access your {portalType} dashboard and resources
+              Please login or create an account to access the {portalType} portal
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -201,16 +210,16 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="login">
+              <TabsContent value="login" className="space-y-4">
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      value={loginData.email}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email"
+                      value={loginData.email}
+                      onChange={(e) => setLoginData({...loginData, email: e.target.value})}
                       required
                     />
                   </div>
@@ -220,49 +229,42 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        value={loginData.password}
-                        onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Enter your password"
+                        value={loginData.password}
+                        onChange={(e) => setLoginData({...loginData, password: e.target.value})}
                         required
                       />
                       <Button
                         type="button"
                         variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        size="icon"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
-                  <Button type="submit" className="w-full">
-                    Login
-                  </Button>
+                  <Button type="submit" className="w-full">Login</Button>
                 </form>
                 
-                <div className="mt-4 p-3 bg-muted rounded-lg">
-                  <p className="text-sm font-medium mb-2">Demo Credentials:</p>
-                  <p className="text-sm text-muted-foreground">
-                    Email: {portalType}@school.com<br />
-                    Password: {portalType}123
-                  </p>
+                <div className="bg-muted/50 p-3 rounded-lg text-xs text-muted-foreground">
+                  <p className="font-medium mb-1">Demo Credentials:</p>
+                  <p>Email: {portalType}@ogrcs.edu.ng</p>
+                  <p>Password: {portalType}123</p>
                 </div>
               </TabsContent>
               
-              <TabsContent value="signup">
+              <TabsContent value="signup" className="space-y-4">
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="signup-name">Full Name</Label>
                     <Input
-                      id="name"
-                      value={signupData.name}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, name: e.target.value }))}
+                      id="signup-name"
+                      type="text"
                       placeholder="Enter your full name"
+                      value={signupData.name}
+                      onChange={(e) => setSignupData({...signupData, name: e.target.value})}
                       required
                     />
                   </div>
@@ -271,74 +273,61 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
                     <Input
                       id="signup-email"
                       type="email"
-                      value={signupData.email}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email"
+                      value={signupData.email}
+                      onChange={(e) => setSignupData({...signupData, email: e.target.value})}
                       required
                     />
                   </div>
-                  {portalType === "staff" && (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="employeeId">Employee ID</Label>
-                        <Input
-                          id="employeeId"
-                          value={signupData.employeeId}
-                          onChange={(e) => setSignupData(prev => ({ ...prev, employeeId: e.target.value }))}
-                          placeholder="Enter your employee ID"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="subject">Subject/Department</Label>
-                        <Input
-                          id="subject"
-                          value={signupData.subject}
-                          onChange={(e) => setSignupData(prev => ({ ...prev, subject: e.target.value }))}
-                          placeholder="e.g., Mathematics, English"
-                        />
-                      </div>
-                    </>
+                  {portalType === "student" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="student-id">Student ID</Label>
+                      <Input
+                        id="student-id"
+                        type="text"
+                        placeholder="Enter your student ID"
+                        value={signupData.studentId}
+                        onChange={(e) => setSignupData({...signupData, studentId: e.target.value})}
+                        required
+                      />
+                    </div>
+                  )}
+                  {portalType === "parent" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="child-name">Child's Name</Label>
+                      <Input
+                        id="child-name"
+                        type="text"
+                        placeholder="Enter your child's name"
+                        value={signupData.childName}
+                        onChange={(e) => setSignupData({...signupData, childName: e.target.value})}
+                        required
+                      />
+                    </div>
                   )}
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        value={signupData.password}
-                        onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
-                        placeholder="Create a password"
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      placeholder="Create a password"
+                      value={signupData.password}
+                      onChange={(e) => setSignupData({...signupData, password: e.target.value})}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirm-password">Confirm Password</Label>
                     <Input
                       id="confirm-password"
                       type="password"
-                      value={signupData.confirmPassword}
-                      onChange={(e) => setSignupData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                       placeholder="Confirm your password"
+                      value={signupData.confirmPassword}
+                      onChange={(e) => setSignupData({...signupData, confirmPassword: e.target.value})}
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full">
-                    Create Account
-                  </Button>
+                  <Button type="submit" className="w-full">Create Account</Button>
                 </form>
               </TabsContent>
             </Tabs>
@@ -348,15 +337,26 @@ export const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     );
   }
 
-  // If authenticated, render children with logout option
   return (
-    <div className="relative">
-      <div className="absolute top-4 right-4 z-50">
-        <Button variant="outline" size="sm" onClick={handleLogout}>
-          Logout
-        </Button>
+    <div className="min-h-screen">
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <GraduationCap className="h-6 w-6 text-primary" />
+            <div>
+              <h1 className="font-semibold capitalize">{portalType} Portal</h1>
+              <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
+        </div>
       </div>
       {children}
     </div>
   );
 };
+
+export default AuthGuard;

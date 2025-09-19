@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/logo.jpeg";
 import chairman from "@/assets/chairman.jpg";
 import proprietress from "@/assets/proprietress.jpg";
+import schoolFlyer from "@/assets/school-flyer.jpg";
 
 const About = () => {
   const values = [

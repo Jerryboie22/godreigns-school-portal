@@ -31,6 +31,7 @@ import certificatePresentation from "@/assets/certificate-presentation.jpg";
 import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
 import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
 import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
+import schoolFlyer from "@/assets/school-flyer.jpg";
 
 const Home = () => {
   const [currentGalleryImage, setCurrentGalleryImage] = useState(0);
@@ -55,7 +56,8 @@ const Home = () => {
     certificatePresentation,
     awardCeremonyOfficials,
     awardCeremonyPresentation,
-    officialAwardCeremony
+    officialAwardCeremony,
+    schoolFlyer
   ];
 
   const nextImage = () => {
@@ -150,6 +152,49 @@ const Home = () => {
               >
                 🏆 View Achievement
               </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Admission Banner with Flyer */}
+      <section className="py-16 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <div className="bg-gradient-to-br from-primary to-accent p-8 rounded-lg text-white">
+                  <h2 className="text-3xl font-bold mb-4">Admission in Progress</h2>
+                  <h3 className="text-2xl font-semibold mb-4 text-accent-foreground">JSS & SSS Classes</h3>
+                  <p className="text-lg mb-6 opacity-95">Join Our God Reigns Crystal School for the 2025/2026 academic session</p>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4" />
+                      <span>08027625129, 08033089735</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Mail className="h-4 w-4" />
+                      <span>ogrcs@yahoo.com</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-4 w-4" />
+                      <span className="text-sm">23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
+                    </div>
+                  </div>
+                  <Link to="/admissions">
+                    <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
+                      Apply Now
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="order-1 lg:order-2 flex justify-center">
+                <img 
+                  src={schoolFlyer} 
+                  alt="Our God Reigns Crystal School - Admission in Progress"
+                  className="rounded-lg shadow-elegant w-full max-w-md"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-import { AuthGuard } from "@/components/AuthGuard";
+import AuthGuard from "@/components/AuthGuard";
 import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
