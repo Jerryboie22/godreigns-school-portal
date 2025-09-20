@@ -300,6 +300,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_email: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
@@ -317,6 +321,10 @@ export type Database = {
       }
       is_super_admin_by_email: {
         Args: { user_email: string }
+        Returns: boolean
+      }
+      is_super_admin_from_jwt: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
     }
