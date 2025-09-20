@@ -25,6 +25,7 @@ import ParentPortal from "./pages/portals/ParentPortal";
 import StudentPortal from "./pages/portals/StudentPortal";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,8 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
               <Route path="/portal/admin" element={<AdminPortal />} />

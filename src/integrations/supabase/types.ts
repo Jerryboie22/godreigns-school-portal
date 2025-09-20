@@ -171,7 +171,10 @@ export type Database = {
           id: string
           last_visited: string | null
           page_path: string
+          session_id: string | null
           unique_visitors: number | null
+          user_agent: string | null
+          user_id: string | null
           visit_count: number | null
         }
         Insert: {
@@ -179,7 +182,10 @@ export type Database = {
           id?: string
           last_visited?: string | null
           page_path: string
+          session_id?: string | null
           unique_visitors?: number | null
+          user_agent?: string | null
+          user_id?: string | null
           visit_count?: number | null
         }
         Update: {
@@ -187,7 +193,10 @@ export type Database = {
           id?: string
           last_visited?: string | null
           page_path?: string
+          session_id?: string | null
           unique_visitors?: number | null
+          user_agent?: string | null
+          user_id?: string | null
           visit_count?: number | null
         }
         Relationships: []
