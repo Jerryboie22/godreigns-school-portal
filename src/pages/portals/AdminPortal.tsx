@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -222,46 +223,36 @@ const AdminPortalContent = () => {
                   <CardTitle className="text-primary">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => window.location.href = '/admin-cms'}
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Manage Content (CMS)
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => window.location.href = '/blog'}
-                  >
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    View Blog Posts
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => window.location.href = '/admin/cms'}
-                  >
-                    <Users className="h-4 w-4 mr-2" />
-                    Manage Gallery
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => window.location.href = '/contact'}
-                  >
-                    <Calendar className="h-4 w-4 mr-2" />
-                    View Contact Messages
-                  </Button>
-                  <Button 
-                    className="w-full justify-start" 
-                    variant="outline"
-                    onClick={() => window.location.href = '/portals'}
-                  >
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    All Portals
-                  </Button>
+                  <Link to="/admin-cms">
+                    <Button className="w-full justify-start" variant="outline">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Manage Content (CMS)
+                    </Button>
+                  </Link>
+                  <Link to="/blog">
+                    <Button className="w-full justify-start" variant="outline">
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      View Blog Posts
+                    </Button>
+                  </Link>
+                  <Link to="/admin/cms">
+                    <Button className="w-full justify-start" variant="outline">
+                      <Users className="h-4 w-4 mr-2" />
+                      Manage Gallery
+                    </Button>
+                  </Link>
+                  <Link to="/contact">
+                    <Button className="w-full justify-start" variant="outline">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      View Contact Messages
+                    </Button>
+                  </Link>
+                  <Link to="/portals">
+                    <Button className="w-full justify-start" variant="outline">
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      All Portals
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
