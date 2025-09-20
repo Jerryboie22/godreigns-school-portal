@@ -56,7 +56,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .eq('id', session.user.id)
             .single();
           
-          if (profileData && profileData.role === portalType) {
+          if (profileData && (profileData.role === portalType || profileData.role === 'admin')) {
             setProfile(profileData);
             setIsAuthenticated(true);
           } else {
