@@ -50,25 +50,40 @@ const Auth = () => {
           description: "Welcome back!",
         });
         
-        // Get user profile to determine redirect
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single();
+        // Wait a moment for profile to be created
+        setTimeout(async () => {
+          try {
+            // Get user profile to determine redirect
+            const { data: profile, error: profileError } = await supabase
+              .from('profiles')
+              .select('role, email')
+              .eq('id', data.user.id)
+              .single();
 
-        // Redirect based on role
-        if (profile?.role === 'super_admin' || profile?.role === 'admin') {
-          navigate('/admin');
-        } else if (profile?.role === 'teacher') {
-          navigate('/portals/staff');
-        } else if (profile?.role === 'student') {
-          navigate('/portals/student');
-        } else if (profile?.role === 'parent') {
-          navigate('/portals/parent');
-        } else {
-          navigate('/portals');
-        }
+            if (profileError) {
+              console.error('Profile fetch error:', profileError);
+              // If no profile yet, redirect to general portals
+              navigate('/portals');
+              return;
+            }
+
+            // Redirect based on role
+            if (profile?.role === 'super_admin' || profile?.role === 'admin') {
+              navigate('/admin');
+            } else if (profile?.role === 'teacher') {
+              navigate('/portal/staff');
+            } else if (profile?.role === 'student') {
+              navigate('/portal/student');
+            } else if (profile?.role === 'parent') {
+              navigate('/portal/parent');
+            } else {
+              navigate('/portals');
+            }
+          } catch (error) {
+            console.error('Redirect error:', error);
+            navigate('/portals');
+          }
+        }, 1000);
       }
     } catch (err) {
       setError('An unexpected error occurred');
