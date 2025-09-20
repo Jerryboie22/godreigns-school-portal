@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { getAnalytics } from "@/hooks/useAnalytics";
 import { toast } from "@/hooks/use-toast";
+import { useSitemapUpdate } from "@/hooks/useSitemapUpdate";
 import {
   Plus,
   Edit,
@@ -56,6 +57,9 @@ const AdminCMS = () => {
     employee_id: '',
     hire_date: new Date().toISOString().split('T')[0]
   });
+
+  // Update sitemap when content changes
+  useSitemapUpdate([posts, galleryImages]);
 
   useEffect(() => {
     fetchData();
