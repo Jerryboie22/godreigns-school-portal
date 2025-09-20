@@ -32,7 +32,7 @@ import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
 import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
 import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
-import graduands from "@/assets/graduands.jpg";
+import graduateIndividual from "@/assets/graduate-individual.jpg";
 
 const Home = () => {
   const [currentGalleryImage, setCurrentGalleryImage] = useState(0);
@@ -210,8 +210,8 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
                 <img 
-                  src={achievementStudents} 
-                  alt="Our God Reigns Crystal School Graduates"
+                  src={graduateIndividual} 
+                  alt="Our God Reigns Crystal School Graduate"
                   className="rounded-lg shadow-elegant w-full max-w-lg"
                 />
               </div>
