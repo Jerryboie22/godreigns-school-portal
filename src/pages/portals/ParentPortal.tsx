@@ -235,8 +235,7 @@ const ParentPortalContent = () => {
               <CardContent>
                 <div className="text-center py-12 text-muted-foreground">
                   <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Detailed attendance tracking available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable real-time attendance monitoring.</p>
+                  <p>Attendance tracking will be available soon.</p>
                 </div>
               </CardContent>
             </Card>
@@ -321,29 +320,13 @@ const ParentPortalContent = () => {
               <CardContent>
                 <div className="text-center py-12 text-muted-foreground">
                   <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Messaging system available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to enable real-time communication with teachers.</p>
+                  <p>Messaging system will be available soon.</p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
 
-        {/* Backend Integration Notice */}
-        <Card className="mt-8 border-accent/20 bg-accent/5">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <Heart className="h-6 w-6 text-accent" />
-              <div>
-                <h3 className="font-semibold text-accent">Stay Connected with Your Child's Education</h3>
-                <p className="text-muted-foreground">
-                  Connect to Supabase to unlock real-time updates on grades, attendance, 
-                  school events, and direct communication with teachers and staff.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

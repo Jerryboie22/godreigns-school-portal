@@ -616,20 +616,6 @@ const AdminPortalContent = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Backend Integration Notice */}
-        <Card className="mt-8 border-primary/20 bg-primary/5">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <Shield className="h-6 w-6 text-primary" />
-              <div>
-                <h3 className="font-semibold text-primary">Admin Dashboard</h3>
-                <p className="text-muted-foreground">
-                  You have full access to all administrative functions. Use the tabs above to manage different aspects of the school system.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
