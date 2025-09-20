@@ -30,6 +30,7 @@ const Home = () => {
   const [showFullAddress, setShowFullAddress] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [homepageContent, setHomepageContent] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fallback images if database is empty
@@ -71,16 +72,48 @@ const Home = () => {
       )
       .subscribe();
 
+    const contentChannel = supabase
+      .channel('homepage-content-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'homepage_content'
+        },
+        () => {
+          fetchHomepageContent();
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(galleryChannel);
+      supabase.removeChannel(contentChannel);
     };
   }, []);
 
   const fetchDynamicContent = async () => {
     setLoading(true);
-    await Promise.all([fetchBlogPosts(), fetchGalleryImages()]);
+    await Promise.all([fetchBlogPosts(), fetchGalleryImages(), fetchHomepageContent()]);
     setLoading(false);
+  };
+
+  const fetchHomepageContent = async () => {
+    try {
+      const { data } = await supabase
+        .from('homepage_content')
+        .select('*')
+        .eq('is_visible', true)
+        .order('order_index', { ascending: true });
+
+      if (data) {
+        setHomepageContent(data);
+      }
+    } catch (error) {
+      console.error('Error fetching homepage content:', error);
+    }
   };
 
   const fetchBlogPosts = async () => {

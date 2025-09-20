@@ -227,6 +227,48 @@ export type Database = {
         }
         Relationships: []
       }
+      homepage_content: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_visible: boolean | null
+          link_text: string | null
+          link_url: string | null
+          order_index: number | null
+          section_key: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean | null
+          link_text?: string | null
+          link_url?: string | null
+          order_index?: number | null
+          section_key: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean | null
+          link_text?: string | null
+          link_url?: string | null
+          order_index?: number | null
+          section_key?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       parents: {
         Row: {
           created_at: string
