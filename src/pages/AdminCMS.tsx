@@ -410,6 +410,87 @@ const AdminCMS = () => {
     }
   };
 
+  const handleCreateTeacher = async () => {
+    if (!newTeacher.name || !newTeacher.subject || !newTeacher.employee_id) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create teacher record directly
+      const { error: teacherError } = await supabase
+        .from('teachers')
+        .insert([{
+          user_id: null, // Will be linked later when user registers
+          subject: newTeacher.subject,
+          department: newTeacher.department,
+          employee_id: newTeacher.employee_id,
+          hire_date: newTeacher.hire_date
+        }]);
+
+      if (teacherError) throw teacherError;
+
+      setNewTeacher({
+        name: '',
+        subject: '',
+        department: '',
+        employee_id: '',
+        hire_date: new Date().toISOString().split('T')[0]
+      });
+      
+      await fetchData();
+      toast({
+        title: "Success",
+        description: "Teacher added successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditTeacher = (teacher: any) => {
+    setNewTeacher({
+      name: teacher.name || '',
+      subject: teacher.subject,
+      department: teacher.department,
+      employee_id: teacher.employee_id,
+      hire_date: teacher.hire_date
+    });
+  };
+
+  const handleDeleteTeacher = async (teacherId: string) => {
+    if (!confirm('Are you sure you want to delete this teacher?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('teachers')
+        .delete()
+        .eq('id', teacherId);
+
+      if (error) throw error;
+
+      await fetchData();
+      toast({
+        title: "Success",
+        description: "Teacher deleted successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-subtle p-6 flex items-center justify-center">
@@ -871,37 +952,93 @@ const AdminCMS = () => {
 
           {/* Teachers Management */}
           <TabsContent value="teachers" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5" />
-                  Teachers Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {teachers.map(teacher => (
-                    <div key={teacher.id} className="border rounded-lg p-4 flex justify-between items-center">
-                      <div>
-                        <h4 className="font-semibold">{teacher.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {teacher.subject} - {teacher.department}
-                        </p>
-                        <p className="text-xs text-muted-foreground">Employee ID: {teacher.employee_id}</p>
-                        <p className="text-xs text-muted-foreground">Hire Date: {new Date(teacher.hire_date).toLocaleDateString()}</p>
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Add Teacher Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Plus className="h-5 w-5" />
+                    Add New Teacher
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Input
+                    placeholder="Teacher Name"
+                    value={newTeacher.name}
+                    onChange={(e) => setNewTeacher({...newTeacher, name: e.target.value})}
+                  />
+                  <Input
+                    placeholder="Subject"
+                    value={newTeacher.subject}
+                    onChange={(e) => setNewTeacher({...newTeacher, subject: e.target.value})}
+                  />
+                  <Input
+                    placeholder="Department"
+                    value={newTeacher.department}
+                    onChange={(e) => setNewTeacher({...newTeacher, department: e.target.value})}
+                  />
+                  <Input
+                    placeholder="Employee ID"
+                    value={newTeacher.employee_id}
+                    onChange={(e) => setNewTeacher({...newTeacher, employee_id: e.target.value})}
+                  />
+                  <Input
+                    type="date"
+                    placeholder="Hire Date"
+                    value={newTeacher.hire_date}
+                    onChange={(e) => setNewTeacher({...newTeacher, hire_date: e.target.value})}
+                  />
+                  <Button onClick={handleCreateTeacher} className="w-full bg-gradient-primary">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Teacher
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Teachers List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <GraduationCap className="h-5 w-5" />
+                    Teachers ({teachers.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {teachers.map(teacher => (
+                      <div key={teacher.id} className="border rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-semibold">{teacher.subject} - {teacher.department}</h4>
+                            <p className="text-sm text-muted-foreground">Employee ID: {teacher.employee_id}</p>
+                            <p className="text-xs text-muted-foreground">Hire Date: {new Date(teacher.hire_date).toLocaleDateString()}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" variant="outline" onClick={() => handleEditTeacher(teacher)}>
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDeleteTeacher(teacher.id)}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      {/* Edit and Delete buttons could be added here if needed */}
-                    </div>
-                  ))}
-                  {teachers.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No teachers found. Add teachers to manage them here.</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                    {teachers.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No teachers yet. Add your first teacher!</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Users Management */}
