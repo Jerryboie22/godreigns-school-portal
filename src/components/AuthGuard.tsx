@@ -23,6 +23,21 @@ interface UserProfile {
   role: string;
 }
 
+// Helper function to check if user role is authorized for portal type
+const isUserAuthorized = (userRole: string, portalType: string): boolean => {
+  // Admin can access all portals
+  if (userRole === 'admin') return true;
+  
+  // Direct role match
+  if (userRole === portalType) return true;
+  
+  // Staff and teacher are equivalent
+  if ((userRole === 'staff' || userRole === 'teacher') && 
+      (portalType === 'staff' || portalType === 'teacher')) return true;
+  
+  return false;
+};
+
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -56,7 +71,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .eq('id', session.user.id)
             .single();
           
-          if (profileData && (profileData.role === portalType || profileData.role === 'admin')) {
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
             setProfile(profileData);
             setIsAuthenticated(true);
           } else {
