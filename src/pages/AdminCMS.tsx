@@ -237,10 +237,10 @@ const AdminCMS = () => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
         
-        // Upload to Supabase storage
+        // Upload to Supabase storage - using 'gallery' bucket
         const { error: uploadError } = await supabase.storage
-          .from('documents')
-          .upload(`gallery/${fileName}`, file, {
+          .from('gallery')
+          .upload(fileName, file, {
             cacheControl: '3600',
             upsert: false
           });
@@ -249,8 +249,8 @@ const AdminCMS = () => {
 
         // Get public URL
         const { data } = supabase.storage
-          .from('documents')
-          .getPublicUrl(`gallery/${fileName}`);
+          .from('gallery')
+          .getPublicUrl(fileName);
 
         // Insert into gallery_images table
         const { error: dbError } = await supabase
