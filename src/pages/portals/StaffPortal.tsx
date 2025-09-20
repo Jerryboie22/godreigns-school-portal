@@ -807,7 +807,7 @@ const StaffPortalContent = () => {
 
 const StaffPortal = () => {
   return (
-    <AuthGuard requiredRoles={["teacher"]}>
+    <AuthGuard portalType="staff">
       <StaffPortalContent />
     </AuthGuard>
   );

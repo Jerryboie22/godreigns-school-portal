@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -517,12 +516,10 @@ const AdminCMS = () => {
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back
             </Button>
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <Home className="h-4 w-4 mr-1" />
-                Home
-              </Button>
-            </Link>
+            <Button variant="outline" size="sm" onClick={() => window.location.href = '/'}>
+              <Home className="h-4 w-4 mr-1" />
+              Home
+            </Button>
             <Badge className="bg-primary text-white">Administrator</Badge>
           </div>
         </div>
