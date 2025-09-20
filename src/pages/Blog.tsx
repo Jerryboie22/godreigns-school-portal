@@ -48,14 +48,33 @@ const Blog = () => {
         .order('created_at', { ascending: false });
       
       if (data && data.length > 0) {
-        // Map database posts to include static images if no image provided
-        const mappedPosts = data.map((post, index) => ({
-          ...post,
-          image: post.image || staticImages[index % staticImages.length],
-          author: 'School Administration', // Use default since posts don't have author field
-          readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
-          date: new Date(post.created_at).toISOString().split('T')[0]
-        }));
+        // Map database posts to include proper image URLs
+        const mappedPosts = data.map((post, index) => {
+          let imageUrl = post.image;
+          
+          // Handle different image URL formats
+          if (post.image && post.image.startsWith('http')) {
+            // If image is already a full URL, use it
+            imageUrl = post.image;
+          } else if (post.image && !post.image.startsWith('http')) {
+            // If image is a storage path, get the public URL
+            const { data: publicUrlData } = supabase.storage
+              .from('blog-images')
+              .getPublicUrl(post.image);
+            imageUrl = publicUrlData.publicUrl;
+          } else {
+            // Fallback to static images if no image provided
+            imageUrl = staticImages[index % staticImages.length];
+          }
+          
+          return {
+            ...post,
+            image: imageUrl,
+            author: 'School Administration', // Use default since posts don't have author field
+            readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
+            date: new Date(post.created_at).toISOString().split('T')[0]
+          };
+        });
         setPosts(mappedPosts);
       } else {
         // Use fallback static posts if no database posts

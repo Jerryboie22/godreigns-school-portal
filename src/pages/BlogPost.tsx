@@ -27,8 +27,22 @@ const BlogPost = () => {
         .single();
       
       if (data) {
+        // Get the public URL for the image if it exists
+        let imageUrl = data.image;
+        if (data.image && data.image.startsWith('http')) {
+          // If image is already a full URL, use it
+          imageUrl = data.image;
+        } else if (data.image && !data.image.startsWith('http')) {
+          // If image is a storage path, get the public URL
+          const { data: publicUrlData } = supabase.storage
+            .from('blog-images')
+            .getPublicUrl(data.image);
+          imageUrl = publicUrlData.publicUrl;
+        }
+        
         setPost({
           ...data,
+          image: imageUrl,
           author: 'School Administration', // Use default since posts don't have author field
           readTime: `${Math.max(1, Math.ceil(data.content.length / 200))} min read`,
           date: new Date(data.created_at).toISOString().split('T')[0]
@@ -231,6 +245,21 @@ We look forward to a productive and successful academic year together!`,
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
+          {/* Featured Image */}
+          {post.image && (
+            <div className="mb-8">
+              <img 
+                src={post.image} 
+                alt={post.title}
+                className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
+                onError={(e) => {
+                  // Hide image if it fails to load
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+          
           {/* Article Content */}
           <Card className="mb-8">
             <CardContent className="p-8">
