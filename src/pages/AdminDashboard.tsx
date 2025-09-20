@@ -258,7 +258,7 @@ const AdminDashboardContent: React.FC<AdminDashboardProps> = ({ user, profile })
 
 const AdminDashboard = () => {
   return (
-    <AuthGuard requiredRoles={["super_admin", "admin"]}>
+    <AuthGuard portalType="admin">
       <AdminDashboardContent />
     </AuthGuard>
   );

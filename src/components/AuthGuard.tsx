@@ -54,8 +54,21 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .select('*')
             .eq('id', session.user.id)
             .single();
-          
-          if (profileData && profileData.role === portalType) {
+
+          // Determine access based on portal type and profile role
+          const role = profileData?.role;
+          const allowed =
+            portalType === 'admin'
+              ? role === 'admin' || role === 'super_admin'
+              : portalType === 'staff'
+                ? role === 'teacher' || role === 'admin' || role === 'super_admin' || role === 'user'
+                : portalType === 'student'
+                  ? role === 'student' || role === 'user'
+                  : portalType === 'parent'
+                    ? role === 'parent' || role === 'user'
+                    : false;
+
+          if (profileData && allowed) {
             setProfile(profileData);
             setIsAuthenticated(true);
           } else {
