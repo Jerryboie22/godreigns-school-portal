@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -395,10 +396,12 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back
             </Button>
-            <Button variant="outline" size="sm" onClick={() => window.location.href = '/'}>
-              <Home className="h-4 w-4 mr-1" />
-              Home
-            </Button>
+            <Link to="/">
+              <Button variant="outline" size="sm">
+                <Home className="h-4 w-4 mr-1" />
+                Home
+              </Button>
+            </Link>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-2" />
               Logout
