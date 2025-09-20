@@ -18,8 +18,7 @@ const Navigation = () => {
     { label: "Portals", path: "/portals" },
     { label: "Gallery", path: "/gallery" },
     { label: "Blog", path: "/blog" },
-    { label: "Contact", path: "/contact" },
-    { label: "Login", path: "/auth" }
+    { label: "Contact", path: "/contact" }
   ];
 
   const isActive = (path: string) => location.pathname === path;

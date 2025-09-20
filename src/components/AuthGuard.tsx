@@ -41,89 +41,42 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    const fetchAndAuthorize = async (session: Session | null) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (!session?.user) {
-        setIsAuthenticated(false);
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      const uid = session.user.id;
-
-      // Try to get profile; if missing, create a minimal one for the user
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', uid)
-        .maybeSingle();
-
-      let effectiveProfile = profileData as UserProfile | null;
-
-      if (!effectiveProfile) {
-        const { data: insertedProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: uid,
-            email: session.user.email as string,
-            full_name: (session.user.user_metadata as any)?.full_name ?? '',
-            role: 'user',
-          })
-          .select('*')
-          .single();
-
-        if (insertError) {
-          // If we can't create a profile, allow non-admin portals based on session only
-          if (portalType !== 'admin') {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileData && profileData.role === portalType) {
+            setProfile(profileData);
             setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
             setProfile(null);
-            setLoading(false);
-            return;
           }
+        } else {
           setIsAuthenticated(false);
           setProfile(null);
-          setLoading(false);
-          return;
         }
-        effectiveProfile = insertedProfile as unknown as UserProfile;
+        setLoading(false);
       }
+    );
 
-      // Determine access based on portal type and profile role
-      const role = (effectiveProfile as any)?.role as string | undefined;
-      const allowed =
-        portalType === 'admin'
-          ? role === 'admin' || role === 'super_admin'
-          : portalType === 'staff'
-            ? role === 'teacher' || role === 'admin' || role === 'super_admin' || role === 'user'
-            : portalType === 'student'
-              ? role === 'student' || role === 'user'
-              : portalType === 'parent'
-                ? role === 'parent' || role === 'user'
-                : false;
-
-      if (effectiveProfile && allowed) {
-        setProfile(effectiveProfile);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-        setProfile(null);
-      }
-
-      setLoading(false);
-    };
-
-    // Set up auth state listener (sync callback; defer async work)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      // Defer to avoid deadlocks per Supabase guidance
-      setTimeout(() => fetchAndAuthorize(session), 0);
-    });
-
-    // Initialize on mount
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setTimeout(() => fetchAndAuthorize(session), 0);
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (!session) {
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
