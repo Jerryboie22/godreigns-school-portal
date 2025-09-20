@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import PortalCard from "@/components/PortalCard";
 import SuccessModal from "@/components/SuccessModal";
-import { ChevronLeft, ChevronRight, Users, Award, BookOpen, Shield, Heart, Target, Eye, Calendar, ArrowRight, Phone, Mail, MapPin, Clock, CreditCard } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Award, BookOpen, Shield, Heart, Target, Eye, Calendar, ArrowRight, Phone, Mail, MapPin, Clock, CreditCard, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 import logo from "@/assets/logo.jpeg";
@@ -15,6 +15,7 @@ import principal from "@/assets/principal.jpg";
 import vicePrincipal from "@/assets/vice-principal.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
 import graduateIndividual from "@/assets/graduate-individual.jpg";
+import studentsGroup from "@/assets/students-group.jpg";
 
 // Fallback images for gallery if database is empty
 import gallery1 from "@/assets/gallery1.jpg";
@@ -183,38 +184,98 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative bg-gradient-hero text-white py-20">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative min-h-screen flex items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={studentsGroup} 
+            alt="Our God Reigns Crystal School Students" 
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-accent/80"></div>
+        </div>
+        
+        {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <img src={logo} alt="Our God Reigns Crystal School" className="h-20 w-20 mx-auto mb-6" />
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              Our God Reigns Crystal School
-            </h1>
-            <p className="text-xl md:text-2xl mb-2 text-accent font-semibold">Light to the World</p>
-            <p className="text-lg mb-2 opacity-90">A place for academic and moral excellence</p>
-            <p className="text-sm mb-8 opacity-75">Academic Session 2025/2026 - Admission in Progress</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/admissions">
-                <Button size="lg" className="text-lg px-8 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
-                  Apply Now - 2025/2026
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 border-white">
-                  Learn More
-                </Button>
-              </Link>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="text-lg px-8 bg-gradient-primary hover:bg-white/20 border-white"
-                onClick={() => setShowSuccessModal(true)}
-              >
-                🏆 View Achievement
-              </Button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+            {/* Left Content */}
+            <div className="text-white space-y-6">
+              <div className="flex items-center space-x-4 mb-6">
+                <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16" />
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+                    Our God Reigns <br/>
+                    <span className="text-accent">Crystal School</span>
+                  </h1>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <p className="text-2xl md:text-3xl font-bold text-accent">Light to the World</p>
+                <p className="text-xl md:text-2xl opacity-95">A place for academic and moral excellence</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 inline-block">
+                  <p className="text-lg font-semibold">Academic Session 2025/2026</p>
+                  <p className="text-accent font-bold">Admission in Progress</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                <Link to="/admissions">
+                  <Button size="lg" className="text-lg px-8 py-4 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
+                    Apply Now - 2025/2026
+                  </Button>
+                </Link>
+                <Link to="/about">
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-white/10 hover:bg-white/20 border-white backdrop-blur-sm w-full sm:w-auto">
+                    Learn More
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            
+            {/* Right Content - Achievement Card */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
+                <div className="text-center text-white space-y-6">
+                  <div className="w-20 h-20 mx-auto bg-accent rounded-full flex items-center justify-center">
+                    <Award className="h-10 w-10 text-accent-foreground" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Excellence in Education</h3>
+                  <p className="text-white/90 leading-relaxed">
+                    Join thousands of successful graduates who have passed through our halls of excellence
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center space-x-2">
+                      <BookOpen className="h-5 w-5 text-accent" />
+                      <span>Outstanding WAEC & NECO Results</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Users className="h-5 w-5 text-accent" />
+                      <span>Experienced Teaching Staff</span>
+                    </div>
+                    <div className="flex items-center justify-center space-x-2">
+                      <Heart className="h-5 w-5 text-accent" />
+                      <span>Christian Values & Character</span>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full bg-white text-primary hover:bg-white/90 border-white"
+                    onClick={() => setShowSuccessModal(true)}
+                  >
+                    <Award className="h-4 w-4 mr-2" />
+                    View Our Achievements
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="h-6 w-6 text-white opacity-70" />
         </div>
       </section>
 
