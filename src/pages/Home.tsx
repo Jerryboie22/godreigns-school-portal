@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,60 +6,134 @@ import { Badge } from "@/components/ui/badge";
 import PortalCard from "@/components/PortalCard";
 import SuccessModal from "@/components/SuccessModal";
 import { ChevronLeft, ChevronRight, Users, Award, BookOpen, Shield, Heart, Target, Eye, Calendar, ArrowRight, Phone, Mail, MapPin, Clock, CreditCard } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 import logo from "@/assets/logo.jpeg";
 import proprietress from "@/assets/proprietress.jpg";
 import chairman from "@/assets/chairman.jpg";
 import principal from "@/assets/principal.jpg";
 import vicePrincipal from "@/assets/vice-principal.jpg";
+import schoolFlyer from "@/assets/school-flyer.jpg";
+import graduateIndividual from "@/assets/graduate-individual.jpg";
+
+// Fallback images for gallery if database is empty
 import gallery1 from "@/assets/gallery1.jpg";
 import gallery2 from "@/assets/gallery2.jpg";
 import gallery3 from "@/assets/gallery3.jpg";
 import achievement from "@/assets/achievement.jpg";
 import awardCeremony from "@/assets/award-ceremony.jpg";
 import culturalDance from "@/assets/cultural-dance.jpg";
-import studentsGroup from "@/assets/students-group.jpg";
-import achievementStudents from "@/assets/achievement-students.jpg";
-import necoAwards from "@/assets/neco-awards.jpg";
-import necoExcellence from "@/assets/neco-excellence.jpg";
-import studentGroupBlue from "@/assets/student-group-blue.jpg";
-import studentsPurple from "@/assets/students-purple-uniforms.jpg";
-import awardWinner from "@/assets/award-winner-emmanuella.jpg";
-import necoExcellenceAwards from "@/assets/neco-excellence-awards.jpg";
-import millionNaira from "@/assets/million-naira-cheque.jpg";
-import certificatePresentation from "@/assets/certificate-presentation.jpg";
-import awardCeremonyOfficials from "@/assets/award-ceremony-officials.jpg";
-import awardCeremonyPresentation from "@/assets/award-ceremony-presentation.jpg";
-import officialAwardCeremony from "@/assets/official-award-ceremony.jpg";
-import schoolFlyer from "@/assets/school-flyer.jpg";
-import graduateIndividual from "@/assets/graduate-individual.jpg";
 
 const Home = () => {
   const [currentGalleryImage, setCurrentGalleryImage] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFullAddress, setShowFullAddress] = useState(false);
-  const galleryImages = [
-    gallery1, 
-    gallery2, 
-    gallery3, 
-    achievement, 
-    awardCeremony,
-    culturalDance,
-    studentsGroup,
-    achievementStudents,
-    necoAwards,
-    necoExcellence,
-    studentGroupBlue,
-    studentsPurple,
-    awardWinner,
-    necoExcellenceAwards,
-    millionNaira,
-    certificatePresentation,
-    awardCeremonyOfficials,
-    awardCeremonyPresentation,
-    officialAwardCeremony,
-    schoolFlyer
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [blogPosts, setBlogPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fallback images if database is empty
+  const fallbackGalleryImages = [
+    gallery1, gallery2, gallery3, achievement, awardCeremony, culturalDance
   ];
+
+  useEffect(() => {
+    fetchDynamicContent();
+    
+    // Set up real-time subscriptions
+    const postsChannel = supabase
+      .channel('homepage-posts-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'posts'
+        },
+        () => {
+          fetchBlogPosts();
+        }
+      )
+      .subscribe();
+
+    const galleryChannel = supabase
+      .channel('homepage-gallery-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'gallery_images'
+        },
+        () => {
+          fetchGalleryImages();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(postsChannel);
+      supabase.removeChannel(galleryChannel);
+    };
+  }, []);
+
+  const fetchDynamicContent = async () => {
+    setLoading(true);
+    await Promise.all([fetchBlogPosts(), fetchGalleryImages()]);
+    setLoading(false);
+  };
+
+  const fetchBlogPosts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const formattedPosts = data.map(post => ({
+          id: post.id,
+          title: post.title,
+          excerpt: post.excerpt || post.content.substring(0, 120) + '...',
+          date: new Date(post.created_at).toISOString().split('T')[0],
+          category: post.category || 'News',
+          image: post.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3ENo Image%3C/text%3E%3C/svg%3E"
+        }));
+        setBlogPosts(formattedPosts);
+      } else {
+        setBlogPosts([]);
+      }
+    } catch (error) {
+      console.error('Error fetching blog posts:', error);
+      setBlogPosts([]);
+    }
+  };
+
+  const fetchGalleryImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('image_url')
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const imageUrls = data.map(img => img.image_url);
+        setGalleryImages([...imageUrls, ...fallbackGalleryImages]);
+      } else {
+        setGalleryImages(fallbackGalleryImages);
+      }
+    } catch (error) {
+      console.error('Error fetching gallery images:', error);
+      setGalleryImages(fallbackGalleryImages);
+    }
+  };
 
   const nextImage = () => {
     setCurrentGalleryImage((prev) => (prev + 1) % galleryImages.length);
@@ -69,56 +143,9 @@ const Home = () => {
     setCurrentGalleryImage((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   };
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: "NECO Excellence Awards 2025/2026: Our Students Shine",
-      excerpt: "Celebrating our students' outstanding achievements at the NECO Excellence Awards for the 2025/2026 academic session. Emmanuella receives special recognition for academic excellence...",
-      date: "2025-09-15",
-      category: "Awards",
-      image: awardWinner
-    },
-    {
-      id: 2,
-      title: "Million Naira Achievement Fund Launch", 
-      excerpt: "Our God Reigns Crystal School launches the Million Naira Achievement Fund to support exceptional students and academic programs for the 2025/2026 session...",
-      date: "2025-09-12",
-      category: "News",
-      image: millionNaira
-    },
-    {
-      id: 3,
-      title: "Cultural Heritage Celebration 2025",
-      excerpt: "Our students showcase their rich cultural heritage through dance, drama, and artistic expressions during our annual cultural week celebration...",
-      date: "2025-09-10",
-      category: "Campus Life", 
-      image: culturalDance
-    },
-    {
-      id: 4,
-      title: "Certificate Presentation Ceremony",
-      excerpt: "Annual certificate presentation ceremony recognizing academic achievements and character development of our graduating students...",
-      date: "2025-09-08",
-      category: "Academics",
-      image: certificatePresentation
-    },
-    {
-      id: 5,
-      title: "New Student Orientation 2025/2026",
-      excerpt: "Welcome to Academic Session 2025/2026! Our new students begin their journey of academic excellence and character building...",
-      date: "2025-09-05",
-      category: "Academics",
-      image: studentsGroup
-    },
-    {
-      id: 6,
-      title: "Award Ceremony Officials Visit",
-      excerpt: "Distinguished officials visit our school for the annual award ceremony, recognizing outstanding academic performance and moral excellence...",
-      date: "2025-09-03",
-      category: "Awards",
-      image: awardCeremonyOfficials
-    }
-  ];
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3EImage Not Available%3C/text%3E%3C/svg%3E";
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -278,9 +305,10 @@ const Home = () => {
               </div>
               <div className="flex justify-center">
                 <img 
-                  src={studentsGroup} 
+                  src={galleryImages[0] || graduateIndividual} 
                   alt="Our God Reigns Crystal School Students"
                   className="rounded-lg shadow-elegant w-full max-w-md"
+                  onError={handleImageError}
                 />
               </div>
             </div>
@@ -348,31 +376,25 @@ const Home = () => {
                         "Your cooperation and support are invaluable as we work hand in hand to shape the future of our children. My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency."
                       </p>
                       <p className="text-muted-foreground mb-6">
-                        "On behalf of the school management, I wish us all a fruitful, productive, and successful academic session ahead. With God on our side, this year will be filled with testimonies of growth and achievement. Once again, welcome to the 2025/2026 academic session."
+                        "Let this new session be marked by renewed dedication to excellence in all areas of your academic journey. May God bless you all as we embark on this exciting journey together."
                       </p>
                     </>
                   )}
                   <Button 
-                    variant="outline" 
+                    variant="ghost" 
                     onClick={() => setShowFullAddress(!showFullAddress)}
-                    className="mb-6"
+                    className="text-primary hover:text-primary/80"
                   >
-                    {showFullAddress ? "Read Less" : "Read More"}
-                    <ArrowRight className={`h-4 w-4 ml-2 transition-transform ${showFullAddress ? "rotate-90" : ""}`} />
+                    {showFullAddress ? 'Show Less' : 'Read Full Address'}
+                    <ArrowRight className={`h-4 w-4 ml-2 transform transition-transform ${showFullAddress ? 'rotate-90' : ''}`} />
                   </Button>
-                  <div className="flex items-center space-x-4">
-                    <div>
-                      <p className="font-semibold text-primary">Pastor (Mrs) Kehinde Adetuberu</p>
-                      <p className="text-sm text-muted-foreground">Proprietress</p>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div className="flex justify-center">
                 <img 
                   src={proprietress} 
-                  alt="Pastor (Mrs) Kehinde Adetuberu - Proprietress"
-                  className="rounded-lg shadow-elegant max-w-sm w-full"
+                  alt="Proprietress - Our God Reigns Crystal School"
+                  className="rounded-lg shadow-elegant w-full max-w-md"
                 />
               </div>
             </div>
@@ -380,85 +402,104 @@ const Home = () => {
         </div>
       </section>
 
-      
-
       {/* Academic Programs */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-gradient-to-br from-accent/10 via-primary/10 to-accent/5">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Academic Programs</h2>
-            <p className="text-lg text-muted-foreground">Comprehensive education from foundation to senior secondary</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <Card className="text-center p-6 group hover:shadow-elegant transition-all duration-300">
-              <CardHeader>
-                <div className="mx-auto bg-secondary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:text-white transition-colors">
-                  <Users className="h-8 w-8 text-secondary group-hover:text-white" />
-                </div>
-                <CardTitle className="text-primary">Junior Secondary (JSS)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Comprehensive curriculum preparing students for senior secondary education with focus on critical thinking.
-                </p>
-              </CardContent>
-            </Card>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary mb-4">Academic Programs 2025/2026</h2>
+              <p className="text-xl text-muted-foreground">Excellence in Junior & Senior Secondary Education</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="p-8 bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 hover:shadow-elegant transition-all duration-300">
+                <CardHeader className="text-center pb-6">
+                  <div className="bg-primary/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <BookOpen className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-2xl text-primary">Junior Secondary (JSS 1-3)</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-muted-foreground mb-6">
+                    Comprehensive foundation in core subjects with emphasis on character development, 
+                    critical thinking, and practical learning approaches that prepare students for advanced studies.
+                  </p>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>• Mathematics, English Language & Sciences</p>
+                    <p>• Social Studies & Basic Technology</p>
+                    <p>• Computer Studies & Vocational Skills</p>
+                    <p>• Moral & Religious Education</p>
+                  </div>
+                </CardContent>
+              </Card>
 
-            <Card className="text-center p-6 group hover:shadow-elegant transition-all duration-300">
-              <CardHeader>
-                <div className="mx-auto bg-accent/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mb-4 group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                  <Award className="h-8 w-8 text-accent group-hover:text-accent-foreground" />
-                </div>
-                <CardTitle className="text-primary">Senior Secondary (SSS)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Excellence-focused program preparing students for WAEC, NECO, and university admission.
-                </p>
-              </CardContent>
-            </Card>
+              <Card className="p-8 bg-gradient-to-br from-accent/20 to-accent/5 border-accent/30 hover:shadow-elegant transition-all duration-300">
+                <CardHeader className="text-center pb-6">
+                  <div className="bg-accent/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="h-8 w-8 text-accent" />
+                  </div>
+                  <CardTitle className="text-2xl text-primary">Senior Secondary (SSS 1-3)</CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-muted-foreground mb-6">
+                    Specialized education with focus on WAEC & NECO preparation, career guidance, 
+                    and leadership development to prepare students for tertiary education and future success.
+                  </p>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>• Science, Commercial & Arts Streams</p>
+                    <p>• WAEC & NECO Preparation</p>
+                    <p>• Career Guidance & Counseling</p>
+                    <p>• Leadership & Character Formation</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Access Portals */}
-      <section className="py-16">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Access Your Portal</h2>
-            <p className="text-lg text-muted-foreground">Dedicated portals for different user roles</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            <PortalCard
-              title="Admin Portal"
-              description="Comprehensive school management and administration"
-              icon={Shield}
-              path="/portal/admin"
-              color="primary"
-            />
-            <PortalCard
-              title="Staff Portal"
-              description="Teacher resources, lesson plans, and student records"
-              icon={Users}
-              path="/portal/staff"
-              color="secondary"
-            />
-            <PortalCard
-              title="Parent Portal"
-              description="Monitor your child's progress and school activities"
-              icon={Heart}
-              path="/portal/parent"
-              color="accent"
-            />
-            <PortalCard
-              title="Student Portal"
-              description="Access assignments, grades, and school resources"
-              icon={BookOpen}
-              path="/portal/student"
-              color="navy"
-            />
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary mb-4">Access School Portals</h2>
+              <p className="text-xl text-muted-foreground">Quick access to our digital learning and management systems</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <PortalCard
+                title="Admin Portal"
+                description="School administration and management access"
+                icon={Shield}
+                path="/portals/admin"
+                color="primary"
+              />
+              
+              <PortalCard
+                title="Staff Portal"
+                description="Teachers and staff resources"
+                icon={Users}
+                path="/portals/staff"
+                color="secondary"
+              />
+              
+              <PortalCard
+                title="Parent Portal"
+                description="Track your child's progress"
+                icon={Heart}
+                path="/portals/parent"
+                color="accent"
+              />
+              
+              <PortalCard
+                title="Student Portal"
+                description="Access learning materials and grades"
+                icon={BookOpen}
+                path="/portals/student"
+                color="navy"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -466,96 +507,156 @@ const Home = () => {
       {/* Why Choose Us */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Why Choose Our God Reigns Crystal School?</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <div className="text-center space-y-4">
-              <div className="bg-primary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto">
-                <Award className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-primary">Academic Excellence</h3>
-              <p className="text-muted-foreground">Consistent outstanding performance in WAEC and NECO examinations</p>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary mb-4">Why Choose Our God Reigns Crystal School</h2>
+              <p className="text-xl text-muted-foreground">Excellence in education with Christian values</p>
             </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-primary">Academic Excellence</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Consistent outstanding performance in WAEC, NECO, and other examinations with national recognition.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <div className="text-center space-y-4">
-              <div className="bg-secondary/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto">
-                <Users className="h-8 w-8 text-secondary" />
-              </div>
-              <h3 className="text-xl font-semibold text-primary">Qualified Teachers</h3>
-              <p className="text-muted-foreground">Experienced and dedicated teaching staff committed to student success</p>
-            </div>
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Heart className="h-8 w-8 text-accent" />
+                  </div>
+                  <CardTitle className="text-primary">Character Development</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Strong emphasis on moral values, discipline, and Christian character formation in all students.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <div className="text-center space-y-4">
-              <div className="bg-accent/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto">
-                <Heart className="h-8 w-8 text-accent" />
-              </div>
-              <h3 className="text-xl font-semibold text-primary">Character Building</h3>
-              <p className="text-muted-foreground">Strong emphasis on moral values and Christian principles</p>
-            </div>
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-primary">Qualified Teachers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Experienced and dedicated teaching staff committed to nurturing each student's potential.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <div className="text-center space-y-4">
-              <div className="bg-navy/10 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto">
-                <BookOpen className="h-8 w-8 text-navy" />
-              </div>
-              <h3 className="text-xl font-semibold text-primary">Modern Facilities</h3>
-              <p className="text-muted-foreground">Well-equipped classrooms, laboratories, and learning resources</p>
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CreditCard className="h-8 w-8 text-accent" />
+                  </div>
+                  <CardTitle className="text-primary">Affordable Fees</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Quality education at affordable rates, making excellent education accessible to all families.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-primary">Safe Environment</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Secure and nurturing environment where students can learn and grow without fear.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center p-6 hover:shadow-elegant transition-all duration-300">
+                <CardHeader>
+                  <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="h-8 w-8 text-accent" />
+                  </div>
+                  <CardTitle className="text-primary">Holistic Development</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Comprehensive approach to education covering academics, sports, arts, and spiritual growth.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
       {/* Campus Life & Gallery */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-primary mb-4">Campus Life & Gallery</h2>
-              <p className="text-lg text-muted-foreground">Experience the vibrant school community</p>
+              <p className="text-xl text-muted-foreground">Discover life at Our God Reigns Crystal School</p>
             </div>
             
-            <div className="relative">
-              <div className="overflow-hidden rounded-lg shadow-elegant">
-                <img 
-                  src={galleryImages[currentGalleryImage]} 
-                  alt="Campus Life" 
-                  className="w-full h-96 object-cover"
-                />
-              </div>
-              
-              <button
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-              >
-                <ChevronLeft className="h-6 w-6 text-primary" />
-              </button>
-              
-              <button
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-              >
-                <ChevronRight className="h-6 w-6 text-primary" />
-              </button>
-              
-              <div className="flex justify-center space-x-2 mt-4">
-                {galleryImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentGalleryImage(index)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentGalleryImage ? 'bg-primary' : 'bg-muted'
-                    }`}
+            {galleryImages.length > 0 && (
+              <div className="relative bg-white rounded-lg shadow-elegant overflow-hidden mb-8">
+                <div className="relative h-96">
+                  <img 
+                    src={galleryImages[currentGalleryImage]} 
+                    alt={`Gallery Image ${currentGalleryImage + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
                   />
-                ))}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <p className="text-sm opacity-90">
+                      Image {currentGalleryImage + 1} of {galleryImages.length}
+                    </p>
+                  </div>
+                  
+                  {galleryImages.length > 1 && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+                        onClick={prevImage}
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+                        onClick={nextImage}
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
             
-            <div className="text-center mt-8">
+            <div className="text-center">
               <Link to="/gallery">
-                <Button variant="outline" size="lg">
+                <Button size="lg" className="bg-gradient-primary">
                   View Full Gallery
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
             </div>
@@ -563,74 +664,89 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Latest Blog Posts */}
-      <section className="py-16 bg-muted/30">
+      {/* Latest News & Events */}
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl font-bold text-primary mb-4">Latest News & Events</h2>
-            <p className="text-lg text-muted-foreground">Stay updated with school news and events</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {blogPosts.slice(0, 3).map((post) => (
-              <Card key={post.id} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1">
-                <div className="h-48 overflow-hidden rounded-t-lg">
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary">{post.category}</Badge>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(post.date).toLocaleDateString()}
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-primary mb-4">Latest News & Events</h2>
+              <p className="text-xl text-muted-foreground">Stay updated with our school community</p>
+            </div>
+            
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1,2,3].map(i => (
+                  <Card key={i} className="animate-pulse">
+                    <div className="h-48 bg-muted"></div>
+                    <CardContent className="p-6">
+                      <div className="h-4 bg-muted rounded mb-2"></div>
+                      <div className="h-6 bg-muted rounded mb-4"></div>
+                      <div className="h-4 bg-muted rounded"></div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : blogPosts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {blogPosts.map((post) => (
+                  <Card key={post.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300 group">
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={handleImageError}
+                      />
+                      <div className="absolute top-4 left-4">
+                        <Badge variant="secondary">{post.category}</Badge>
+                      </div>
                     </div>
-                  </div>
-                  <CardTitle className="group-hover:text-primary transition-colors">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">{post.excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <Link to={`/blog/${post.id}`} className="text-primary hover:text-primary/80 font-medium inline-flex items-center">
-                      Read More
-                      <ArrowRight className="h-4 w-4 ml-1" />
-                    </Link>
-                    {post.id === 1 && (
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => setShowSuccessModal(true)}
-                        className="text-accent border-accent hover:bg-accent hover:text-accent-foreground"
-                      >
-                        View Achievement
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          <div className="text-center mt-8">
-            <Link to="/blog">
-              <Button variant="outline" size="lg">
-                View All Posts
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Link>
+                    <CardContent className="p-6">
+                      <div className="flex items-center text-sm text-muted-foreground mb-3">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(post.date).toLocaleDateString()}
+                      </div>
+                      <h3 className="text-xl font-bold text-primary mb-3 hover:text-primary/80 transition-colors line-clamp-2">
+                        <Link to={`/blog/${post.id}`}>
+                          {post.title}
+                        </Link>
+                      </h3>
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                      <Link to={`/blog/${post.id}`}>
+                        <Button variant="ghost" size="sm" className="p-0 text-primary hover:text-primary/80">
+                          Read More
+                          <ArrowRight className="h-4 w-4 ml-1" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="h-16 w-16 mx-auto text-muted-foreground/50 mb-6" />
+                <h3 className="text-xl font-semibold text-muted-foreground mb-4">No Recent Posts</h3>
+                <p className="text-muted-foreground">Check back soon for the latest news and updates!</p>
+              </div>
+            )}
+            
+            <div className="text-center mt-12">
+              <Link to="/blog">
+                <Button variant="outline" size="lg">
+                  View All Posts
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Success Modal */}
       <SuccessModal 
-        isOpen={showSuccessModal} 
+        isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
-        title="NECO Excellence Award Winner 2025!"
-        message="Congratulations to Miss Adeyemo Emmanuella Adedamola on being awarded the Best Female Senior School Certificate Examination (SSCE) candidate in Nigeria for 2025! This remarkable achievement showcases the quality of education and dedication at Our God Reigns Crystal School during the 2025/2026 academic session."
       />
     </div>
   );

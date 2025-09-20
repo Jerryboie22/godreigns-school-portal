@@ -41,6 +41,26 @@ const Gallery = () => {
 
   useEffect(() => {
     fetchGalleryImages();
+    
+    // Set up real-time subscription for gallery images
+    const channel = supabase
+      .channel('gallery-images-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'gallery_images'
+        },
+        () => {
+          fetchGalleryImages(); // Re-fetch when gallery changes
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchGalleryImages = async () => {
@@ -54,14 +74,14 @@ const Gallery = () => {
         console.error('Error fetching gallery images:', error);
         setGalleryImages(fallbackGalleryItems);
       } else if (data && data.length > 0) {
-        const formattedImages = data.map((img, index) => ({
+        const formattedImages = data.map((img) => ({
           id: img.id,
           src: img.image_url,
           title: img.title,
           category: img.category || 'General',
           description: img.description || ''
         }));
-        // Combine database images with fallback images for more content
+        // Database images take priority, fallback images fill gaps
         setGalleryImages([...formattedImages, ...fallbackGalleryItems]);
       } else {
         setGalleryImages(fallbackGalleryItems);
@@ -332,6 +352,9 @@ const Gallery = () => {
                   src={item.src}
                   alt={item.title}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3EImage Not Available%3C/text%3E%3C/svg%3E";
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -383,6 +406,9 @@ const Gallery = () => {
                 src={filteredItems[selectedImage].src}
                 alt={filteredItems[selectedImage].title}
                 className="w-full h-auto max-h-[80vh] object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23374151'/%3E%3Ctext x='200' y='150' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='16' fill='%23ffffff'%3EImage Not Available%3C/text%3E%3C/svg%3E";
+                }}
               />
               <div className="text-center text-white mt-4 p-4">
                 <Badge variant="secondary" className="mb-2">

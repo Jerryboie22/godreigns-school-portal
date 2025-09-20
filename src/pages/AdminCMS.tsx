@@ -98,39 +98,72 @@ const AdminCMS = () => {
   };
 
   const handleCreatePost = async () => {
-    if (newPost.title && newPost.content) {
-      try {
-        const { error } = await supabase.from('posts').insert([{
-          title: newPost.title,
-          content: newPost.content,
-          excerpt: newPost.excerpt || newPost.content.substring(0, 150) + '...',
-          image: newPost.image,
-          category: newPost.category,
-          status: newPost.status,
-          author_id: (await supabase.auth.getUser()).data.user?.id
-        }]);
+    if (!newPost.title || !newPost.content) {
+      toast({
+        title: "Validation Error",
+        description: "Title and content are required!",
+        variant: "destructive"
+      });
+      return;
+    }
 
-        if (error) throw error;
+    // Block publishing without featured image
+    if (newPost.status === 'published' && !newPost.image) {
+      toast({
+        title: "Featured Image Required",
+        description: "You must add a featured image before publishing a post!",
+        variant: "destructive"
+      });
+      return;
+    }
 
-        setNewPost({ title: '', content: '', excerpt: '', image: '', category: 'General', status: 'draft' });
-        await fetchData();
-        
-        toast({
-          title: "Success",
-          description: "Post created successfully!",
-        });
-      } catch (error: any) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      }
+    try {
+      const { error } = await supabase.from('posts').insert([{
+        title: newPost.title,
+        content: newPost.content,
+        excerpt: newPost.excerpt || newPost.content.substring(0, 150) + '...',
+        image: newPost.image,
+        category: newPost.category,
+        status: newPost.status,
+        author_id: (await supabase.auth.getUser()).data.user?.id
+      }]);
+
+      if (error) throw error;
+
+      setNewPost({ title: '', content: '', excerpt: '', image: '', category: 'General', status: 'draft' });
+      await fetchData();
+      
+      toast({
+        title: "Success",
+        description: `Post ${newPost.status === 'published' ? 'published' : 'saved as draft'} successfully!`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     }
   };
 
   const handlePublishPost = async (id: string) => {
     try {
+      // First check if the post has a featured image
+      const { data: postData } = await supabase
+        .from('posts')
+        .select('image, title')
+        .eq('id', id)
+        .single();
+
+      if (!postData?.image) {
+        toast({
+          title: "Featured Image Required",
+          description: `Cannot publish "${postData?.title}" without a featured image!`,
+          variant: "destructive"
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('posts')
         .update({ status: 'published' })
@@ -394,12 +427,21 @@ const AdminCMS = () => {
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Featured Image URL</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Featured Image URL <span className="text-red-500">*</span>
+                      <span className="text-xs text-muted-foreground ml-2">(Required for publishing)</span>
+                    </label>
                     <Input 
                       placeholder="Image URL..."
                       value={newPost.image}
                       onChange={(e) => setNewPost({...newPost, image: e.target.value})}
+                      className={!newPost.image ? "border-amber-300 focus:border-amber-500" : ""}
                     />
+                    {!newPost.image && (
+                      <p className="text-xs text-amber-600 mt-1">
+                        ⚠️ Posts without featured images can only be saved as drafts
+                      </p>
+                    )}
                   </div>
                   
                   <div className="flex gap-2">
