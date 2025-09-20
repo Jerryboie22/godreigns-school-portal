@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      gallery_images: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published: boolean | null
+          slug: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published?: boolean | null
+          slug?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published?: boolean | null
+          slug?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -40,6 +117,174 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      school_fees: {
+        Row: {
+          academic_year: string | null
+          amount: number
+          created_at: string | null
+          due_date: string
+          id: string
+          payment_date: string | null
+          status: string | null
+          student_profile_id: string | null
+          term: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          academic_year?: string | null
+          amount: number
+          created_at?: string | null
+          due_date: string
+          id?: string
+          payment_date?: string | null
+          status?: string | null
+          student_profile_id?: string | null
+          term?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          academic_year?: string | null
+          amount?: number
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          payment_date?: string | null
+          status?: string | null
+          student_profile_id?: string | null
+          term?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_fees_student_profile_id_fkey"
+            columns: ["student_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_visited: string | null
+          page_path: string
+          unique_visitors: number | null
+          visit_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_visited?: string | null
+          page_path: string
+          unique_visitors?: number | null
+          visit_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_visited?: string | null
+          page_path?: string
+          unique_visitors?: number | null
+          visit_count?: number | null
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          address: string | null
+          admission_date: string | null
+          class: string | null
+          created_at: string | null
+          id: string
+          parent_contact: string | null
+          profile_id: string | null
+          section: string | null
+          student_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          admission_date?: string | null
+          class?: string | null
+          created_at?: string | null
+          id?: string
+          parent_contact?: string | null
+          profile_id?: string | null
+          section?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          admission_date?: string | null
+          class?: string | null
+          created_at?: string | null
+          id?: string
+          parent_contact?: string | null
+          profile_id?: string | null
+          section?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teachers: {
+        Row: {
+          created_at: string | null
+          department: string | null
+          employee_id: string | null
+          experience_years: number | null
+          hire_date: string | null
+          id: string
+          profile_id: string | null
+          qualification: string | null
+          subject: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          department?: string | null
+          employee_id?: string | null
+          experience_years?: number | null
+          hire_date?: string | null
+          id?: string
+          profile_id?: string | null
+          qualification?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string | null
+          employee_id?: string | null
+          experience_years?: number | null
+          hire_date?: string | null
+          id?: string
+          profile_id?: string | null
+          qualification?: string | null
+          subject?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teachers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

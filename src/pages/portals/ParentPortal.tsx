@@ -334,7 +334,7 @@ const ParentPortalContent = () => {
 
 const ParentPortal = () => {
   return (
-    <AuthGuard portalType="parent">
+    <AuthGuard requiredRoles={["parent"]}>
       <ParentPortalContent />
     </AuthGuard>
   );

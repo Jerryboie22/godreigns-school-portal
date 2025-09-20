@@ -372,7 +372,7 @@ const StudentPortalContent = () => {
 
 const StudentPortal = () => {
   return (
-    <AuthGuard portalType="student">
+    <AuthGuard requiredRoles={["student"]}>
       <StudentPortalContent />
     </AuthGuard>
   );

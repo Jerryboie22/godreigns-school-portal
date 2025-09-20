@@ -623,7 +623,7 @@ const AdminPortalContent = () => {
 
 const AdminPortal = () => {
   return (
-    <AuthGuard portalType="admin">
+    <AuthGuard requiredRoles={["super_admin", "admin"]}>
       <AdminPortalContent />
     </AuthGuard>
   );
