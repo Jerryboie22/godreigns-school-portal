@@ -86,7 +86,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
               setIsAuthorized(authorized);
               
               if (!authorized && event !== 'SIGNED_OUT') {
-                // Redirect based on user role or to default
+                // Redirect based on user role or to default auth page
                 if (profileData?.role === 'teacher') {
                   navigate('/portal/staff');
                 } else if (profileData?.role === 'student') {
@@ -94,7 +94,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
                 } else if (profileData?.role === 'parent') {
                   navigate('/portal/parent');
                 } else {
-                  navigate('/portals');
+                  navigate(redirectTo);
                 }
               }
             } catch (error) {
@@ -145,7 +145,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
               } else if (profileData?.role === 'parent') {
                 navigate('/portal/parent');
               } else {
-                navigate('/portals');
+                navigate(redirectTo);
               }
             }
           } catch (error) {
