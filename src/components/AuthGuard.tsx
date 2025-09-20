@@ -76,7 +76,13 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           .single();
 
         if (insertError) {
-          // If we can't create a profile, fallback to denying access gracefully
+          // If we can't create a profile, allow non-admin portals based on session only
+          if (portalType !== 'admin') {
+            setIsAuthenticated(true);
+            setProfile(null);
+            setLoading(false);
+            return;
+          }
           setIsAuthenticated(false);
           setProfile(null);
           setLoading(false);
