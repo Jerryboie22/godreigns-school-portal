@@ -210,7 +210,7 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
                 <img 
-                  src={graduands} 
+                  src={achievementStudents} 
                   alt="Our God Reigns Crystal School Graduates"
                   className="rounded-lg shadow-elegant w-full max-w-lg"
                 />
