@@ -241,7 +241,7 @@ const AdminPortalContent = () => {
                   <Button 
                     className="w-full justify-start" 
                     variant="outline"
-                    onClick={() => window.location.href = '/gallery'}
+                    onClick={() => window.location.href = '/admin/cms'}
                   >
                     <Users className="h-4 w-4 mr-2" />
                     Manage Gallery
@@ -506,7 +506,7 @@ const AdminPortalContent = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <Button 
-                    onClick={() => window.location.href = '/school-fees'}
+                    onClick={() => window.location.href = '/admin/school-fees'}
                     className="h-24 text-left flex-col items-start p-4"
                   >
                     <DollarSign className="h-6 w-6 mb-2" />

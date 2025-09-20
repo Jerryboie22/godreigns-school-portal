@@ -61,7 +61,8 @@ const Gallery = () => {
           category: img.category || 'General',
           description: img.description || ''
         }));
-        setGalleryImages(formattedImages);
+        // Combine database images with fallback images for more content
+        setGalleryImages([...formattedImages, ...fallbackGalleryItems]);
       } else {
         setGalleryImages(fallbackGalleryItems);
       }
@@ -209,8 +210,8 @@ const Gallery = () => {
     }
   ];
 
-  // Use database images if available, fallback to static images
-  const allGalleryItems = galleryImages.length > 0 ? galleryImages : fallbackGalleryItems;
+  // Use database images if available, otherwise use fallback
+  const allGalleryItems = galleryImages;
 
   const filteredItems = allGalleryItems.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

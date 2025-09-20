@@ -1,14 +1,71 @@
 import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, User, ArrowLeft, ArrowRight, Share2, Heart } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const BlogPost = () => {
   const { id } = useParams();
+  const [post, setPost] = useState<any>(null);
+  const [allPosts, setAllPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // This would normally come from an API or database
-  const blogPosts = [
+  useEffect(() => {
+    fetchPost();
+    fetchAllPosts();
+  }, [id]);
+
+  const fetchPost = async () => {
+    try {
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', id)
+        .eq('status', 'published')
+        .single();
+      
+      if (data) {
+        setPost({
+          ...data,
+          author: 'School Administration', // Use default since posts don't have author field
+          readTime: `${Math.max(1, Math.ceil(data.content.length / 200))} min read`,
+          date: new Date(data.created_at).toISOString().split('T')[0]
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      // Fallback to static posts
+      setPost(staticBlogPosts.find(p => p.id === parseInt(id || '')));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllPosts = async () => {
+    try {
+      const { data } = await supabase
+        .from('posts')
+        .select('id, title, category, created_at')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+      
+      if (data) {
+        setAllPosts(data.map(p => ({
+          ...p,
+          date: new Date(p.created_at).toISOString().split('T')[0]
+        })));
+      } else {
+        setAllPosts(staticBlogPosts);
+      }
+    } catch (error) {
+      setAllPosts(staticBlogPosts);
+    }
+  };
+
+  // Static fallback posts
+  const staticBlogPosts = [
     {
       id: 1,
       title: "Our God Reigns Crystal School Wins NECO Excellence Awards 2024",
@@ -104,12 +161,22 @@ We look forward to a productive and successful academic year together!`,
     }
   ];
 
-  const currentPost = blogPosts.find(post => post.id === parseInt(id || ''));
-  const currentIndex = blogPosts.findIndex(post => post.id === parseInt(id || ''));
-  const nextPost = blogPosts[currentIndex + 1];
-  const prevPost = blogPosts[currentIndex - 1];
+  const currentIndex = allPosts.findIndex(p => p.id === parseInt(id || '') || p.id === id);
+  const nextPost = allPosts[currentIndex + 1];
+  const prevPost = allPosts[currentIndex - 1];
 
-  if (!currentPost) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading post...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -137,17 +204,17 @@ We look forward to a productive and successful academic year together!`,
               Back to Blog
             </Link>
             <Badge variant="secondary" className="mb-4">
-              {currentPost.category}
+              {post.category}
             </Badge>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{currentPost.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{post.title}</h1>
             <div className="flex flex-wrap items-center space-x-6 text-white/80">
               <div className="flex items-center">
                 <User className="h-4 w-4 mr-2" />
-                {currentPost.author}
+                {post.author}
               </div>
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-2" />
-                {new Date(currentPost.date).toLocaleDateString('en-US', { 
+                {new Date(post.date).toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
@@ -155,7 +222,7 @@ We look forward to a productive and successful academic year together!`,
               </div>
               <div className="flex items-center">
                 <Clock className="h-4 w-4 mr-2" />
-                {currentPost.readTime}
+                {post.readTime}
               </div>
             </div>
           </div>
@@ -182,7 +249,7 @@ We look forward to a productive and successful academic year together!`,
               {/* Article Body */}
               <div className="prose prose-lg max-w-none">
                 <div className="whitespace-pre-line text-foreground leading-relaxed">
-                  {currentPost.content.split('\n').map((paragraph, index) => {
+                  {post.content.split('\n').map((paragraph, index) => {
                     if (paragraph.startsWith('## ')) {
                       return (
                         <h2 key={index} className="text-2xl font-bold text-primary mt-8 mb-4">

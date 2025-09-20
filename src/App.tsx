@@ -17,6 +17,7 @@ import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import SchoolFeesAdmin from "./pages/SchoolFeesAdmin";
 import AdminPortal from "./pages/portals/AdminPortal";
 import AdminCMS from "./pages/AdminCMS";
 import StaffPortal from "./pages/portals/StaffPortal";
@@ -46,8 +47,9 @@ const App = () => (
               <Route path="/portals" element={<Portals />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
               <Route path="/portal/admin" element={<AdminPortal />} />
               <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />

@@ -47,15 +47,34 @@ const Blog = () => {
         .eq('status', 'published')
         .order('created_at', { ascending: false });
       
-      if (data) setPosts(data);
+      if (data && data.length > 0) {
+        // Map database posts to include static images if no image provided
+        const mappedPosts = data.map((post, index) => ({
+          ...post,
+          image: post.image || staticImages[index % staticImages.length],
+          author: 'School Administration', // Use default since posts don't have author field
+          readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
+          date: new Date(post.created_at).toISOString().split('T')[0]
+        }));
+        setPosts(mappedPosts);
+      } else {
+        // Use fallback static posts if no database posts
+        setPosts(staticBlogPosts);
+      }
     } catch (error) {
       console.error('Error fetching posts:', error);
+      setPosts(staticBlogPosts);
     } finally {
       setLoading(false);
     }
   };
 
-  const blogPosts = [
+  const staticImages = [
+    necoExcellenceAwards, millionNaira, awardCeremonyOfficials, awardCeremony, 
+    culturalDance, studentsGroup, achievementStudents, necoAwards, gallery1
+  ];
+
+  const staticBlogPosts = [
     {
       id: 1,
       title: "NECO Excellence Awards 2025: Miss Adeyemo Emmanuella Adedamola Wins Best Female SSCE Candidate",
@@ -199,7 +218,7 @@ Remember, at Our God Reigns Crystal School, every student is destined to be a "L
     readTime: "3 min read",
     featured: post.featured || false,
     image: post.image || awardCeremony
-  })) : blogPosts;
+  })) : staticBlogPosts;
 
   const filteredPosts = allPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
