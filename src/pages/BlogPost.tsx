@@ -246,10 +246,10 @@ We look forward to a productive and successful academic year together!`,
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Featured Image */}
-          {post.image && (
+          {post.featured_image && (
             <div className="mb-8">
               <img 
-                src={post.image} 
+                src={post.featured_image} 
                 alt={post.title}
                 className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
                 onError={(e) => {
@@ -331,7 +331,7 @@ We look forward to a productive and successful academic year together!`,
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <Badge variant="outline">{prevPost.category}</Badge>
+                    <Badge variant="outline">{prevPost.category || 'Blog'}</Badge>
                     <span>{new Date(prevPost.date).toLocaleDateString()}</span>
                   </div>
                 </CardContent>
@@ -354,7 +354,7 @@ We look forward to a productive and successful academic year together!`,
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>{new Date(nextPost.date).toLocaleDateString()}</span>
-                    <Badge variant="outline">{nextPost.category}</Badge>
+                    <Badge variant="outline">{nextPost.category || 'Blog'}</Badge>
                   </div>
                 </CardContent>
               </Card>

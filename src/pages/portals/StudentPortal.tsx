@@ -323,7 +323,7 @@ const StudentPortalContent = () => {
                     <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
                       <h4 className="font-medium text-foreground mb-2">Mathematics Notes</h4>
                       <p className="text-sm text-muted-foreground mb-3">Quadratic Equations and Graphs</p>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => {/* TODO: Implement download functionality */}}>
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </Button>
@@ -331,7 +331,7 @@ const StudentPortalContent = () => {
                     <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
                       <h4 className="font-medium text-foreground mb-2">Physics Lab Manual</h4>
                       <p className="text-sm text-muted-foreground mb-3">Wave Motion Experiments</p>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => {/* TODO: Implement download functionality */}}>
                         <Download className="h-4 w-4 mr-2" />
                         Download
                       </Button>

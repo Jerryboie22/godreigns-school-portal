@@ -50,7 +50,7 @@ const Blog = () => {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('status', 'published')
+        .eq('published', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -61,7 +61,7 @@ const Blog = () => {
           author: 'School Administration',
           readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
           date: new Date(post.created_at).toISOString().split('T')[0],
-          // Ensure image has fallback
+          // Use featured_image field consistently  
           image: post.featured_image || placeholderImage
         }));
         setPosts(mappedPosts);
@@ -80,7 +80,7 @@ const Blog = () => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
+    const matchesCategory = selectedCategory === "All";
     return matchesSearch && matchesCategory;
   });
 

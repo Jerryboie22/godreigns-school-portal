@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { MessageModal } from "@/components/MessageModal";
+import EventDetailsModal from "@/components/EventDetailsModal";
 import { 
   Heart, 
   BookOpen, 
@@ -29,6 +31,9 @@ const ParentPortalContent = () => {
   });
   const [editingChild, setEditingChild] = useState(false);
   const [childForm, setChildForm] = useState({ name: "", class: "" });
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const recentGrades = [
     { subject: "Mathematics", score: "85%", grade: "B+", date: "2024-09-15" },
@@ -45,6 +50,15 @@ const ParentPortalContent = () => {
   const handleSaveChild = () => {
     setChildInfo(prev => ({ ...prev, ...childForm }));
     setEditingChild(false);
+  };
+
+  const handleOpenEventDetails = (event: any) => {
+    setSelectedEvent(event);
+    setEventModalOpen(true);
+  };
+
+  const handleSendMessage = () => {
+    setMessageModalOpen(true);
   };
 
   const upcomingEvents = [
@@ -294,7 +308,7 @@ const ParentPortalContent = () => {
                         <h4 className="font-medium text-foreground">{event.event}</h4>
                         <p className="text-sm text-muted-foreground">{event.date} at {event.time}</p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => handleOpenEventDetails(event)}>
                         Details
                       </Button>
                     </div>
@@ -312,7 +326,7 @@ const ParentPortalContent = () => {
                   <span>Messages & Communication</span>
                 </CardTitle>
                 <CardDescription>Messages from teachers and school administration</CardDescription>
-                <Button>
+                <Button onClick={handleSendMessage}>
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Send Message
                 </Button>
@@ -326,6 +340,22 @@ const ParentPortalContent = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Modals */}
+        <MessageModal 
+          isOpen={messageModalOpen} 
+          onClose={() => setMessageModalOpen(false)}
+          onSend={(messageData) => {
+            console.log('Message sent:', messageData);
+            setMessageModalOpen(false);
+          }}
+        />
+        
+        <EventDetailsModal
+          open={eventModalOpen}
+          onClose={() => setEventModalOpen(false)}
+          event={selectedEvent}
+        />
 
       </div>
     </div>
