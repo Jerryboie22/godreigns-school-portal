@@ -16,6 +16,7 @@ import vicePrincipal from "@/assets/vice-principal.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
 import graduateIndividual from "@/assets/graduate-individual.jpg";
 import studentsGroup from "@/assets/students-group.jpg";
+import studentsUniform from "@/assets/students-uniform.jpg";
 
 // Fallback images for gallery if database is empty
 import gallery1 from "@/assets/gallery1.jpg";
@@ -185,47 +186,122 @@ const Home = () => {
     <div className="min-h-screen bg-background">
 
 
-      {/* Admission Banner with Flyer */}
-      <section className="py-16 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1">
-                <div className="bg-gradient-to-br from-primary to-accent p-8 rounded-lg text-white">
-                  <h2 className="text-3xl font-bold mb-4">Admission in Progress</h2>
-                  <h3 className="text-2xl font-semibold mb-4 text-accent-foreground">JSS & SSS Classes</h3>
-                  <p className="text-lg mb-6 opacity-95">Join Our God Reigns Crystal School for the 2025/2026 academic session</p>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      <a href="tel:+2348027625129" className="hover:underline">08027625129</a>
-                      <span>,</span>
-                      <a href="tel:+2348033089735" className="hover:underline">08033089735</a>
+      {/* Hero Section - Admission Banner */}
+      <section className="relative bg-gradient-to-br from-green-600 via-green-500 to-emerald-600 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white/60 rotate-45"></div>
+          <div className="absolute bottom-20 left-32 w-12 h-12 bg-white/20 rounded-full"></div>
+          <div className="absolute bottom-32 right-16 w-8 h-8 bg-yellow-300/40 rotate-45"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 py-16 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[600px]">
+              
+              {/* Left Side - Content */}
+              <div className="text-white space-y-8">
+                {/* School Header */}
+                <div className="space-y-2">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-wider">
+                    <span className="block text-white">Our God Reigns</span>
+                    <span className="block text-white">Crystal School</span>
+                  </h1>
+                  <p className="text-green-100 text-lg">
+                    23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State
+                  </p>
+                  <div className="flex flex-wrap gap-4 text-green-100">
+                    <span>Tel: 08027625129, 08033089735</span>
+                    <span>•</span>
+                    <span>E-mail: ogrcs@yahoo.com</span>
+                  </div>
+                </div>
+                
+                {/* Tagline */}
+                <div className="bg-red-600 inline-block px-6 py-2 rounded-lg transform -rotate-1">
+                  <p className="text-white font-bold text-lg italic">
+                    ...a place for academic and moral excellence
+                  </p>
+                </div>
+                
+                {/* Admission Section */}
+                <div className="bg-green-700/30 backdrop-blur-sm rounded-2xl p-8 border border-green-400/30">
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-4xl md:text-5xl font-black text-white uppercase mb-2">
+                        Admission
+                      </h2>
+                      <h3 className="text-3xl md:text-4xl font-black text-white uppercase">
+                        In Progress
+                      </h3>
+                      <div className="bg-red-600 text-white px-4 py-2 rounded-lg inline-block mt-2">
+                        <span className="font-bold text-lg">into</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4" />
-                      <a href="mailto:ogrcs@yahoo.com" className="hover:underline">ogrcs@yahoo.com</a>
+                    
+                    <div className="bg-yellow-400 text-black px-8 py-4 rounded-xl inline-block transform rotate-1">
+                      <h4 className="text-3xl md:text-4xl font-black uppercase tracking-wide">
+                        JSS & SSS
+                      </h4>
+                      <p className="text-xl font-bold uppercase">Classes</p>
                     </div>
-                    <div className="flex items-start space-x-2">
-                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm break-words">23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
+                    
+                    <div className="flex flex-wrap gap-4">
+                      <Link to="/admissions">
+                        <Button 
+                          size="lg" 
+                          className="bg-white text-green-700 hover:bg-green-50 font-bold text-lg px-8 py-3 rounded-xl transform hover:scale-105 transition-all duration-200"
+                        >
+                          Apply Now
+                          <ArrowRight className="h-5 w-5 ml-2" />
+                        </Button>
+                      </Link>
+                      <Link to="/contact">
+                        <Button 
+                          size="lg" 
+                          variant="outline"
+                          className="border-white text-white hover:bg-white/10 font-bold text-lg px-8 py-3 rounded-xl"
+                        >
+                          Contact Us
+                          <Phone className="h-5 w-5 ml-2" />
+                        </Button>
+                      </Link>
                     </div>
                   </div>
-                  <Link to="/admissions">
-                    <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
-                      Apply Now
-                    </Button>
-                  </Link>
                 </div>
               </div>
-              <div className="order-1 lg:order-2 flex justify-center">
-                <img 
-                  src={schoolFlyer} 
-                  alt="Our God Reigns Crystal School - Admission in Progress"
-                  className="rounded-lg shadow-elegant w-full max-w-md"
-                />
+              
+              {/* Right Side - Students Image */}
+              <div className="relative">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-500">
+                  <img 
+                    src={studentsUniform} 
+                    alt="Our God Reigns Crystal School Students in Uniform"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-green-900/30 to-transparent"></div>
+                </div>
+                
+                {/* Decorative elements */}
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center shadow-xl">
+                  <Award className="h-12 w-12 text-green-700" />
+                </div>
+                <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl">
+                  <BookOpen className="h-10 w-10 text-green-600" />
+                </div>
               </div>
+              
             </div>
+          </div>
+        </div>
+        
+        {/* School Motto at Bottom */}
+        <div className="bg-white py-6">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-3xl md:text-4xl font-bold italic text-red-600 font-serif">
+              Motto: Light to the World
+            </p>
           </div>
         </div>
       </section>
