@@ -53,7 +53,7 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-      <header className="bg-background border-b border-border shadow-soft sticky top-0 z-50">
+      <header className="bg-background border-b border-border shadow-soft">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center space-x-3">
