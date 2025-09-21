@@ -1,5 +1,3 @@
-import React from "react";
-import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,45 +28,43 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <div className="flex flex-col min-h-screen">
-            <Navigation />
-            <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/admissions" element={<Admissions />} />
-                <Route path="/library" element={<Library />} />
-                <Route path="/e-learning" element={<ELearning />} />
-                <Route path="/school-fees" element={<SchoolFees />} />
-                <Route path="/portals" element={<Portals />} />
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:id" element={<BlogPost />} />
-                <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
-                <Route path="/portal/admin" element={<AdminPortal />} />
-                <Route path="/portals/admin" element={<AdminPortal />} />
-                <Route path="/admin/cms" element={<AdminCMS />} />
-                <Route path="/admin-cms" element={<AdminCMS />} />
-                <Route path="/portal/staff" element={<StaffPortal />} />
-                <Route path="/portal/parent" element={<ParentPortal />} />
-                <Route path="/portal/student" element={<StudentPortal />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <ScrollToTop />
+        <div className="flex flex-col min-h-screen">
+          <Navigation />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/admissions" element={<Admissions />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/e-learning" element={<ELearning />} />
+              <Route path="/school-fees" element={<SchoolFees />} />
+              <Route path="/portals" element={<Portals />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
+              <Route path="/portal/admin" element={<AdminPortal />} />
+              <Route path="/portals/admin" element={<AdminPortal />} />
+              <Route path="/admin/cms" element={<AdminCMS />} />
+              <Route path="/admin-cms" element={<AdminCMS />} />
+              <Route path="/portal/staff" element={<StaffPortal />} />
+              <Route path="/portal/parent" element={<ParentPortal />} />
+              <Route path="/portal/student" element={<StudentPortal />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
