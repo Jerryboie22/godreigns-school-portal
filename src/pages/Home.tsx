@@ -285,7 +285,7 @@ const Home = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
+              <div className="order-2 lg:order-1">
                 <div className="bg-accent/20 rounded-lg p-6 mb-8">
                   <h3 className="text-2xl font-bold text-primary mb-2">Admission in Progress</h3>
                   <p className="text-lg text-primary">into JSS & SSS Classes</p>
@@ -303,7 +303,7 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-              <div className="flex justify-center">
+              <div className="flex justify-center order-1 lg:order-2">
                 <img 
                   src={galleryImages[0] || graduateIndividual} 
                   alt="Our God Reigns Crystal School Students"
@@ -351,53 +351,60 @@ const Home = () => {
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl font-bold text-primary mb-6">Proprietress Welcome Address - 2025/2026 Session</h2>
-                <div className="prose prose-lg">
-                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                    "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
-                  </p>
-                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                    "To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome."
-                  </p>
-                  <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                    "You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords. The start of a new academic year is always a season of fresh opportunities."
-                  </p>
-                  {showFullAddress && (
-                    <>
-                      <p className="text-muted-foreground mb-4">
-                        "It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential."
-                      </p>
-                      <p className="text-muted-foreground mb-4">
-                        "To our dear teachers and staff, I commend your tireless dedication and commitment. Together, let us continue to inspire, mentor, and guide our students towards academic excellence and moral uprightness. To our parents and guardians, we deeply appreciate your trust and partnership."
-                      </p>
-                      <p className="text-muted-foreground mb-4">
-                        "Your cooperation and support are invaluable as we work hand in hand to shape the future of our children. My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency."
-                      </p>
-                      <p className="text-muted-foreground mb-6">
-                        "Let this new session be marked by renewed dedication to excellence in all areas of your academic journey. May God bless you all as we embark on this exciting journey together."
-                      </p>
-                    </>
-                  )}
-                  <Button 
-                    variant="ghost" 
-                    onClick={() => setShowFullAddress(!showFullAddress)}
-                    className="text-primary hover:text-primary/80"
-                  >
-                    {showFullAddress ? 'Show Less' : 'Read Full Address'}
-                    <ArrowRight className={`h-4 w-4 ml-2 transform transition-transform ${showFullAddress ? 'rotate-90' : ''}`} />
-                  </Button>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-primary mb-4">Proprietress Welcome Address - 2025/2026 Session</h2>
+            </div>
+            
+            <Card className="overflow-hidden group hover:shadow-elegant transition-all duration-300">
+              <div className="md:flex">
+                <div className="md:w-1/3 order-1 md:order-1">
+                  <img 
+                    src={proprietress} 
+                    alt="Pastor (Mrs) Kehinde Adetuberu - Proprietress"
+                    className="w-full h-64 md:h-full object-cover"
+                  />
+                </div>
+                <div className="md:w-2/3 p-6 order-2 md:order-2">
+                  <h3 className="text-xl font-bold text-primary mb-2">Pastor (Mrs) Kehinde Adetuberu</h3>
+                  <p className="text-accent font-medium mb-4">Proprietress</p>
+                  <div className="prose prose-lg">
+                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
+                      "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
+                    </p>
+                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
+                      "To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome."
+                    </p>
+                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
+                      "You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords. The start of a new academic year is always a season of fresh opportunities."
+                    </p>
+                    {showFullAddress && (
+                      <>
+                        <p className="text-muted-foreground mb-4">
+                          "It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential."
+                        </p>
+                        <p className="text-muted-foreground mb-4">
+                          "To our dear teachers and staff, I commend your tireless dedication and commitment. Together, let us continue to inspire, mentor, and guide our students towards academic excellence and moral uprightness. To our parents and guardians, we deeply appreciate your trust and partnership."
+                        </p>
+                        <p className="text-muted-foreground mb-4">
+                          "Your cooperation and support are invaluable as we work hand in hand to shape the future of our children. My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency."
+                        </p>
+                        <p className="text-muted-foreground mb-6">
+                          "Let this new session be marked by renewed dedication to excellence in all areas of your academic journey. May God bless you all as we embark on this exciting journey together."
+                        </p>
+                      </>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => setShowFullAddress(!showFullAddress)}
+                      className="text-primary hover:text-primary/80"
+                    >
+                      {showFullAddress ? 'Show Less' : 'Read Full Address'}
+                      <ArrowRight className={`h-4 w-4 ml-2 transform transition-transform ${showFullAddress ? 'rotate-90' : ''}`} />
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-center">
-                <img 
-                  src={proprietress} 
-                  alt="Proprietress - Our God Reigns Crystal School"
-                  className="rounded-lg shadow-elegant w-full max-w-md"
-                />
-              </div>
-            </div>
+            </Card>
           </div>
         </div>
       </section>
