@@ -339,8 +339,7 @@ const StudentPortalContent = () => {
                   </div>
                   <div className="text-center py-8 text-muted-foreground">
                     <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>More learning resources available with backend integration.</p>
-                    <p className="text-sm mt-2">Connect to Supabase to access full digital library.</p>
+                    <p>Additional learning resources will be available soon.</p>
                   </div>
                 </div>
               </CardContent>
@@ -359,29 +358,13 @@ const StudentPortalContent = () => {
               <CardContent>
                 <div className="text-center py-12 text-muted-foreground">
                   <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Detailed progress tracking available with backend integration.</p>
-                  <p className="text-sm mt-2">Connect to Supabase to view comprehensive academic analytics.</p>
+                  <p>Progress tracking will be available soon.</p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
 
-        {/* Backend Integration Notice */}
-        <Card className="mt-8 border-navy/20 bg-navy/5">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-6 w-6 text-navy" />
-              <div>
-                <h3 className="font-semibold text-navy">Enhanced Learning Experience</h3>
-                <p className="text-muted-foreground">
-                  Connect to Supabase to unlock full student portal features including real-time grades, 
-                  assignment submissions, resource downloads, and progress tracking.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
