@@ -350,60 +350,71 @@ const Home = () => {
       {/* Proprietress Welcome Address */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-primary mb-4">Proprietress Welcome Address - 2025/2026 Session</h2>
             </div>
             
-            <Card className="overflow-hidden group hover:shadow-elegant transition-all duration-300">
-              <div className="md:flex">
-                <div className="md:w-1/3 order-1 md:order-1">
-                  <img 
-                    src={proprietress} 
-                    alt="Pastor (Mrs) Kehinde Adetuberu - Proprietress"
-                    className="w-full h-64 md:h-full object-cover"
-                  />
+            <Card className="overflow-hidden group hover:shadow-elegant transition-all duration-300 bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardContent className="p-8">
+                <div className="flex flex-col items-center text-center mb-8">
+                  <div className="relative mb-6">
+                    <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary/20 shadow-elegant">
+                      <img 
+                        src={proprietress} 
+                        alt="Pastor (Mrs) Kehinde Adetuberu - Proprietress"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-primary mb-2">Pastor (Mrs) Kehinde Adetuberu</h3>
+                  <p className="text-accent font-semibold text-lg mb-6">Proprietress</p>
                 </div>
-                <div className="md:w-2/3 p-6 order-2 md:order-2">
-                  <h3 className="text-xl font-bold text-primary mb-2">Pastor (Mrs) Kehinde Adetuberu</h3>
-                  <p className="text-accent font-medium mb-4">Proprietress</p>
-                  <div className="prose prose-lg">
-                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                      "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
-                    </p>
-                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                      "To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome."
-                    </p>
-                    <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
-                      "You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords. The start of a new academic year is always a season of fresh opportunities."
-                    </p>
-                    {showFullAddress && (
-                      <>
-                        <p className="text-muted-foreground mb-4">
-                          "It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential."
+                
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                    "Distinguished Parents, Guardians, Staff, and Beloved Students, It is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session."
+                  </p>
+                  <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                    "To our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome."
+                  </p>
+                  <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                    "You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords. The start of a new academic year is always a season of fresh opportunities."
+                  </p>
+                  {showFullAddress && (
+                    <>
+                      <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                        "It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential."
+                      </p>
+                      <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                        "To our dear teachers and staff, I commend your tireless dedication and commitment. Together, let us continue to inspire, mentor, and guide our students towards academic excellence and moral uprightness. To our parents and guardians, we deeply appreciate your trust and partnership."
+                      </p>
+                      <p className="text-muted-foreground mb-4 text-base leading-relaxed">
+                        "Your cooperation and support are invaluable as we work hand in hand to shape the future of our children. My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency."
+                      </p>
+                      <p className="text-muted-foreground mb-6 text-base leading-relaxed">
+                        "Let this new session be marked by renewed dedication to excellence in all areas of your academic journey. May God bless you all as we embark on this exciting journey together."
+                      </p>
+                      <div className="text-center pt-4 border-t border-muted">
+                        <p className="text-muted-foreground font-semibold">
+                          Pastor (Mrs) Kehinde Adetuberu<br />
+                          <span className="text-accent">Proprietress</span>
                         </p>
-                        <p className="text-muted-foreground mb-4">
-                          "To our dear teachers and staff, I commend your tireless dedication and commitment. Together, let us continue to inspire, mentor, and guide our students towards academic excellence and moral uprightness. To our parents and guardians, we deeply appreciate your trust and partnership."
-                        </p>
-                        <p className="text-muted-foreground mb-4">
-                          "Your cooperation and support are invaluable as we work hand in hand to shape the future of our children. My admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency."
-                        </p>
-                        <p className="text-muted-foreground mb-6">
-                          "Let this new session be marked by renewed dedication to excellence in all areas of your academic journey. May God bless you all as we embark on this exciting journey together."
-                        </p>
-                      </>
-                    )}
-                    <Button 
-                      variant="ghost" 
+                      </div>
+                    </>
+                  )}
+                  <div className="text-center mt-6">
+                    <Button
+                      variant="outline"
                       onClick={() => setShowFullAddress(!showFullAddress)}
-                      className="text-primary hover:text-primary/80"
+                      className="border-primary/20 hover:bg-primary/10 text-primary hover:text-primary"
                     >
                       {showFullAddress ? 'Show Less' : 'Read Full Address'}
                       <ArrowRight className={`h-4 w-4 ml-2 transform transition-transform ${showFullAddress ? 'rotate-90' : ''}`} />
                     </Button>
                   </div>
                 </div>
-              </div>
+              </CardContent>
             </Card>
           </div>
         </div>
