@@ -62,7 +62,7 @@ const Blog = () => {
           readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
           date: new Date(post.created_at).toISOString().split('T')[0],
           // Ensure image has fallback
-          image: post.image || placeholderImage
+          image: post.featured_image || placeholderImage
         }));
         setPosts(mappedPosts);
       } else {

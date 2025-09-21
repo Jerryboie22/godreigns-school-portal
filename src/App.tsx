@@ -19,6 +19,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import SchoolFeesAdmin from "./pages/SchoolFeesAdmin";
 import AdminPortal from "./pages/portals/AdminPortal";
+import FullAdminCMS from "./pages/FullAdminCMS";
 import AdminCMS from "./pages/AdminCMS";
 import StaffPortal from "./pages/portals/StaffPortal";
 import ParentPortal from "./pages/portals/ParentPortal";
@@ -53,7 +54,8 @@ const App = () => (
               <Route path="/portal/admin" element={<AdminPortal />} />
               <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />
-              <Route path="/admin-cms" element={<AdminCMS />} />
+          <Route path="/admin-cms" element={<FullAdminCMS />} />
+          <Route path="/admin-cms-legacy" element={<AdminCMS />} />
               <Route path="/portal/staff" element={<StaffPortal />} />
               <Route path="/portal/parent" element={<ParentPortal />} />
               <Route path="/portal/student" element={<StudentPortal />} />

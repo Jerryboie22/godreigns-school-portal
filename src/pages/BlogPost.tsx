@@ -23,26 +23,26 @@ const BlogPost = () => {
         .from('posts')
         .select('*')
         .eq('id', id)
-        .eq('status', 'published')
+        .eq('published', true)
         .single();
       
       if (data) {
         // Get the public URL for the image if it exists
-        let imageUrl = data.image;
-        if (data.image && data.image.startsWith('http')) {
+        let imageUrl = data.featured_image;
+        if (data.featured_image && data.featured_image.startsWith('http')) {
           // If image is already a full URL, use it
-          imageUrl = data.image;
-        } else if (data.image && !data.image.startsWith('http')) {
+          imageUrl = data.featured_image;
+        } else if (data.featured_image && !data.featured_image.startsWith('http')) {
           // If image is a storage path, get the public URL
           const { data: publicUrlData } = supabase.storage
             .from('blog-images')
-            .getPublicUrl(data.image);
+            .getPublicUrl(data.featured_image);
           imageUrl = publicUrlData.publicUrl;
         }
         
         setPost({
           ...data,
-          image: imageUrl,
+          featured_image: imageUrl,
           author: 'School Administration', // Use default since posts don't have author field
           readTime: `${Math.max(1, Math.ceil(data.content.length / 200))} min read`,
           date: new Date(data.created_at).toISOString().split('T')[0]
@@ -61,8 +61,8 @@ const BlogPost = () => {
     try {
       const { data } = await supabase
         .from('posts')
-        .select('id, title, category, created_at')
-        .eq('status', 'published')
+        .select('id, title, created_at')
+        .eq('published', true)
         .order('created_at', { ascending: false });
       
       if (data) {
