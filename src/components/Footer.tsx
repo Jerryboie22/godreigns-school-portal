@@ -68,18 +68,18 @@ const Footer = () => {
             
             {/* Social Media */}
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-white/70 hover:text-yellow-300 transition-colors">
+              <a href="https://www.facebook.com/profile.php?id=100064995772701" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-yellow-300 transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-yellow-300 transition-colors">
+              <Link to="/" className="text-white/70 hover:text-yellow-300 transition-colors">
                 <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-white/70 hover:text-yellow-300 transition-colors">
+              </Link>
+              <Link to="/" className="text-white/70 hover:text-yellow-300 transition-colors">
                 <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-white/70 hover:text-yellow-300 transition-colors">
+              </Link>
+              <Link to="/" className="text-white/70 hover:text-yellow-300 transition-colors">
                 <Youtube className="h-5 w-5" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
