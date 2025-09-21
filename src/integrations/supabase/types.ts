@@ -14,216 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      announcements: {
-        Row: {
-          author_id: string
-          content: string
-          created_at: string
-          id: string
-          priority: string
-          published: boolean
-          target_audience: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          author_id: string
-          content: string
-          created_at?: string
-          id?: string
-          priority?: string
-          published?: boolean
-          target_audience: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          author_id?: string
-          content?: string
-          created_at?: string
-          id?: string
-          priority?: string
-          published?: boolean
-          target_audience?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "announcements_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      assignments: {
-        Row: {
-          class: string
-          created_at: string
-          description: string | null
-          due_date: string
-          id: string
-          max_score: number | null
-          subject: string
-          teacher_id: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          class: string
-          created_at?: string
-          description?: string | null
-          due_date: string
-          id?: string
-          max_score?: number | null
-          subject: string
-          teacher_id: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          class?: string
-          created_at?: string
-          description?: string | null
-          due_date?: string
-          id?: string
-          max_score?: number | null
-          subject?: string
-          teacher_id?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "assignments_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "teachers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      attendance: {
-        Row: {
-          created_at: string
-          date: string
-          id: string
-          notes: string | null
-          status: string
-          student_id: string
-          teacher_id: string
-        }
-        Insert: {
-          created_at?: string
-          date?: string
-          id?: string
-          notes?: string | null
-          status: string
-          student_id: string
-          teacher_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          id?: string
-          notes?: string | null
-          status?: string
-          student_id?: string
-          teacher_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "attendance_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "attendance_teacher_id_fkey"
-            columns: ["teacher_id"]
-            isOneToOne: false
-            referencedRelation: "teachers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      fees: {
-        Row: {
-          amount: number
-          created_at: string
-          description: string
-          due_date: string
-          id: string
-          paid_date: string | null
-          payment_method: string | null
-          status: string
-          student_id: string
-          updated_at: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string
-          description: string
-          due_date: string
-          id?: string
-          paid_date?: string | null
-          payment_method?: string | null
-          status?: string
-          student_id: string
-          updated_at?: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string
-          description?: string
-          due_date?: string
-          id?: string
-          paid_date?: string | null
-          payment_method?: string | null
-          status?: string
-          student_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fees_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       gallery_images: {
         Row: {
-          category: string | null
-          created_at: string
+          created_at: string | null
           description: string | null
           id: string
           image_url: string
-          title: string
-          uploaded_by: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
         }
         Insert: {
-          category?: string | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: string
           image_url: string
-          title: string
-          uploaded_by?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Update: {
-          category?: string | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           id?: string
           image_url?: string
-          title?: string
-          uploaded_by?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -233,11 +50,12 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
-          is_visible: boolean | null
+          is_visible: boolean
           link_text: string | null
           link_url: string | null
-          order_index: number | null
-          section_key: string
+          order_index: number
+          section_type: string
+          settings: Json | null
           title: string | null
           updated_at: string
         }
@@ -246,11 +64,12 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
-          is_visible?: boolean | null
+          is_visible?: boolean
           link_text?: string | null
           link_url?: string | null
-          order_index?: number | null
-          section_key: string
+          order_index?: number
+          section_type: string
+          settings?: Json | null
           title?: string | null
           updated_at?: string
         }
@@ -259,299 +78,482 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
-          is_visible?: boolean | null
+          is_visible?: boolean
           link_text?: string | null
           link_url?: string | null
-          order_index?: number | null
-          section_key?: string
+          order_index?: number
+          section_type?: string
+          settings?: Json | null
           title?: string | null
           updated_at?: string
         }
         Relationships: []
       }
-      parents: {
+      media_library: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          description: string | null
+          file_size: number | null
+          file_type: string
+          file_url: string
+          filename: string
+          id: string
+          original_filename: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          file_size?: number | null
+          file_type: string
+          file_url: string
+          filename: string
+          id?: string
+          original_filename: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          description?: string | null
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          filename?: string
+          id?: string
+          original_filename?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      navigation_menu: {
         Row: {
           created_at: string
-          emergency_contact: string | null
           id: string
-          occupation: string | null
+          is_active: boolean
+          label: string
+          order_index: number
+          parent_id: string | null
+          target: string | null
           updated_at: string
-          user_id: string
+          url: string
         }
         Insert: {
           created_at?: string
-          emergency_contact?: string | null
           id?: string
-          occupation?: string | null
+          is_active?: boolean
+          label: string
+          order_index?: number
+          parent_id?: string | null
+          target?: string | null
           updated_at?: string
-          user_id: string
+          url: string
         }
         Update: {
           created_at?: string
-          emergency_contact?: string | null
           id?: string
-          occupation?: string | null
+          is_active?: boolean
+          label?: string
+          order_index?: number
+          parent_id?: string | null
+          target?: string | null
           updated_at?: string
-          user_id?: string
+          url?: string
         }
         Relationships: [
           {
-            foreignKeyName: "parents_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "navigation_menu_parent_id_fkey"
+            columns: ["parent_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "navigation_menu"
             referencedColumns: ["id"]
           },
         ]
       }
-      posts: {
+      page_sections: {
         Row: {
-          author_id: string | null
-          category: string | null
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_visible: boolean
+          link_text: string | null
+          link_url: string | null
+          order_index: number
+          page_id: string | null
+          section_type: string
+          settings: Json | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean
+          link_text?: string | null
+          link_url?: string | null
+          order_index?: number
+          page_id?: string | null
+          section_type: string
+          settings?: Json | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_visible?: boolean
+          link_text?: string | null
+          link_url?: string | null
+          order_index?: number
+          page_id?: string | null
+          section_type?: string
+          settings?: Json | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_sections_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
           content: string
           created_at: string
           excerpt: string | null
-          featured: boolean | null
+          featured_image: string | null
           id: string
-          image: string | null
-          status: string
+          is_published: boolean
+          meta_description: string | null
+          meta_keywords: string | null
+          meta_title: string | null
+          slug: string
+          template: string | null
           title: string
           updated_at: string
         }
         Insert: {
-          author_id?: string | null
-          category?: string | null
           content: string
           created_at?: string
           excerpt?: string | null
-          featured?: boolean | null
+          featured_image?: string | null
           id?: string
-          image?: string | null
-          status?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          slug: string
+          template?: string | null
           title: string
           updated_at?: string
         }
         Update: {
-          author_id?: string | null
-          category?: string | null
           content?: string
           created_at?: string
           excerpt?: string | null
-          featured?: boolean | null
+          featured_image?: string | null
           id?: string
-          image?: string | null
-          status?: string
+          is_published?: boolean
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          slug?: string
+          template?: string | null
           title?: string
           updated_at?: string
         }
         Relationships: []
       }
-      profiles: {
+      posts: {
         Row: {
-          address: string | null
-          created_at: string
-          email: string
-          full_name: string
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          excerpt: string | null
+          featured_image: string | null
           id: string
-          phone: string | null
-          role: string
-          updated_at: string
+          published: boolean | null
+          slug: string | null
+          title: string
+          updated_at: string | null
         }
         Insert: {
-          address?: string | null
-          created_at?: string
-          email: string
-          full_name: string
-          id: string
-          phone?: string | null
-          role: string
-          updated_at?: string
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published?: boolean | null
+          slug?: string | null
+          title: string
+          updated_at?: string | null
         }
         Update: {
-          address?: string | null
-          created_at?: string
-          email?: string
-          full_name?: string
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
           id?: string
-          phone?: string | null
-          role?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      site_analytics: {
-        Row: {
-          id: string
-          ip_address: string | null
-          page_path: string
-          session_id: string | null
-          user_agent: string | null
-          user_id: string | null
-          visit_timestamp: string
-        }
-        Insert: {
-          id?: string
-          ip_address?: string | null
-          page_path: string
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-          visit_timestamp?: string
-        }
-        Update: {
-          id?: string
-          ip_address?: string | null
-          page_path?: string
-          session_id?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-          visit_timestamp?: string
-        }
-        Relationships: []
-      }
-      students: {
-        Row: {
-          admission_date: string
-          class: string
-          created_at: string
-          date_of_birth: string | null
-          id: string
-          parent_id: string | null
-          student_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          admission_date?: string
-          class: string
-          created_at?: string
-          date_of_birth?: string | null
-          id?: string
-          parent_id?: string | null
-          student_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          admission_date?: string
-          class?: string
-          created_at?: string
-          date_of_birth?: string | null
-          id?: string
-          parent_id?: string | null
-          student_id?: string
-          updated_at?: string
-          user_id?: string
+          published?: boolean | null
+          slug?: string | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "fk_students_parent"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "parents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "students_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      submissions: {
+      profiles: {
         Row: {
-          assignment_id: string
-          content: string | null
-          created_at: string
-          file_url: string | null
-          graded_at: string | null
+          created_at: string | null
+          email: string
+          full_name: string | null
           id: string
-          score: number | null
-          student_id: string
-          submitted_at: string
-          teacher_feedback: string | null
-          updated_at: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
         }
         Insert: {
-          assignment_id: string
-          content?: string | null
-          created_at?: string
-          file_url?: string | null
-          graded_at?: string | null
-          id?: string
-          score?: number | null
-          student_id: string
-          submitted_at?: string
-          teacher_feedback?: string | null
-          updated_at?: string
+          created_at?: string | null
+          email: string
+          full_name?: string | null
+          id: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
         }
         Update: {
-          assignment_id?: string
-          content?: string | null
-          created_at?: string
-          file_url?: string | null
-          graded_at?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string | null
           id?: string
-          score?: number | null
-          student_id?: string
-          submitted_at?: string
-          teacher_feedback?: string | null
-          updated_at?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      school_fees: {
+        Row: {
+          academic_year: string | null
+          amount: number
+          created_at: string | null
+          due_date: string
+          id: string
+          payment_date: string | null
+          status: string | null
+          student_profile_id: string | null
+          term: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          academic_year?: string | null
+          amount: number
+          created_at?: string | null
+          due_date: string
+          id?: string
+          payment_date?: string | null
+          status?: string | null
+          student_profile_id?: string | null
+          term?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          academic_year?: string | null
+          amount?: number
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          payment_date?: string | null
+          status?: string | null
+          student_profile_id?: string | null
+          term?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "submissions_assignment_id_fkey"
-            columns: ["assignment_id"]
+            foreignKeyName: "school_fees_student_profile_id_fkey"
+            columns: ["student_profile_id"]
             isOneToOne: false
-            referencedRelation: "assignments"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      site_analytics: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_visited: string | null
+          page_path: string
+          session_id: string | null
+          unique_visitors: number | null
+          user_agent: string | null
+          user_id: string | null
+          visit_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_visited?: string | null
+          page_path: string
+          session_id?: string | null
+          unique_visitors?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          visit_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_visited?: string | null
+          page_path?: string
+          session_id?: string | null
+          unique_visitors?: number | null
+          user_agent?: string | null
+          user_id?: string | null
+          visit_count?: number | null
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          address: string | null
+          admission_date: string | null
+          class: string | null
+          created_at: string | null
+          id: string
+          parent_contact: string | null
+          profile_id: string | null
+          section: string | null
+          student_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          admission_date?: string | null
+          class?: string | null
+          created_at?: string | null
+          id?: string
+          parent_contact?: string | null
+          profile_id?: string | null
+          section?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          admission_date?: string | null
+          class?: string | null
+          created_at?: string | null
+          id?: string
+          parent_contact?: string | null
+          profile_id?: string | null
+          section?: string | null
+          student_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "submissions_student_id_fkey"
-            columns: ["student_id"]
+            foreignKeyName: "students_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: "students"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
       teachers: {
         Row: {
-          created_at: string
+          created_at: string | null
           department: string | null
-          employee_id: string
-          hire_date: string
+          employee_id: string | null
+          experience_years: number | null
+          hire_date: string | null
           id: string
-          subject: string
-          updated_at: string
-          user_id: string
+          profile_id: string | null
+          qualification: string | null
+          subject: string | null
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           department?: string | null
-          employee_id: string
-          hire_date?: string
+          employee_id?: string | null
+          experience_years?: number | null
+          hire_date?: string | null
           id?: string
-          subject: string
-          updated_at?: string
-          user_id: string
+          profile_id?: string | null
+          qualification?: string | null
+          subject?: string | null
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           department?: string | null
-          employee_id?: string
-          hire_date?: string
+          employee_id?: string | null
+          experience_years?: number | null
+          hire_date?: string | null
           id?: string
-          subject?: string
-          updated_at?: string
-          user_id?: string
+          profile_id?: string | null
+          qualification?: string | null
+          subject?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "teachers_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "teachers_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -563,10 +565,42 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_user_email: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          required_role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Returns: boolean
+      }
+      is_current_user_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_super_admin_by_email: {
+        Args: { user_email: string }
+        Returns: boolean
+      }
+      is_super_admin_from_jwt: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "super_admin"
+        | "admin"
+        | "teacher"
+        | "student"
+        | "parent"
+        | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -693,6 +727,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "super_admin",
+        "admin",
+        "teacher",
+        "student",
+        "parent",
+        "user",
+      ],
+    },
   },
 } as const
