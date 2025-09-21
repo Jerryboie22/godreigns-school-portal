@@ -214,7 +214,7 @@ const Blog = () => {
               <Card key={post.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300 group">
                 <div className="relative overflow-hidden">
                   <img 
-                    src={post.image} 
+                    src={post.featured_image} 
                     alt={post.title}
                     className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={handleImageError}
