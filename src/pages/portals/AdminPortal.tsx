@@ -450,39 +450,42 @@ const AdminPortalContent = () => {
                 <CardDescription>Manage curriculum, assessments, and academic records</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Button 
-                    onClick={() => window.location.href = '/portal/staff'}
-                    className="h-24 text-left flex-col items-start p-4"
-                  >
-                    <BookOpen className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">Staff Portal</div>
-                      <div className="text-xs opacity-75">Manage teaching</div>
-                    </div>
-                  </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/library'}
-                    className="h-24 text-left flex-col items-start p-4" 
-                    variant="outline"
-                  >
-                    <Calendar className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">Library</div>
-                      <div className="text-xs">Manage resources</div>
-                    </div>
-                  </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/e-learning'}
-                    className="h-24 text-left flex-col items-start p-4" 
-                    variant="outline"
-                  >
-                    <BarChart3 className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">E-Learning</div>
-                      <div className="text-xs">Online platform</div>
-                    </div>
-                  </Button>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Link to="/portal/staff">
+                    <Button 
+                      className="h-24 text-left flex-col items-start p-4 w-full"
+                    >
+                      <BookOpen className="h-6 w-6 mb-2" />
+                      <div>
+                        <div className="font-semibold">Staff Portal</div>
+                        <div className="text-xs opacity-75">Manage teaching</div>
+                      </div>
+                    </Button>
+                  </Link>
+                  <Link to="/library">
+                    <Button 
+                      className="h-24 text-left flex-col items-start p-4 w-full" 
+                      variant="outline"
+                    >
+                      <Calendar className="h-6 w-6 mb-2" />
+                      <div>
+                        <div className="font-semibold">Library</div>
+                        <div className="text-xs">Manage resources</div>
+                      </div>
+                    </Button>
+                  </Link>
+                  <Link to="/e-learning">
+                    <Button 
+                      className="h-24 text-left flex-col items-start p-4 w-full" 
+                      variant="outline"
+                    >
+                      <BarChart3 className="h-6 w-6 mb-2" />
+                      <div>
+                        <div className="font-semibold">E-Learning</div>
+                        <div className="text-xs">Online platform</div>
+                      </div>
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -496,27 +499,29 @@ const AdminPortalContent = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Button 
-                    onClick={() => window.location.href = '/admin/school-fees'}
-                    className="h-24 text-left flex-col items-start p-4"
-                  >
-                    <DollarSign className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">School Fees</div>
-                      <div className="text-xs opacity-75">Payment portal</div>
-                    </div>
-                  </Button>
-                  <Button 
-                    onClick={() => window.location.href = '/portal/parent'}
-                    className="h-24 text-left flex-col items-start p-4" 
-                    variant="outline"
-                  >
-                    <BarChart3 className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">Parent Portal</div>
-                      <div className="text-xs">Fee tracking</div>
-                    </div>
-                  </Button>
+                  <Link to="/admin/school-fees">
+                    <Button 
+                      className="h-24 text-left flex-col items-start p-4 w-full"
+                    >
+                      <DollarSign className="h-6 w-6 mb-2" />
+                      <div>
+                        <div className="font-semibold">School Fees</div>
+                        <div className="text-xs opacity-75">Payment portal</div>
+                      </div>
+                    </Button>
+                  </Link>
+                  <Link to="/portal/parent">
+                    <Button 
+                      className="h-24 text-left flex-col items-start p-4 w-full" 
+                      variant="outline"
+                    >
+                      <BarChart3 className="h-6 w-6 mb-2" />
+                      <div>
+                        <div className="font-semibold">Parent Portal</div>
+                        <div className="text-xs">Fee tracking</div>
+                      </div>
+                    </Button>
+                  </Link>
                   <Button 
                     onClick={() => handleAction("Generate Financial Report")}
                     className="h-24 text-left flex-col items-start p-4" 
@@ -544,59 +549,65 @@ const AdminPortalContent = () => {
                   <div className="space-y-4">
                     <h3 className="font-semibold text-primary">Content Management</h3>
                     <div className="space-y-3">
-                      <Button 
-                        onClick={() => window.location.href = '/admin-cms'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Settings className="h-4 w-4 mr-2" />
-                        CMS Dashboard
-                      </Button>
-                      <Button 
-                        onClick={() => window.location.href = '/gallery'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Gallery Management
-                      </Button>
-                      <Button 
-                        onClick={() => window.location.href = '/blog'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Bell className="h-4 w-4 mr-2" />
-                        Blog Posts
-                      </Button>
+                      <Link to="/admin-cms">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          CMS Dashboard
+                        </Button>
+                      </Link>
+                      <Link to="/gallery">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Gallery Management
+                        </Button>
+                      </Link>
+                      <Link to="/blog">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Bell className="h-4 w-4 mr-2" />
+                          Blog Posts
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <h3 className="font-semibold text-primary">Portal Access</h3>
                     <div className="space-y-3">
-                      <Button 
-                        onClick={() => window.location.href = '/portals'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        All Portals
-                      </Button>
-                      <Button 
-                        onClick={() => window.location.href = '/contact'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Contact Messages
-                      </Button>
-                      <Button 
-                        onClick={() => window.location.href = '/about'}
-                        className="w-full justify-start" 
-                        variant="outline"
-                      >
-                        <Settings className="h-4 w-4 mr-2" />
-                        About Page
-                      </Button>
+                      <Link to="/portals">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          All Portals
+                        </Button>
+                      </Link>
+                      <Link to="/contact">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          Contact Messages
+                        </Button>
+                      </Link>
+                      <Link to="/about">
+                        <Button 
+                          className="w-full justify-start" 
+                          variant="outline"
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          About Page
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>
