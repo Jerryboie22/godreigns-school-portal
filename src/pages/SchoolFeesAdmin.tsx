@@ -39,7 +39,7 @@ const SchoolFeesAdmin = () => {
   const fetchData = async () => {
     try {
       const { data: feesData } = await supabase
-        .from('school_fees')
+        .from('fees')
         .select(`
           *,
           students (
@@ -86,7 +86,7 @@ const SchoolFeesAdmin = () => {
     }
 
     try {
-      const { error } = await supabase.from('school_fees').insert([{
+      const { error } = await supabase.from('fees').insert([{
         student_id: newFee.student_id,
         amount: parseFloat(newFee.amount),
         description: newFee.description,
@@ -121,7 +121,7 @@ const SchoolFeesAdmin = () => {
   const handleMarkPaid = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('school_fees')
+        .from('fees')
         .update({ 
           status: 'paid',
           paid_date: new Date().toISOString().split('T')[0]
@@ -149,7 +149,7 @@ const SchoolFeesAdmin = () => {
 
     try {
       const { error } = await supabase
-        .from('school_fees')
+        .from('fees')
         .delete()
         .eq('id', id);
 

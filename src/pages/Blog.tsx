@@ -50,7 +50,7 @@ const Blog = () => {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('published', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -61,8 +61,8 @@ const Blog = () => {
           author: 'School Administration',
           readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
           date: new Date(post.created_at).toISOString().split('T')[0],
-          // Use featured_image field consistently  
-          image: post.featured_image || placeholderImage
+          // Ensure image has fallback
+          image: post.image || placeholderImage
         }));
         setPosts(mappedPosts);
       } else {
@@ -80,7 +80,7 @@ const Blog = () => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All";
+    const matchesCategory = selectedCategory === "All" || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -214,7 +214,7 @@ const Blog = () => {
               <Card key={post.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300 group">
                 <div className="relative overflow-hidden">
                   <img 
-                    src={post.featured_image} 
+                    src={post.image} 
                     alt={post.title}
                     className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={handleImageError}

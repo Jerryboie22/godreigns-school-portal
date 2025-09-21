@@ -23,26 +23,26 @@ const BlogPost = () => {
         .from('posts')
         .select('*')
         .eq('id', id)
-        .eq('published', true)
+        .eq('status', 'published')
         .single();
       
       if (data) {
         // Get the public URL for the image if it exists
-        let imageUrl = data.featured_image;
-        if (data.featured_image && data.featured_image.startsWith('http')) {
+        let imageUrl = data.image;
+        if (data.image && data.image.startsWith('http')) {
           // If image is already a full URL, use it
-          imageUrl = data.featured_image;
-        } else if (data.featured_image && !data.featured_image.startsWith('http')) {
+          imageUrl = data.image;
+        } else if (data.image && !data.image.startsWith('http')) {
           // If image is a storage path, get the public URL
           const { data: publicUrlData } = supabase.storage
             .from('blog-images')
-            .getPublicUrl(data.featured_image);
+            .getPublicUrl(data.image);
           imageUrl = publicUrlData.publicUrl;
         }
         
         setPost({
           ...data,
-          featured_image: imageUrl,
+          image: imageUrl,
           author: 'School Administration', // Use default since posts don't have author field
           readTime: `${Math.max(1, Math.ceil(data.content.length / 200))} min read`,
           date: new Date(data.created_at).toISOString().split('T')[0]
@@ -61,8 +61,8 @@ const BlogPost = () => {
     try {
       const { data } = await supabase
         .from('posts')
-        .select('id, title, created_at')
-        .eq('published', true)
+        .select('id, title, category, created_at')
+        .eq('status', 'published')
         .order('created_at', { ascending: false });
       
       if (data) {
@@ -246,10 +246,10 @@ We look forward to a productive and successful academic year together!`,
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Featured Image */}
-          {post.featured_image && (
+          {post.image && (
             <div className="mb-8">
               <img 
-                src={post.featured_image} 
+                src={post.image} 
                 alt={post.title}
                 className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
                 onError={(e) => {
@@ -331,7 +331,7 @@ We look forward to a productive and successful academic year together!`,
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <Badge variant="outline">{prevPost.category || 'Blog'}</Badge>
+                    <Badge variant="outline">{prevPost.category}</Badge>
                     <span>{new Date(prevPost.date).toLocaleDateString()}</span>
                   </div>
                 </CardContent>
@@ -354,7 +354,7 @@ We look forward to a productive and successful academic year together!`,
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>{new Date(nextPost.date).toLocaleDateString()}</span>
-                    <Badge variant="outline">{nextPost.category || 'Blog'}</Badge>
+                    <Badge variant="outline">{nextPost.category}</Badge>
                   </div>
                 </CardContent>
               </Card>
