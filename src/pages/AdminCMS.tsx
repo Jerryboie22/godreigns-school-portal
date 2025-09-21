@@ -430,11 +430,11 @@ const AdminCMS = () => {
       const { error: teacherError } = await supabase
         .from('teachers')
         .insert([{
-          name: newTeacher.name || 'New Teacher',
+          user_id: null, // Will be linked later when user registers
           subject: newTeacher.subject,
-          email: `${newTeacher.name.toLowerCase().replace(' ', '.')}@ogrcs.edu.ng` || 'teacher@ogrcs.edu.ng',
-          phone: '+234 000 000 0000',
-          bio: `Teacher specializing in ${newTeacher.subject}`
+          department: newTeacher.department,
+          employee_id: newTeacher.employee_id,
+          hire_date: newTeacher.hire_date
         }]);
 
       if (teacherError) throw teacherError;
