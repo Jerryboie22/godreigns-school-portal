@@ -1,4 +1,54 @@
 User-agent: *
 Allow: /
 
+# Allow crawling of important pages
+Allow: /about
+Allow: /admissions
+Allow: /contact
+Allow: /gallery
+Allow: /library
+Allow: /school-fees
+Allow: /e-learning
+Allow: /blog
+Allow: /blog/*
+
+# Disallow admin and portal pages (private/secured areas)
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /portals/admin
+Disallow: /portals/staff
+Disallow: /portals/parent
+Disallow: /portals/student
+Disallow: /admin-cms
+Disallow: /admin/cms
+Disallow: /admin/school-fees
+
+# Common security paths to disallow
+Disallow: /api/
+Disallow: /private/
+Disallow: /*.json
+Disallow: /*?*auth*
+Disallow: /*?*login*
+Disallow: /*?*admin*
+
+# Allow important static resources
+Allow: /assets/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.ico
+
+# Crawl delay (be nice to the server)
+Crawl-delay: 1
+
+# Sitemap location
 Sitemap: https://ogrcs.com/sitemap.xml
+
+# Additional sitemaps if needed
+# Sitemap: https://ogrcs.com/sitemap-images.xml
+# Sitemap: https://ogrcs.com/sitemap-news.xml
