@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -253,8 +254,18 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
-        <Card className="w-full max-w-md">
+      <>
+        <Helmet>
+          <title>{`${portalType.charAt(0).toUpperCase() + portalType.slice(1)} Portal Login | Our God Reigns Crystal School`}</title>
+          <meta name="description" content={`Secure ${portalType} portal access for Our God Reigns Crystal School. Login required to access ${portalType}-specific features and information.`} />
+          <meta name="robots" content="noindex, nofollow" />
+          <meta property="og:title" content={`${portalType.charAt(0).toUpperCase() + portalType.slice(1)} Portal - Our God Reigns Crystal School`} />
+          <meta property="og:description" content={`Secure portal access for ${portalType}s at Our God Reigns Crystal School.`} />
+          <meta property="og:type" content="website" />
+          <link rel="canonical" href={`${window.location.origin}/portal/${portalType}`} />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
+          <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4" />
             <CardTitle className="capitalize">{portalType} Portal Access</CardTitle>
@@ -391,7 +402,8 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             </Tabs>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </>
     );
   }
 
