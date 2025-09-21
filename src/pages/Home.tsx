@@ -279,53 +279,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Contact Header Section */}
-      <section className="bg-gradient-to-r from-emerald-700 to-emerald-800 text-white py-4">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-8 text-sm">
-            <div className="flex items-center space-x-2">
-              <Phone className="h-4 w-4" />
-              <span>+234 803 308 9735 / +234 802 762 5129</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <span>ogrcs@yahoo.com</span>
-            </div>
-            <div className="flex items-center space-x-2 text-center md:text-left">
-              <MapPin className="h-4 w-4 flex-shrink-0" />
-              <span>23, Bolanle Awosiku Street, Off Ilogbo Road, Ota, Ogun State</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Welcome Section - Reduced by half on mobile */}
-      <section className="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white py-8 md:py-16 lg:py-32">
-        <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 md:space-y-6">
-            <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold">Welcome to</h2>
-            <h3 className="text-4xl md:text-5xl lg:text-7xl font-bold text-yellow-300">OGRCS</h3>
-            
-            <div className="space-y-3 md:space-y-4 max-w-4xl mx-auto">
-              <p className="text-lg md:text-2xl lg:text-3xl font-semibold text-yellow-200 italic">
-                "...a place for academic and moral excellence"
-              </p>
-              <p className="text-base md:text-xl lg:text-2xl font-medium">Light to the World</p>
-              <p className="text-sm md:text-lg lg:text-xl leading-relaxed mt-4 md:mt-6">
-                Providing qualitative and affordable education while raising God-fearing leaders for tomorrow.
-              </p>
-            </div>
-            
-            <div className="pt-6 md:pt-8">
-              <Link to="/admissions">
-                <Button size="lg" className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-full">
-                  Apply for Admission
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Admission Banner with Flyer */}
       <section className="py-16 bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
