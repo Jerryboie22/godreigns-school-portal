@@ -198,36 +198,36 @@ const Home = () => {
         
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-screen py-16 lg:py-20">
             {/* Left Content */}
-            <div className="text-white space-y-6">
-              <div className="flex items-center space-x-4 mb-6">
-                <img src={logo} alt="Our God Reigns Crystal School" className="h-16 w-16" />
+            <div className="text-white space-y-4 lg:space-y-6">
+              <div className="flex items-center space-x-3 lg:space-x-4 mb-4 lg:mb-6">
+                <img src={logo} alt="Our God Reigns Crystal School" className="h-12 w-12 lg:h-16 lg:w-16" />
                 <div>
-                  <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+                  <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight">
                     Our God Reigns <br/>
                     <span className="text-accent">Crystal School</span>
                   </h1>
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <p className="text-2xl md:text-3xl font-bold text-accent">Light to the World</p>
-                <p className="text-xl md:text-2xl opacity-95">A place for academic and moral excellence</p>
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 inline-block">
-                  <p className="text-lg font-semibold">Academic Session 2025/2026</p>
+              <div className="space-y-3 lg:space-y-4">
+                <p className="text-xl md:text-2xl lg:text-3xl font-bold text-accent">Light to the World</p>
+                <p className="text-lg md:text-xl lg:text-2xl opacity-95">A place for academic and moral excellence</p>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-4 inline-block">
+                  <p className="text-base lg:text-lg font-semibold">Academic Session 2025/2026</p>
                   <p className="text-accent font-bold">Admission in Progress</p>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 pt-6">
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 pt-4 lg:pt-6">
                 <Link to="/admissions">
-                  <Button size="lg" className="text-lg px-8 py-4 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
+                  <Button size="lg" className="text-base lg:text-lg px-6 lg:px-8 py-3 lg:py-4 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto">
                     Apply Now - 2025/2026
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-4 bg-white/10 hover:bg-white/20 border-white backdrop-blur-sm w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="text-base lg:text-lg px-6 lg:px-8 py-3 lg:py-4 bg-white/10 hover:bg-white/20 border-white backdrop-blur-sm w-full sm:w-auto">
                     Learn More
                   </Button>
                 </Link>
@@ -236,32 +236,32 @@ const Home = () => {
             
             {/* Right Content - Achievement Card */}
             <div className="flex justify-center lg:justify-end">
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 max-w-md w-full border border-white/20 shadow-2xl">
-                <div className="text-center text-white space-y-6">
-                  <div className="w-20 h-20 mx-auto bg-accent rounded-full flex items-center justify-center">
-                    <Award className="h-10 w-10 text-accent-foreground" />
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 lg:p-8 max-w-md w-full border border-white/20 shadow-2xl">
+                <div className="text-center text-white space-y-4 lg:space-y-6">
+                  <div className="w-16 h-16 lg:w-20 lg:h-20 mx-auto bg-accent rounded-full flex items-center justify-center">
+                    <Award className="h-8 w-8 lg:h-10 lg:w-10 text-accent-foreground" />
                   </div>
-                  <h3 className="text-2xl font-bold">Excellence in Education</h3>
-                  <p className="text-white/90 leading-relaxed">
+                  <h3 className="text-xl lg:text-2xl font-bold">Excellence in Education</h3>
+                  <p className="text-white/90 leading-relaxed text-sm lg:text-base">
                     Join thousands of successful graduates who have passed through our halls of excellence
                   </p>
-                  <div className="space-y-3">
+                  <div className="space-y-2 lg:space-y-3">
                     <div className="flex items-center justify-center space-x-2">
-                      <BookOpen className="h-5 w-5 text-accent" />
-                      <span>Outstanding WAEC & NECO Results</span>
+                      <BookOpen className="h-4 w-4 lg:h-5 lg:w-5 text-accent" />
+                      <span className="text-sm lg:text-base">Outstanding WAEC & NECO Results</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2">
-                      <Users className="h-5 w-5 text-accent" />
-                      <span>Experienced Teaching Staff</span>
+                      <Users className="h-4 w-4 lg:h-5 lg:w-5 text-accent" />
+                      <span className="text-sm lg:text-base">Experienced Teaching Staff</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2">
-                      <Heart className="h-5 w-5 text-accent" />
-                      <span>Christian Values & Character</span>
+                      <Heart className="h-4 w-4 lg:h-5 lg:w-5 text-accent" />
+                      <span className="text-sm lg:text-base">Christian Values & Character</span>
                     </div>
                   </div>
                   <Button 
                     variant="outline" 
-                    className="w-full bg-white text-primary hover:bg-white/90 border-white"
+                    className="w-full bg-white text-primary hover:bg-white/90 border-white text-sm lg:text-base"
                     onClick={() => setShowSuccessModal(true)}
                   >
                     <Award className="h-4 w-4 mr-2" />
@@ -274,8 +274,56 @@ const Home = () => {
         </div>
         
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="h-6 w-6 text-white opacity-70" />
+        <div className="absolute bottom-4 lg:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="h-5 w-5 lg:h-6 lg:w-6 text-white opacity-70" />
+        </div>
+      </section>
+
+      {/* Contact Header Section */}
+      <section className="bg-gradient-to-r from-emerald-700 to-emerald-800 text-white py-4">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-8 text-sm">
+            <div className="flex items-center space-x-2">
+              <Phone className="h-4 w-4" />
+              <span>+234 803 308 9735 / +234 802 762 5129</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Mail className="h-4 w-4" />
+              <span>ogrcs@yahoo.com</span>
+            </div>
+            <div className="flex items-center space-x-2 text-center md:text-left">
+              <MapPin className="h-4 w-4 flex-shrink-0" />
+              <span>23, Bolanle Awosiku Street, Off Ilogbo Road, Ota, Ogun State</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Welcome Section - Reduced by half on mobile */}
+      <section className="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white py-8 md:py-16 lg:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 md:space-y-6">
+            <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold">Welcome to</h2>
+            <h3 className="text-4xl md:text-5xl lg:text-7xl font-bold text-yellow-300">OGRCS</h3>
+            
+            <div className="space-y-3 md:space-y-4 max-w-4xl mx-auto">
+              <p className="text-lg md:text-2xl lg:text-3xl font-semibold text-yellow-200 italic">
+                "...a place for academic and moral excellence"
+              </p>
+              <p className="text-base md:text-xl lg:text-2xl font-medium">Light to the World</p>
+              <p className="text-sm md:text-lg lg:text-xl leading-relaxed mt-4 md:mt-6">
+                Providing qualitative and affordable education while raising God-fearing leaders for tomorrow.
+              </p>
+            </div>
+            
+            <div className="pt-6 md:pt-8">
+              <Link to="/admissions">
+                <Button size="lg" className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-6 md:px-8 py-3 md:py-4 text-base md:text-lg rounded-full">
+                  Apply for Admission
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
