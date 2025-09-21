@@ -290,22 +290,6 @@ const Home = () => {
                   <h2 className="text-3xl font-bold mb-4">Admission in Progress</h2>
                   <h3 className="text-2xl font-semibold mb-4 text-accent-foreground">JSS & SSS Classes</h3>
                   <p className="text-lg mb-6 opacity-95">Join Our God Reigns Crystal School for the 2025/2026 academic session</p>
-                  <div className="space-y-3 mb-6">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      <a href="tel:+2348027625129" className="hover:underline">08027625129</a>
-                      <span>,</span>
-                      <a href="tel:+2348033089735" className="hover:underline">08033089735</a>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4" />
-                      <a href="mailto:ogrcs@yahoo.com" className="hover:underline">ogrcs@yahoo.com</a>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm break-words">23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
-                    </div>
-                  </div>
                   <Link to="/admissions">
                     <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90">
                       Apply Now
