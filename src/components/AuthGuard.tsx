@@ -267,10 +267,10 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
+      <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Loading...</p>
+          <GraduationCap className="h-8 w-8 text-primary mx-auto mb-2 animate-pulse" />
+          <p className="text-sm text-muted-foreground">Loading portal...</p>
         </div>
       </div>
     );
