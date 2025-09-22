@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,8 @@ import AuthGuard from "@/components/AuthGuard";
 import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
+import { ScheduleManager } from "@/components/ScheduleManager";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Users, 
   BookOpen, 
@@ -30,6 +33,11 @@ import {
 } from "lucide-react";
 
 const StaffPortalContent = () => {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+  
   const [assignments, setAssignments] = useState([
     { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
     { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
@@ -72,6 +80,34 @@ const StaffPortalContent = () => {
   });
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData.user) {
+          setUser(userData.user);
+          
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', userData.user.id)
+            .single();
+          
+          if (profileData) {
+            setProfile(profileData);
+            setIsAdmin(profileData.role === 'admin');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const [editingAssignment, setEditingAssignment] = useState<number | null>(null);
   const [editingStudent, setEditingStudent] = useState<number | null>(null);
@@ -298,12 +334,17 @@ const StaffPortalContent = () => {
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-to-br from-secondary to-secondary/80 text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center space-x-4">
-            <GraduationCap className="h-10 w-10" />
-            <div>
-              <h1 className="text-3xl font-bold">Staff Portal</h1>
-              <p className="text-white/90">Teacher Resources and Student Management</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <GraduationCap className="h-10 w-10" />
+              <div>
+                <h1 className="text-3xl font-bold">Staff Portal</h1>
+                <p className="text-white/90">
+                  Welcome back, {profile?.full_name || 'Staff Member'}
+                </p>
+              </div>
             </div>
+            <NotificationCenter />
           </div>
         </div>
       </div>
@@ -360,18 +401,18 @@ const StaffPortalContent = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="schedule" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="lessons">Lesson Plans</TabsTrigger>
+            <TabsTrigger value="schedule">My Schedule</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="schedule" className="space-y-6">
+          <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -425,6 +466,13 @@ const StaffPortalContent = () => {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="schedule">
+            <ScheduleManager 
+              isAdmin={isAdmin} 
+              staffId={user?.id}
+            />
           </TabsContent>
 
           <TabsContent value="students" className="space-y-6">
