@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, GraduationCap, LogOut, ArrowLeft, Home } from "lucide-react";
+import { Eye, EyeOff, GraduationCap, LogOut, ArrowLeft, Home, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
@@ -38,12 +38,32 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
   return false;
 };
 
+// Helper function to get dashboard URL based on user role
+const getDashboardUrl = (userRole: string): string => {
+  const baseUrl = 'https://www.ogrcs.com';
+  
+  switch (userRole) {
+    case 'student':
+      return `${baseUrl}/student/dashboard`;
+    case 'parent':
+      return `${baseUrl}/parent/dashboard`;
+    case 'teacher':
+    case 'staff':
+      return `${baseUrl}/teacher/dashboard`;
+    case 'admin':
+      return `${baseUrl}/admin/dashboard`;
+    default:
+      return `${baseUrl}/`;
+  }
+};
+
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [pendingVerification, setPendingVerification] = useState<string | null>(null);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -63,12 +83,41 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        if (session?.user && event === 'SIGNED_IN') {
+          setRedirecting(true);
+          
           // Fetch user profile
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('user_id', session.user.id)
+            .single();
+          
+          if (profileData) {
+            setProfile(profileData);
+            
+            // Show success message
+            toast({
+              title: "Login Successful",
+              description: "Redirecting to your dashboard...",
+            });
+            
+            // Redirect to external dashboard after a brief delay
+            setTimeout(() => {
+              const dashboardUrl = getDashboardUrl(profileData.role);
+              window.location.href = dashboardUrl;
+            }, 1500);
+            
+            return;
+          }
+        }
+        
+        if (session?.user) {
+          // Fetch user profile for authorization check
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', session.user.id)
             .single();
           
           if (profileData && isUserAuthorized(profileData.role, portalType)) {
@@ -83,13 +132,29 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           setProfile(null);
         }
         setLoading(false);
+        setRedirecting(false);
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Fetch user profile for existing session
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        if (profileData && isUserAuthorized(profileData.role, portalType)) {
+          setProfile(profileData);
+          setIsAuthenticated(true);
+        }
+      }
+      
       if (!session) {
         setLoading(false);
       }
@@ -113,12 +178,8 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
       }
+      // Success toast and redirect will be handled by onAuthStateChange
     } catch (error) {
       toast({
         title: "Login Failed",
@@ -150,7 +211,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      const redirectUrl = `https://www.ogrcs.com/portal/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -200,7 +261,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+          emailRedirectTo: `https://www.ogrcs.com/portal/${portalType}`
         }
       });
 
@@ -230,12 +291,20 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     });
   };
 
-  if (loading) {
+  if (loading || redirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
         <div className="text-center">
-          <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="flex items-center justify-center mb-4">
+            {redirecting ? (
+              <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            ) : (
+              <GraduationCap className="h-12 w-12 text-primary animate-pulse" />
+            )}
+          </div>
+          <p className="text-muted-foreground">
+            {redirecting ? "Redirecting to your dashboard..." : "Loading..."}
+          </p>
         </div>
       </div>
     );
