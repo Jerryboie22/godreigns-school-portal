@@ -57,22 +57,21 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    let mounted = true;
-
-    const init = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user ?? null);
-        setSession((prev) => (prev?.access_token ? prev : null));
-
-        if (user) {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('id', session.user.id)
             .single();
-
-          if (mounted && profileData && isUserAuthorized(profileData.role, portalType)) {
+          
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
             setProfile(profileData);
             setIsAuthenticated(true);
           } else {
@@ -83,25 +82,20 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           setIsAuthenticated(false);
           setProfile(null);
         }
-      } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
-    };
+    );
 
-    // Initial auth/profile load (fast path)
-    init();
-
-    // Subscribe to auth changes to keep UI in sync
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      await init();
+      if (!session) {
+        setLoading(false);
+      }
     });
 
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
