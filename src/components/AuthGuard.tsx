@@ -60,18 +60,23 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     let isMounted = true;
 
     const fetchProfile = async (uid: string) => {
-      const { data: profileData } = await supabase
+      console.log('Fetching profile for uid:', uid);
+      const { data: profileData, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', uid)
         .maybeSingle();
 
+      console.log('Profile fetch result:', { profileData, error });
+
       if (!isMounted) return;
 
       if (profileData && isUserAuthorized(profileData.role, portalType)) {
+        console.log('User authorized for portal:', portalType, 'with role:', profileData.role);
         setProfile(profileData);
         setIsAuthenticated(true);
       } else {
+        console.log('User not authorized. Profile:', profileData, 'Portal type:', portalType);
         setProfile(null);
         setIsAuthenticated(false);
       }
@@ -88,8 +93,10 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
       setTimeout(() => {
         if (!isMounted) return;
         if (nextSession?.user) {
+          console.log('Auth state change - fetching profile for user:', nextSession.user.id);
           fetchProfile(nextSession.user.id);
         } else {
+          console.log('Auth state change - no user, clearing auth state');
           setProfile(null);
           setIsAuthenticated(false);
           setLoading(false);
@@ -100,12 +107,15 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!isMounted) return;
+      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
+        console.log('Initial session - fetching profile for user:', session.user.id);
         fetchProfile(session.user.id);
       } else {
+        console.log('Initial session - no user found');
         setIsAuthenticated(false);
         setProfile(null);
         setLoading(false);
