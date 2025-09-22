@@ -13,6 +13,7 @@ import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
 import { ScheduleManager } from "@/components/ScheduleManager";
+import { AddAssignmentModal } from "@/components/modals/AddAssignmentModal";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Users, 
@@ -38,11 +39,7 @@ const StaffPortalContent = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   
-  const [assignments, setAssignments] = useState([
-    { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
-    { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
-    { id: 3, title: "English Essay", class: "JSS 3C", dueDate: "2025-01-20", status: "Graded", subject: "English" }
-  ]);
+  const [assignments, setAssignments] = useState<any[]>([]);
   
   const [students, setStudents] = useState([
     { id: 1, name: "Adebayo Oladimeji", class: "JSS 2A", grade: "A", attendance: 95 },
@@ -98,6 +95,9 @@ const StaffPortalContent = () => {
             setProfile(profileData);
             setIsAdmin(profileData.role === 'admin');
           }
+
+          // Fetch assignments for this staff member
+          await fetchAssignments(userData.user.id);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -109,6 +109,32 @@ const StaffPortalContent = () => {
     fetchUserData();
   }, []);
 
+  const fetchAssignments = async (teacherId: string) => {
+    try {
+      const { data: assignmentsData, error } = await supabase
+        .from('assignments')
+        .select('*')
+        .eq('teacher_id', teacherId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching assignments:', error);
+      } else {
+        const formattedAssignments = assignmentsData?.map(assignment => ({
+          id: assignment.id,
+          title: assignment.title,
+          class: assignment.class_level,
+          dueDate: assignment.due_date || 'No due date',
+          status: 'Active',
+          subject: assignment.subject
+        })) || [];
+        setAssignments(formattedAssignments);
+      }
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+    }
+  };
+
   const [editingAssignment, setEditingAssignment] = useState<number | null>(null);
   const [editingStudent, setEditingStudent] = useState<number | null>(null);
   const [assignmentForm, setAssignmentForm] = useState({ title: "", class: "", dueDate: "", subject: "" });
@@ -118,6 +144,7 @@ const StaffPortalContent = () => {
   const [showLessonPlanModal, setShowLessonPlanModal] = useState(false);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [showAddAssignmentModal, setShowAddAssignmentModal] = useState(false);
   const [selectedLessonPlan, setSelectedLessonPlan] = useState<any>(null);
 
   const todaysSchedule = [
@@ -127,7 +154,7 @@ const StaffPortalContent = () => {
     { time: "2:00 PM", subject: "Free Period", class: "-", room: "-" },
   ];
 
-  const handleCreateAssignment = () => {
+  const handleCreateAssignment = async () => {
     if (!newAssignment.title || !newAssignment.class || !newAssignment.dueDate) {
       toast({
         title: "Missing Information",
@@ -137,22 +164,50 @@ const StaffPortalContent = () => {
       return;
     }
 
-    const assignment = {
-      id: Date.now(),
-      title: newAssignment.title,
-      class: newAssignment.class,
-      dueDate: newAssignment.dueDate,
-      status: "Active",
-      subject: newAssignment.subject || "General"
-    };
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error("Not authenticated");
+      }
 
-    setAssignments(prev => [...prev, assignment]);
-    setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" });
-    
-    toast({
-      title: "Assignment Created",
-      description: "New assignment has been created successfully.",
-    });
+      const { data, error } = await supabase
+        .from('assignments')
+        .insert({
+          title: newAssignment.title,
+          class_level: newAssignment.class,
+          due_date: newAssignment.dueDate,
+          description: newAssignment.description,
+          subject: newAssignment.subject || "General",
+          teacher_id: userData.user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newAssignmentFormatted = {
+        id: data.id,
+        title: data.title,
+        class: data.class_level,
+        dueDate: data.due_date,
+        status: "Active", 
+        subject: data.subject
+      };
+
+      setAssignments(prev => [...prev, newAssignmentFormatted]);
+      setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" });
+      
+      toast({
+        title: "Assignment Created",
+        description: "New assignment has been created successfully.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create assignment",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDeleteAssignment = (id: number) => {
@@ -449,10 +504,15 @@ const StaffPortalContent = () => {
                     <CheckSquare className="h-4 w-4 mr-2" />
                     Mark Attendance
                   </Button>
-                  <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Create Lesson Plan
-                  </Button>
+          <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
+            <BookOpen className="h-4 w-4 mr-2" />
+            Create Lesson Plan
+          </Button>
+          {/* Add Assignment Button */}
+          <Button onClick={() => setShowAddAssignmentModal(true)} className="w-full justify-start">
+            <Plus className="h-4 w-4 mr-2" />
+            Create Assignment
+          </Button>
                   <Button onClick={handleSendMessage} variant="outline" className="w-full justify-start">
                     <Send className="h-4 w-4 mr-2" />
                     Message Parents
@@ -830,26 +890,36 @@ const StaffPortalContent = () => {
         </Tabs>
       </div>
 
-      {/* Modals */}
-      <LessonPlanModal
-        isOpen={showLessonPlanModal}
-        onClose={() => setShowLessonPlanModal(false)}
-        onSave={handleSaveLessonPlan}
-        lessonPlan={selectedLessonPlan}
-      />
+        {/* Modals */}
+        <LessonPlanModal
+          isOpen={showLessonPlanModal}
+          onClose={() => setShowLessonPlanModal(false)}
+          onSave={handleSaveLessonPlan}
+          lessonPlan={selectedLessonPlan}
+        />
+        
+        <AttendanceModal
+          isOpen={showAttendanceModal}
+          onClose={() => setShowAttendanceModal(false)}
+          onSave={handleSaveAttendance}
+        />
+        
+        <MessageModal
+          isOpen={showMessageModal}
+          onClose={() => setShowMessageModal(false)}
+          onSend={handleSendMessageData}
+        />
 
-      <AttendanceModal
-        isOpen={showAttendanceModal}
-        onClose={() => setShowAttendanceModal(false)}
-        onSave={handleSaveAttendance}
-      />
-
-      <MessageModal
-        isOpen={showMessageModal}
-        onClose={() => setShowMessageModal(false)}
-        onSend={handleSendMessageData}
-      />
-    </div>
+        <AddAssignmentModal
+          isOpen={showAddAssignmentModal}
+          onClose={() => setShowAddAssignmentModal(false)}
+          onAssignmentAdded={() => {
+            if (user) {
+              fetchAssignments(user.id);
+            }
+          }}
+        />
+      </div>
   );
 };
 

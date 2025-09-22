@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
@@ -21,14 +23,61 @@ import {
 } from "lucide-react";
 
 const StudentPortalContent = () => {
-  const [studentInfo, setStudentInfo] = useState({
-    name: "Adebayo Olamide",
-    class: "SSS 2B",
-    admissionNumber: "OGR/2022/0567",
-    currentTerm: "First Term 2024/2025"
-  });
+  const [studentInfo, setStudentInfo] = useState<any>(null);
+  const [enrolledClasses, setEnrolledClasses] = useState<any[]>([]);
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: "", class: "" });
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchStudentData();
+  }, []);
+
+  const fetchStudentData = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+
+      // Fetch profile data
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userData.user.id)
+        .single();
+
+      if (profileData) {
+        setStudentInfo({
+          name: profileData.full_name || "Student",
+          class: "Not Assigned",
+          admissionNumber: "N/A",
+          currentTerm: "First Term 2024/2025"
+        });
+      }
+
+      // Fetch enrolled classes
+      const { data: classesData, error } = await supabase
+        .from('enrolled_classes')
+        .select('*')
+        .eq('student_id', userData.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching classes:', error);
+      } else {
+        setEnrolledClasses(classesData || []);
+      }
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load student information",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const currentGrades = [
     { subject: "Mathematics", currentGrade: "B+", percentage: 85, target: "A" },
@@ -58,6 +107,17 @@ const StudentPortalContent = () => {
     setEditingProfile(true);
     setProfileForm({ name: studentInfo.name, class: studentInfo.class });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading portal...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSaveProfile = () => {
     setStudentInfo(prev => ({ ...prev, ...profileForm }));

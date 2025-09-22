@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { PaymentModal } from "@/components/modals/PaymentModal";
 import { Link } from "react-router-dom";
 import { 
   Heart, 
@@ -21,14 +24,62 @@ import {
 } from "lucide-react";
 
 const ParentPortalContent = () => {
-  const [childInfo, setChildInfo] = useState({
-    name: "Chioma Okafor",
-    class: "JSS 2A",
-    admissionNumber: "OGR/2023/1234",
-    photo: "/placeholder-student.jpg"
-  });
+  const [childInfo, setChildInfo] = useState<any>(null);
+  const [childrenRecords, setChildrenRecords] = useState<any[]>([]);
   const [editingChild, setEditingChild] = useState(false);
   const [childForm, setChildForm] = useState({ name: "", class: "" });
+  const [paymentModal, setPaymentModal] = useState({ isOpen: false, feeType: "", amount: 0 });
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    fetchChildrenData();
+  }, []);
+
+  const fetchChildrenData = async () => {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+
+      const { data: childrenData, error } = await supabase
+        .from('children_records')
+        .select('*')
+        .eq('parent_id', userData.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching children data:', error);
+      } else {
+        setChildrenRecords(childrenData || []);
+        if (childrenData && childrenData.length > 0) {
+          const firstChild = childrenData[0];
+          setChildInfo({
+            name: firstChild.child_name,
+            class: firstChild.class_level,
+            admissionNumber: firstChild.admission_number || 'N/A',
+            photo: "/placeholder-student.jpg"
+          });
+        } else {
+          // No children records found
+          setChildInfo({
+            name: "No child registered",
+            class: "Not Assigned",
+            admissionNumber: "N/A",
+            photo: "/placeholder-student.jpg"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching children data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load child information",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const recentGrades = [
     { subject: "Mathematics", score: "85%", grade: "B+", date: "2024-09-15" },
@@ -46,6 +97,26 @@ const ParentPortalContent = () => {
     setChildInfo(prev => ({ ...prev, ...childForm }));
     setEditingChild(false);
   };
+
+  const handlePayFees = (feeType: string, amount: number) => {
+    setPaymentModal({ isOpen: true, feeType, amount });
+  };
+
+  const handlePaymentComplete = () => {
+    fetchChildrenData(); // Refresh data after payment
+    setPaymentModal({ isOpen: false, feeType: "", amount: 0 });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading portal...</p>
+        </div>
+      </div>
+    );
+  }
 
   const upcomingEvents = [
     { event: "Parent-Teacher Conference", date: "2024-09-25", time: "10:00 AM" },
@@ -263,6 +334,15 @@ const ParentPortalContent = () => {
                         <Badge variant={fee.status === 'Paid' ? 'default' : 'secondary'}>
                           {fee.status}
                         </Badge>
+                        {fee.status === 'Pending' && (
+                          <Button 
+                            size="sm" 
+                            className="ml-2"
+                            onClick={() => handlePayFees(fee.item, parseFloat(fee.amount.replace('₦', '').replace(',', '')))}
+                          >
+                            Pay Now
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -326,6 +406,16 @@ const ParentPortalContent = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={paymentModal.isOpen}
+          onClose={() => setPaymentModal({ isOpen: false, feeType: "", amount: 0 })}
+          feeAmount={paymentModal.amount}
+          feeType={paymentModal.feeType}
+          studentId={childInfo?.admissionNumber}
+          onPaymentComplete={handlePaymentComplete}
+        />
 
       </div>
     </div>
