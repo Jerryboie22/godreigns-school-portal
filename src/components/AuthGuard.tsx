@@ -68,11 +68,16 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('user_id', session.user.id)
             .single();
           
           if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile(profileData);
+            // Map user_id to id for compatibility
+            const profile = {
+              ...profileData,
+              id: profileData.user_id
+            };
+            setProfile(profile);
             setIsAuthenticated(true);
           } else {
             setIsAuthenticated(false);
