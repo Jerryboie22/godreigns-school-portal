@@ -161,6 +161,51 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_sections: {
+        Row: {
+          content_type: string
+          created_at: string
+          custom_content: Json | null
+          description: string | null
+          icon: string
+          id: string
+          is_visible: boolean
+          order_index: number
+          portal_type: string
+          section_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          custom_content?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          portal_type: string
+          section_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          custom_content?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          portal_type?: string
+          section_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string | null
@@ -171,6 +216,7 @@ export type Database = {
           featured: boolean | null
           id: string
           image: string | null
+          slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -184,6 +230,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image?: string | null
+          slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -197,6 +244,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image?: string | null
+          slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -233,6 +281,42 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      site_urls: {
+        Row: {
+          created_at: string
+          current_url: string
+          display_name: string
+          id: string
+          is_editable: boolean | null
+          page_name: string
+          page_type: string | null
+          related_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_url: string
+          display_name: string
+          id?: string
+          is_editable?: boolean | null
+          page_name: string
+          page_type?: string | null
+          related_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_url?: string
+          display_name?: string
+          id?: string
+          is_editable?: boolean | null
+          page_name?: string
+          page_type?: string | null
+          related_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -304,6 +388,36 @@ export type Database = {
           name?: string
           phone?: string | null
           subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      url_redirects: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          new_url: string
+          old_url: string
+          redirect_type: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          new_url: string
+          old_url: string
+          redirect_type?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          new_url?: string
+          old_url?: string
+          redirect_type?: number | null
           updated_at?: string
         }
         Relationships: []

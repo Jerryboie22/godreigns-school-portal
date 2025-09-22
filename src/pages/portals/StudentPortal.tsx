@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   BookOpen, 
   Calendar, 
@@ -20,7 +21,23 @@ import {
   Edit
 } from "lucide-react";
 
+interface PortalSection {
+  id: string;
+  section_key: string;
+  title: string;
+  description: string | null;
+  icon: string;
+  order_index: number;
+  is_visible: boolean;
+  content_type: string;
+}
+
+const iconMap = {
+  Trophy, Clock, FileText, BookOpen, Target
+};
+
 const StudentPortalContent = () => {
+  const [portalSections, setPortalSections] = useState<PortalSection[]>([]);
   const [studentInfo, setStudentInfo] = useState({
     name: "Adebayo Olamide",
     class: "SSS 2B",
@@ -29,6 +46,31 @@ const StudentPortalContent = () => {
   });
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: "", class: "" });
+
+  useEffect(() => {
+    fetchPortalSections();
+  }, []);
+
+  const fetchPortalSections = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('portal_sections')
+        .select('*')
+        .eq('portal_type', 'student')
+        .eq('is_visible', true)
+        .order('order_index', { ascending: true });
+
+      if (error) throw error;
+      setPortalSections(data || []);
+    } catch (error) {
+      console.error('Error fetching portal sections:', error);
+    }
+  };
+
+  const renderIcon = (iconName: string) => {
+    const IconComponent = iconMap[iconName as keyof typeof iconMap];
+    return IconComponent ? <IconComponent className="h-5 w-5 mr-2 text-primary" /> : <FileText className="h-5 w-5 mr-2 text-primary" />;
+  };
 
   const currentGrades = [
     { subject: "Mathematics", currentGrade: "B+", percentage: 85, target: "A" },
@@ -188,182 +230,213 @@ const StudentPortalContent = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="grades" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
-            <TabsTrigger value="grades">Grades</TabsTrigger>
-            <TabsTrigger value="assignments">Assignments</TabsTrigger>
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
-            <TabsTrigger value="progress">Progress</TabsTrigger>
-          </TabsList>
+        {portalSections.length > 0 && (
+          <Tabs defaultValue={portalSections[0]?.section_key || "grades"} className="space-y-6">
+            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${Math.min(portalSections.length, 5)}, minmax(0, 1fr))` }}>
+              {portalSections.map((section) => (
+                <TabsTrigger key={section.section_key} value={section.section_key}>
+                  {section.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          <TabsContent value="grades">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Trophy className="h-5 w-5 text-primary" />
-                  <span>Current Term Grades</span>
-                </CardTitle>
-                <CardDescription>Your academic performance this term</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {currentGrades.map((grade, index) => (
-                    <div key={index} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-foreground">{grade.subject}</h4>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant={grade.currentGrade.startsWith('A') ? 'default' : 'secondary'}>
-                            {grade.currentGrade}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">Target: {grade.target}</span>
+            {portalSections.map((section) => (
+              <TabsContent key={section.section_key} value={section.section_key}>
+                {section.content_type === 'grades' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>Current Term Grades</span>
+                      </CardTitle>
+                      <CardDescription>Your academic performance this term</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {currentGrades.map((grade, index) => (
+                          <div key={index} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-medium text-foreground">{grade.subject}</h4>
+                              <div className="flex items-center space-x-2">
+                                <Badge variant={grade.currentGrade.startsWith('A') ? 'default' : 'secondary'}>
+                                  {grade.currentGrade}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">Target: {grade.target}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <Progress value={grade.percentage} className="flex-1" />
+                              <span className="text-sm font-medium">{grade.percentage}%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {section.content_type === 'assignments' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>Assignments & Tasks</span>
+                      </CardTitle>
+                      <CardDescription>Your current and upcoming assignments</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {assignments.map((assignment, index) => (
+                          <div key={index} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-foreground">{assignment.title}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {assignment.subject} • Due: {assignment.dueDate}
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              {assignment.score !== "-" && (
+                                <span className="font-medium">{assignment.score}</span>
+                              )}
+                              <Badge 
+                                variant={
+                                  assignment.status === "Graded" ? "default" : 
+                                  assignment.status === "Submitted" ? "secondary" : "outline"
+                                }
+                              >
+                                {assignment.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {section.content_type === 'schedule' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>Today's Schedule</span>
+                      </CardTitle>
+                      <CardDescription>
+                        {new Date().toLocaleDateString('en-US', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {schedule.map((item, index) => (
+                          <div key={index} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                            <div className="text-sm font-medium text-secondary w-24">{item.time}</div>
+                            <div className="flex-1">
+                              <p className="font-medium text-foreground">{item.subject}</p>
+                              {item.teacher !== "-" && (
+                                <p className="text-sm text-muted-foreground">
+                                  {item.teacher} • {item.room}
+                                </p>
+                              )}
+                            </div>
+                            <Badge variant={item.subject === "Break" ? "secondary" : "outline"}>
+                              {item.subject === "Break" ? "Break" : "Class"}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {section.content_type === 'resources' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>Learning Resources</span>
+                      </CardTitle>
+                      <CardDescription>Study materials and educational resources</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                            <h4 className="font-medium text-foreground mb-2">Mathematics Notes</h4>
+                            <p className="text-sm text-muted-foreground mb-3">Quadratic Equations and Graphs</p>
+                            <Button variant="outline" size="sm">
+                              <Download className="h-4 w-4 mr-2" />
+                              Download
+                            </Button>
+                          </div>
+                          <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                            <h4 className="font-medium text-foreground mb-2">Physics Lab Manual</h4>
+                            <p className="text-sm text-muted-foreground mb-3">Wave Motion Experiments</p>
+                            <Button variant="outline" size="sm">
+                              <Download className="h-4 w-4 mr-2" />
+                              Download
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="text-center py-8 text-muted-foreground">
+                          <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>Additional learning resources will be available soon.</p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        <Progress value={grade.percentage} className="flex-1" />
-                        <span className="text-sm font-medium">{grade.percentage}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </CardContent>
+                  </Card>
+                )}
 
-          <TabsContent value="assignments">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <FileText className="h-5 w-5 text-accent" />
-                  <span>Assignments & Tasks</span>
-                </CardTitle>
-                <CardDescription>Your current and upcoming assignments</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {assignments.map((assignment, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-foreground">{assignment.title}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {assignment.subject} • Due: {assignment.dueDate}
-                        </p>
+                {section.content_type === 'progress' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>Academic Progress</span>
+                      </CardTitle>
+                      <CardDescription>Track your improvement over time</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-12 text-muted-foreground">
+                        <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>Progress tracking will be available soon.</p>
                       </div>
-                      <div className="flex items-center space-x-3">
-                        {assignment.score !== "-" && (
-                          <span className="font-medium">{assignment.score}</span>
-                        )}
-                        <Badge 
-                          variant={
-                            assignment.status === "Graded" ? "default" : 
-                            assignment.status === "Submitted" ? "secondary" : "outline"
-                          }
-                        >
-                          {assignment.status}
-                        </Badge>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {section.content_type === 'custom' && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        {renderIcon(section.icon)}
+                        <span>{section.title}</span>
+                      </CardTitle>
+                      <CardDescription>{section.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>Custom content for {section.title} will be available soon.</p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        )}
 
-          <TabsContent value="schedule">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-secondary" />
-                  <span>Today's Schedule</span>
-                </CardTitle>
-                <CardDescription>
-                  {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {schedule.map((item, index) => (
-                    <div key={index} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="text-sm font-medium text-secondary w-24">{item.time}</div>
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{item.subject}</p>
-                        {item.teacher !== "-" && (
-                          <p className="text-sm text-muted-foreground">
-                            {item.teacher} • {item.room}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant={item.subject === "Break" ? "secondary" : "outline"}>
-                        {item.subject === "Break" ? "Break" : "Class"}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="resources">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                  <span>Learning Resources</span>
-                </CardTitle>
-                <CardDescription>Study materials and educational resources</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <h4 className="font-medium text-foreground mb-2">Mathematics Notes</h4>
-                      <p className="text-sm text-muted-foreground mb-3">Quadratic Equations and Graphs</p>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <h4 className="font-medium text-foreground mb-2">Physics Lab Manual</h4>
-                      <p className="text-sm text-muted-foreground mb-3">Wave Motion Experiments</p>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Additional learning resources will be available soon.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="progress">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5 text-primary" />
-                  <span>Academic Progress</span>
-                </CardTitle>
-                <CardDescription>Track your improvement over time</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Progress tracking will be available soon.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {portalSections.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>Loading portal sections...</p>
+          </div>
+        )}
 
       </div>
     </div>
