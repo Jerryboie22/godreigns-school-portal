@@ -59,66 +59,58 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   useEffect(() => {
     let isMounted = true;
 
-    const init = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
+    const fetchProfile = async (uid: string) => {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', uid)
+        .maybeSingle();
 
-        if (session?.user) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+      if (!isMounted) return;
 
-          if (!isMounted) return;
-
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile(profileData);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-            setProfile(null);
-          }
-        } else {
-          setIsAuthenticated(false);
-          setProfile(null);
-        }
-      } finally {
-        if (isMounted) setLoading(false);
+      if (profileData && isUserAuthorized(profileData.role, portalType)) {
+        setProfile(profileData);
+        setIsAuthenticated(true);
+      } else {
+        setProfile(null);
+        setIsAuthenticated(false);
       }
+      setLoading(false);
     };
 
-    init();
+    // Set up auth state listener FIRST (sync only)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!isMounted) return;
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
 
-    // Auth state listener for subsequent changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      // Defer any Supabase calls to avoid deadlocks
+      setTimeout(() => {
         if (!isMounted) return;
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile(profileData);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-            setProfile(null);
-          }
+        if (nextSession?.user) {
+          fetchProfile(nextSession.user.id);
         } else {
-          setIsAuthenticated(false);
           setProfile(null);
+          setIsAuthenticated(false);
+          setLoading(false);
         }
+      }, 0);
+    });
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setIsAuthenticated(false);
+        setProfile(null);
+        setLoading(false);
       }
-    );
+    });
 
     return () => {
       isMounted = false;
