@@ -16,8 +16,15 @@ import {
   CheckSquare,
   MessageSquare,
   Target,
-  LogOut
+  LogOut,
+  Edit,
+  Trash2,
+  Settings,
+  Bell
 } from "lucide-react";
+import AddScheduleModal from "@/components/modals/AddScheduleModal";
+import ProfileEditModal from "@/components/modals/ProfileEditModal";
+import NotificationsModal from "@/components/modals/NotificationsModal";
 
 interface LessonSchedule {
   id: string;
@@ -34,6 +41,7 @@ const StaffPortal = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [schedules, setSchedules] = useState<LessonSchedule[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,6 +58,15 @@ const StaffPortal = () => {
       }
       
       setUser(session.user);
+      
+      // Fetch user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      setProfile(profileData);
       await fetchSchedules(session.user.id);
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -75,6 +92,31 @@ const StaffPortal = () => {
       toast({
         title: "Error",
         description: "Failed to load your schedules.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteSchedule = async (scheduleId: string) => {
+    try {
+      const { error } = await supabase
+        .from('lesson_schedules')
+        .delete()
+        .eq('id', scheduleId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Schedule Deleted",
+        description: "The schedule has been removed successfully.",
+      });
+
+      fetchSchedules(user.id);
+    } catch (error) {
+      console.error('Error deleting schedule:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete schedule.",
         variant: "destructive",
       });
     }
@@ -126,13 +168,16 @@ const StaffPortal = () => {
               <GraduationCap className="h-10 w-10" />
               <div>
                 <h1 className="text-3xl font-bold">Staff Portal</h1>
-                <p className="text-white/90">Welcome back, {user?.email}</p>
+                <p className="text-white/90">Welcome back, {profile?.full_name || user?.email}</p>
               </div>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-secondary">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsModal userId={user?.id} />
+              <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-secondary">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -202,11 +247,16 @@ const StaffPortal = () => {
           <TabsContent value="schedule" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-primary" />
-                  Your Weekly Schedule
-                </CardTitle>
-                <CardDescription>Your teaching schedule for this week</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center">
+                      <Calendar className="h-5 w-5 mr-2 text-primary" />
+                      Your Weekly Schedule
+                    </CardTitle>
+                    <CardDescription>Your teaching schedule for this week</CardDescription>
+                  </div>
+                  <AddScheduleModal onScheduleAdded={() => fetchSchedules(user.id)} />
+                </div>
               </CardHeader>
               <CardContent>
                 {schedules.length > 0 ? (
@@ -225,14 +275,22 @@ const StaffPortal = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="flex items-center gap-2">
                           <Badge variant="outline">
                             {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}  
                           </Badge>
-                          {schedule.notes && (
-                            <p className="text-xs text-muted-foreground mt-1">{schedule.notes}</p>
-                          )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSchedule(schedule.id)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
+                        {schedule.notes && (
+                          <p className="text-xs text-muted-foreground mt-1">{schedule.notes}</p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -308,21 +366,33 @@ const StaffPortal = () => {
           <TabsContent value="profile" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-primary" />
-                  Staff Profile
-                </CardTitle>
-                <CardDescription>Your profile information</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center">
+                      <Users className="h-5 w-5 mr-2 text-primary" />
+                      Staff Profile
+                    </CardTitle>
+                    <CardDescription>Your profile information</CardDescription>
+                  </div>
+                  <ProfileEditModal 
+                    currentProfile={profile} 
+                    onProfileUpdated={() => checkAuth()} 
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
+                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <p className="font-medium">{profile?.full_name || 'Not set'}</p>
+                  </div>
+                  <div>
                     <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-medium">{user?.email}</p>
+                    <p className="font-medium">{profile?.email || user?.email}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Role</label>
-                    <p className="font-medium">Staff Member</p>
+                    <p className="font-medium capitalize">{profile?.role || 'Staff Member'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Subjects Teaching</label>

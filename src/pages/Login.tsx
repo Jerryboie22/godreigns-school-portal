@@ -12,7 +12,7 @@ import { User, Session } from "@supabase/supabase-js";
 import { GraduationCap, ArrowLeft } from "lucide-react";
 
 interface UserProfile {
-  id: string;
+  user_id: string;
   email: string;
   full_name: string;
   role: string;

@@ -17,8 +17,14 @@ import {
   FileText,
   User,
   Phone,
-  LogOut
+  LogOut,
+  Edit,
+  Trash2,
+  CreditCard
 } from "lucide-react";
+import AddChildModal from "@/components/modals/AddChildModal";
+import ProfileEditModal from "@/components/modals/ProfileEditModal";
+import NotificationsModal from "@/components/modals/NotificationsModal";
 
 interface ChildRecord {
   id: string;
@@ -34,6 +40,7 @@ const ParentPortal = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [childrenRecords, setChildrenRecords] = useState<ChildRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,6 +57,15 @@ const ParentPortal = () => {
       }
       
       setUser(session.user);
+      
+      // Fetch user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      setProfile(profileData);
       await fetchChildrenRecords(session.user.id);
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -73,6 +89,56 @@ const ParentPortal = () => {
       toast({
         title: "Error",
         description: "Failed to load your children's records.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteChild = async (childId: string) => {
+    try {
+      const { error } = await supabase
+        .from('children_records')
+        .delete()
+        .eq('id', childId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Record Removed",
+        description: "Child record has been removed successfully.",
+      });
+
+      fetchChildrenRecords(user.id);
+    } catch (error) {
+      console.error('Error removing child record:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove child record.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePayFees = async (childId: string) => {
+    try {
+      const { error } = await supabase
+        .from('children_records')
+        .update({ outstanding_fees: 0 })
+        .eq('id', childId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Payment Successful",
+        description: "School fees have been paid successfully.",
+      });
+
+      fetchChildrenRecords(user.id);
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: "Payment Failed",
+        description: "Failed to process payment. Please try again.",
         variant: "destructive",
       });
     }
@@ -128,13 +194,16 @@ const ParentPortal = () => {
               <Heart className="h-10 w-10" />
               <div>
                 <h1 className="text-3xl font-bold">Parent Portal</h1>
-                <p className="text-accent-foreground/90">Welcome back, {user?.email}</p>
+                <p className="text-accent-foreground/90">Welcome back, {profile?.full_name || user?.email}</p>
               </div>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-accent">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsModal userId={user?.id} />
+              <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-accent">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -202,11 +271,16 @@ const ParentPortal = () => {
           <TabsContent value="children">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <span>Children Records</span>
-                </CardTitle>
-                <CardDescription>Overview of your children's academic records</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <User className="h-5 w-5 text-primary" />
+                      <span>Children Records</span>
+                    </CardTitle>
+                    <CardDescription>Overview of your children's academic records</CardDescription>
+                  </div>
+                  <AddChildModal onChildAdded={() => fetchChildrenRecords(user.id)} />
+                </div>
               </CardHeader>
               <CardContent>
                 {childrenRecords.length > 0 ? (
@@ -221,10 +295,18 @@ const ParentPortal = () => {
                               {child.admission_number && ` • Admission: ${child.admission_number}`}
                             </p>
                           </div>
-                          <div className="text-right">
+                          <div className="flex items-center gap-2">
                             {child.current_gpa && (
                               <Badge variant="secondary">GPA: {child.current_gpa}</Badge>
                             )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteChild(child.id)}
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
@@ -305,9 +387,21 @@ const ParentPortal = () => {
                       <div key={child.id} className="p-4 rounded-lg border">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-foreground">{child.child_name}</h4>
-                          <Badge variant={child.outstanding_fees > 0 ? 'destructive' : 'default'}>
-                            {child.outstanding_fees > 0 ? 'Outstanding' : 'Paid'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={child.outstanding_fees > 0 ? 'destructive' : 'default'}>
+                              {child.outstanding_fees > 0 ? 'Outstanding' : 'Paid'}
+                            </Badge>
+                            {child.outstanding_fees > 0 && (
+                              <Button
+                                size="sm"
+                                onClick={() => handlePayFees(child.id)}
+                                className="h-8 flex items-center gap-1"
+                              >
+                                <CreditCard className="h-3 w-3" />
+                                Pay
+                              </Button>
+                            )}
+                          </div>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Outstanding Amount:</span>
@@ -320,7 +414,19 @@ const ParentPortal = () => {
                         <span className="font-medium">Total Outstanding:</span>
                         <span className="text-lg font-bold">₦{getTotalOutstandingFees().toLocaleString()}</span>
                       </div>
-                      <Button className="w-full">Pay School Fees</Button>
+                      <Button 
+                        className="w-full" 
+                        onClick={() => {
+                          const childrenWithFees = childrenRecords.filter(child => child.outstanding_fees > 0);
+                          if (childrenWithFees.length > 0) {
+                            Promise.all(childrenWithFees.map(child => handlePayFees(child.id)));
+                          }
+                        }}
+                        disabled={getTotalOutstandingFees() === 0}
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Pay All Outstanding Fees
+                      </Button>
                     </div>
                   </div>
                 ) : (
@@ -336,21 +442,33 @@ const ParentPortal = () => {
           <TabsContent value="profile">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <span>Parent Profile</span>
-                </CardTitle>
-                <CardDescription>Your profile information</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <User className="h-5 w-5 text-primary" />
+                      <span>Parent Profile</span>
+                    </CardTitle>
+                    <CardDescription>Your profile information</CardDescription>
+                  </div>
+                  <ProfileEditModal 
+                    currentProfile={profile} 
+                    onProfileUpdated={() => checkAuth()} 
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
+                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <p className="font-medium">{profile?.full_name || 'Not set'}</p>
+                  </div>
+                  <div>
                     <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-medium">{user?.email}</p>
+                    <p className="font-medium">{profile?.email || user?.email}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Role</label>
-                    <p className="font-medium">Parent</p>
+                    <p className="font-medium capitalize">{profile?.role || 'Parent'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Children</label>

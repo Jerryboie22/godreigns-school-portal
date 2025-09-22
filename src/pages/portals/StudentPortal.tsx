@@ -7,18 +7,10 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  BookOpen, 
-  Calendar, 
-  Trophy, 
-  Clock, 
-  FileText,
-  User,
-  Target,
-  Award,
-  GraduationCap,
-  LogOut
-} from "lucide-react";
+import { BookOpen, Calendar, Trophy, Clock, FileText, User, Target, Award, GraduationCap, LogOut, Edit, Trash2 } from "lucide-react";
+import AddClassModal from "@/components/modals/AddClassModal";
+import ProfileEditModal from "@/components/modals/ProfileEditModal";
+import NotificationsModal from "@/components/modals/NotificationsModal";
 
 interface EnrolledClass {
   id: string;
@@ -33,6 +25,7 @@ const StudentPortal = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [enrolledClasses, setEnrolledClasses] = useState<EnrolledClass[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +42,15 @@ const StudentPortal = () => {
       }
       
       setUser(session.user);
+      
+      // Fetch user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      setProfile(profileData);
       await fetchEnrolledClasses(session.user.id);
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -72,6 +74,31 @@ const StudentPortal = () => {
       toast({
         title: "Error",
         description: "Failed to load your classes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteClass = async (classId: string) => {
+    try {
+      const { error } = await supabase
+        .from('enrolled_classes')
+        .delete()
+        .eq('id', classId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Class Removed",
+        description: "You have been unenrolled from this class.",
+      });
+
+      fetchEnrolledClasses(user.id);
+    } catch (error) {
+      console.error('Error removing class:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove class.",
         variant: "destructive",
       });
     }
@@ -122,13 +149,16 @@ const StudentPortal = () => {
               <GraduationCap className="h-10 w-10" />
               <div>
                 <h1 className="text-3xl font-bold">Student Portal</h1>
-                <p className="text-navy-foreground/90">Welcome back, {user?.email}</p>
+                <p className="text-navy-foreground/90">Welcome back, {profile?.full_name || user?.email}</p>
               </div>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-navy">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationsModal userId={user?.id} />
+              <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-navy">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -196,11 +226,16 @@ const StudentPortal = () => {
           <TabsContent value="classes">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BookOpen className="h-5 w-5 text-primary" />
-                  <span>Enrolled Classes</span>
-                </CardTitle>
-                <CardDescription>Your current class enrollments</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <BookOpen className="h-5 w-5 text-primary" />
+                      <span>Enrolled Classes</span>
+                    </CardTitle>
+                    <CardDescription>Your current class enrollments</CardDescription>
+                  </div>
+                  <AddClassModal onClassAdded={() => fetchEnrolledClasses(user.id)} />
+                </div>
               </CardHeader>
               <CardContent>
                 {enrolledClasses.length > 0 ? (
@@ -215,6 +250,14 @@ const StudentPortal = () => {
                                 {cls.grade}
                               </Badge>
                             )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteClass(cls.id)}
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">
@@ -303,21 +346,33 @@ const StudentPortal = () => {
           <TabsContent value="profile">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <span>Student Profile</span>
-                </CardTitle>
-                <CardDescription>Your profile information</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <User className="h-5 w-5 text-primary" />
+                      <span>Student Profile</span>
+                    </CardTitle>
+                    <CardDescription>Your profile information</CardDescription>
+                  </div>
+                  <ProfileEditModal 
+                    currentProfile={profile} 
+                    onProfileUpdated={() => checkAuth()} 
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
+                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                    <p className="font-medium">{profile?.full_name || 'Not set'}</p>
+                  </div>
+                  <div>
                     <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-medium">{user?.email}</p>
+                    <p className="font-medium">{profile?.email || user?.email}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Role</label>
-                    <p className="font-medium">Student</p>
+                    <p className="font-medium capitalize">{profile?.role || 'Student'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Enrolled Subjects</label>
