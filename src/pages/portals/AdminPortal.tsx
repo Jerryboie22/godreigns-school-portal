@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
@@ -28,66 +27,17 @@ import {
 
 const AdminPortalContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeStudents, setActiveStudents] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeStudents, setActiveStudents] = useState([
+    { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
+    { id: 2, name: "Chinyere Okafor", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
+  ]);
+  const [staff, setStaff] = useState([
+    { id: 1, name: "Mrs. Folake Adebisi", position: "English Teacher", department: "Languages", status: "Active" },
+    { id: 2, name: "Mr. Chukwuma Okonkwo", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
+    { id: 3, name: "Miss Aisha Bello", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
+  ]);
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      // Fetch students
-      const { data: studentsData, error: studentsError } = await supabase
-        .from('students')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (studentsError) {
-        console.error('Error fetching students:', studentsError);
-      } else {
-        const formattedStudents = studentsData?.map(student => ({
-          id: student.id,
-          name: student.full_name,
-          class: student.class_level || 'Not Assigned',
-          admissionNo: student.student_id || 'N/A',
-          status: 'Active'
-        })) || [];
-        setActiveStudents(formattedStudents);
-      }
-
-      // Fetch staff from profiles
-      const { data: staffData, error: staffError } = await supabase
-        .from('profiles')
-        .select('*')
-        .in('role', ['staff', 'teacher', 'admin'])
-        .order('created_at', { ascending: false });
-
-      if (staffError) {
-        console.error('Error fetching staff:', staffError);
-      } else {
-        const formattedStaff = staffData?.map(member => ({
-          id: member.user_id,
-          name: member.full_name || 'No Name',
-          position: member.role === 'admin' ? 'Administrator' : 'Teacher',
-          department: 'General',
-          status: 'Active'
-        })) || [];
-        setStaff(formattedStaff);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load data from database",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAction = (action: string, id?: number) => {
     toast({
@@ -188,17 +138,6 @@ const AdminPortalContent = () => {
       description: "Staff information has been updated successfully.",
     });
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading portal...</p>
-        </div>
-      </div>
-    );
-  }
 
   const quickStats = [
     { label: "Total Students", value: "847", icon: Users, color: "text-primary" },

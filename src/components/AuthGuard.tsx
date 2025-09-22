@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,32 +31,14 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
   // Direct role match
   if (userRole === portalType) return true;
   
-  // Staff and teacher are equivalent - both can access staff portal
-  if ((userRole === 'staff' || userRole === 'teacher') && portalType === 'staff') return true;
-  if (userRole === 'staff' && portalType === 'teacher') return true;
+  // Staff and teacher are equivalent
+  if ((userRole === 'staff' || userRole === 'teacher') && 
+      (portalType === 'staff' || portalType === 'teacher')) return true;
   
   return false;
 };
 
-// Helper function to get the correct portal path for a user role
-const getPortalPathForRole = (userRole: string): string => {
-  switch (userRole) {
-    case 'admin':
-      return '/portals/admin';
-    case 'staff':
-    case 'teacher':
-      return '/portals/staff';
-    case 'parent':
-      return '/portals/parent';
-    case 'student':
-      return '/portals/student';
-    default:
-      return '/portals';
-  }
-};
-
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
-  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -76,36 +58,22 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only synchronous updates here to avoid deadlocks
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      // Defer Supabase calls and navigation
-      setTimeout(async () => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
         if (session?.user) {
           // Fetch user profile
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('user_id', session.user.id)
+            .eq('id', session.user.id)
             .single();
-
-          if (profileData) {
-            // Map user_id to id for compatibility
-            const profile = {
-              ...profileData,
-              id: profileData.user_id
-            };
-
-            if (isUserAuthorized(profileData.role, portalType)) {
-              setProfile(profile);
-              setIsAuthenticated(true);
-            } else {
-              // Set profile but not authenticated to show unauthorized screen
-              setProfile(profile);
-              setIsAuthenticated(false);
-            }
+          
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
+            setProfile(profileData);
+            setIsAuthenticated(true);
           } else {
             setIsAuthenticated(false);
             setProfile(null);
@@ -115,8 +83,8 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           setProfile(null);
         }
         setLoading(false);
-      }, 0);
-    });
+      }
+    );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -128,7 +96,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, [portalType, navigate]);
+  }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,7 +150,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -232,7 +200,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
         }
       });
 
@@ -264,10 +232,10 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5">
         <div className="text-center">
-          <GraduationCap className="h-8 w-8 text-primary mx-auto mb-2 animate-pulse" />
-          <p className="text-sm text-muted-foreground">Loading portal...</p>
+          <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -284,46 +252,6 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   }
 
   if (!isAuthenticated) {
-    // If user has a profile but is not authorized for this portal, show unauthorized screen
-    if (profile) {
-      const userPortalPath = getPortalPathForRole(profile.role);
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
-          <Card className="w-full max-w-md text-center">
-            <CardHeader>
-              <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4" />
-              <CardTitle>Access Denied</CardTitle>
-              <CardDescription>
-                You don't have permission to access the {portalType} portal.
-                <br />
-                You are logged in as a {profile.role}.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Link to={userPortalPath}>
-                <Button className="w-full">
-                  Go to My {profile.role} Portal
-                </Button>
-              </Link>
-              <div className="flex space-x-2">
-                <Link to="/" className="flex-1">
-                  <Button variant="outline" className="w-full">
-                    <Home className="h-4 w-4 mr-1" />
-                    Home
-                  </Button>
-                </Link>
-                <Button variant="outline" className="flex-1" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-1" />
-                  Logout
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
-    // If no profile, show login screen
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
         <Card className="w-full max-w-md">
