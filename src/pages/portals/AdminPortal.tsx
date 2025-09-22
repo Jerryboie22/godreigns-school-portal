@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, 
   BookOpen, 
@@ -22,10 +23,15 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye
+  Eye,
+  LogOut
 } from "lucide-react";
 
-const AdminPortalContent = () => {
+const AdminPortal = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeStudents, setActiveStudents] = useState([
     { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
@@ -37,7 +43,40 @@ const AdminPortalContent = () => {
     { id: 2, name: "Mr. Chukwuma Okonkwo", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
     { id: 3, name: "Miss Aisha Bello", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
   ]);
-  const { toast } = useToast();
+  
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      
+      setUser(session.user);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      navigate('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/login');
+      toast({
+        title: "Logged Out",
+        description: "You have been logged out successfully.",
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   const handleAction = (action: string, id?: number) => {
     toast({
@@ -153,16 +192,33 @@ const AdminPortalContent = () => {
     { action: "Report generated", details: "Monthly academic performance", time: "1 day ago" },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-primary text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center space-x-4">
-            <Shield className="h-10 w-10" />
-            <div>
-              <h1 className="text-3xl font-bold">Admin Portal</h1>
-              <p className="text-white/90">Comprehensive School Management System</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Shield className="h-10 w-10" />
+              <div>
+                <h1 className="text-3xl font-bold">Admin Portal</h1>
+                <p className="text-white/90">Welcome back, {user?.email}</p>
+              </div>
             </div>
+            <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-primary">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
           </div>
         </div>
       </div>
@@ -632,14 +688,6 @@ const AdminPortalContent = () => {
         </Card>
       </div>
     </div>
-  );
-};
-
-const AdminPortal = () => {
-  return (
-    <AuthGuard portalType="admin">
-      <AdminPortalContent />
-    </AuthGuard>
   );
 };
 

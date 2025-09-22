@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +39,7 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
 };
 
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -55,6 +56,22 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     studentId: "", // For students
     childName: "", // For parents
   });
+
+  const getPortalPath = (role: string): string | null => {
+    switch (role) {
+      case 'admin':
+        return '/portals/admin';
+      case 'staff':
+      case 'teacher':
+        return '/portals/staff';
+      case 'student':
+        return '/portals/student';
+      case 'parent':
+        return '/portals/parent';
+      default:
+        return null;
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -75,6 +92,16 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         console.log('User authorized for portal:', portalType, 'with role:', profileData.role);
         setProfile(profileData);
         setIsAuthenticated(true);
+      } else if (profileData && profileData.role && profileData.role !== portalType) {
+        // User is authenticated but accessing wrong portal - redirect to correct one
+        const correctPath = getPortalPath(profileData.role);
+        if (correctPath && correctPath !== window.location.pathname) {
+          navigate(correctPath);
+          return;
+        }
+        console.log('User not authorized. Profile:', profileData, 'Portal type:', portalType);
+        setProfile(null);
+        setIsAuthenticated(false);
       } else {
         console.log('User not authorized. Profile:', profileData, 'Portal type:', portalType);
         setProfile(null);

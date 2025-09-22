@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      children_records: {
+        Row: {
+          admission_number: string | null
+          attendance_percentage: number | null
+          child_name: string
+          class_level: string
+          created_at: string
+          current_gpa: number | null
+          id: string
+          outstanding_fees: number | null
+          parent_id: string
+          updated_at: string
+        }
+        Insert: {
+          admission_number?: string | null
+          attendance_percentage?: number | null
+          child_name: string
+          class_level: string
+          created_at?: string
+          current_gpa?: number | null
+          id?: string
+          outstanding_fees?: number | null
+          parent_id: string
+          updated_at?: string
+        }
+        Update: {
+          admission_number?: string | null
+          attendance_percentage?: number | null
+          child_name?: string
+          class_level?: string
+          created_at?: string
+          current_gpa?: number | null
+          id?: string
+          outstanding_fees?: number | null
+          parent_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      enrolled_classes: {
+        Row: {
+          attendance_percentage: number | null
+          class_name: string
+          created_at: string
+          grade: string | null
+          id: string
+          student_id: string
+          subject: string
+          teacher_id: string | null
+          teacher_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendance_percentage?: number | null
+          class_name: string
+          created_at?: string
+          grade?: string | null
+          id?: string
+          student_id: string
+          subject: string
+          teacher_id?: string | null
+          teacher_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendance_percentage?: number | null
+          class_name?: string
+          created_at?: string
+          grade?: string | null
+          id?: string
+          student_id?: string
+          subject?: string
+          teacher_id?: string | null
+          teacher_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fees: {
         Row: {
           amount: number
@@ -161,6 +239,93 @@ export type Database = {
         }
         Relationships: []
       }
+      lesson_schedules: {
+        Row: {
+          class_level: string
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          notes: string | null
+          room: string | null
+          staff_id: string
+          start_time: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          class_level: string
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          notes?: string | null
+          room?: string | null
+          staff_id: string
+          start_time: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          class_level?: string
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          notes?: string | null
+          room?: string | null
+          staff_id?: string
+          start_time?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      portal_sections: {
+        Row: {
+          content_type: string
+          created_at: string
+          custom_content: Json | null
+          description: string | null
+          icon: string
+          id: string
+          is_visible: boolean
+          order_index: number
+          portal_type: string
+          section_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          custom_content?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          portal_type: string
+          section_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          custom_content?: Json | null
+          description?: string | null
+          icon?: string
+          id?: string
+          is_visible?: boolean
+          order_index?: number
+          portal_type?: string
+          section_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string | null
@@ -171,6 +336,7 @@ export type Database = {
           featured: boolean | null
           id: string
           image: string | null
+          slug: string | null
           status: string | null
           title: string
           updated_at: string
@@ -184,6 +350,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image?: string | null
+          slug?: string | null
           status?: string | null
           title: string
           updated_at?: string
@@ -197,6 +364,7 @@ export type Database = {
           featured?: boolean | null
           id?: string
           image?: string | null
+          slug?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -233,6 +401,83 @@ export type Database = {
           role?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      schedule_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+          recipient_id: string
+          schedule_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          notification_type?: string
+          recipient_id: string
+          schedule_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+          recipient_id?: string
+          schedule_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_notifications_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      site_urls: {
+        Row: {
+          created_at: string
+          current_url: string
+          display_name: string
+          id: string
+          is_editable: boolean | null
+          page_name: string
+          page_type: string | null
+          related_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_url: string
+          display_name: string
+          id?: string
+          is_editable?: boolean | null
+          page_name: string
+          page_type?: string | null
+          related_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_url?: string
+          display_name?: string
+          id?: string
+          is_editable?: boolean | null
+          page_name?: string
+          page_type?: string | null
+          related_id?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -308,12 +553,45 @@ export type Database = {
         }
         Relationships: []
       }
+      url_redirects: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          new_url: string
+          old_url: string
+          redirect_type: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          new_url: string
+          old_url: string
+          redirect_type?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          new_url?: string
+          old_url?: string
+          redirect_type?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

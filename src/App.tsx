@@ -11,7 +11,7 @@ const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Admissions = lazy(() => import("./pages/Admissions"));
 const Library = lazy(() => import("./pages/Library"));
-const ELearning = lazy(() => import("./pages/ELearning"));
+const ELearning = lazy(() => import("./pages/ELearning"));  
 const SchoolFees = lazy(() => import("./pages/SchoolFees"));
 const Portals = lazy(() => import("./pages/Portals"));
 const Gallery = lazy(() => import("./pages/Gallery"));
@@ -24,6 +24,7 @@ const AdminCMS = lazy(() => import("./pages/AdminCMS"));
 const StaffPortal = lazy(() => import("./pages/portals/StaffPortal"));
 const ParentPortal = lazy(() => import("./pages/portals/ParentPortal"));
 const StudentPortal = lazy(() => import("./pages/portals/StudentPortal"));
+const Login = lazy(() => import("./pages/Login"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/e-learning" element={<ELearning />} />
               <Route path="/school-fees" element={<SchoolFees />} />
               <Route path="/portals" element={<Portals />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog />} />
