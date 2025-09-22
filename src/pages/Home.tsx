@@ -15,7 +15,7 @@ import principal from "@/assets/principal.jpg";
 import vicePrincipal from "@/assets/vice-principal.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
 import graduateIndividual from "@/assets/graduate-individual.jpg";
-import studentsGroup from "@/assets/students-group.jpg";
+import studentsGreenUniforms from "@/assets/students-green-uniforms.jpg";
 
 // Fallback images for gallery if database is empty
 import gallery1 from "@/assets/gallery1.jpg";
@@ -186,94 +186,105 @@ const Home = () => {
 
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary via-primary-glow to-accent min-h-[55vh] flex items-center overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.1)_50%,transparent_75%)] bg-[length:60px_60px] opacity-30"></div>
+      <section className="relative min-h-[70vh] md:min-h-[55vh] flex items-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${studentsGreenUniforms})`,
+          }}
+        >
+          {/* Dark Overlay for better text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/75 to-primary/80"></div>
+          
+          {/* Pattern Overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:60px_60px] opacity-40"></div>
+        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="text-white space-y-8">
-                <div className="space-y-6">
-                  <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 text-white font-medium">
-                    <span className="w-2 h-2 bg-yellow-400 rounded-full mr-3 animate-pulse"></span>
-                    Admission Open for 2025/2026 Session
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              <div className="text-white space-y-6 lg:space-y-8">
+                <div className="space-y-4 lg:space-y-6">
+                  <div className="inline-flex items-center bg-accent/90 backdrop-blur-sm rounded-full px-4 lg:px-6 py-2 lg:py-3 text-accent-foreground font-medium">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></span>
+                    <span className="text-sm lg:text-base">Admission Open for 2025/2026 Session</span>
                   </div>
                   
-                  <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                    <span className="block text-white">Our God Reigns</span>
-                    <span className="block text-yellow-300">Crystal School</span>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                    <span className="block text-white drop-shadow-lg">Our God Reigns</span>
+                    <span className="block text-accent drop-shadow-lg">Crystal School</span>
                   </h1>
                   
-                  <div className="space-y-3">
-                    <p className="text-2xl font-medium text-white/95">Light to the World</p>
-                    <p className="text-xl text-white/90 leading-relaxed max-w-lg">
+                  <div className="space-y-2 lg:space-y-3">
+                    <p className="text-lg md:text-xl lg:text-2xl font-medium text-white/95 drop-shadow">Light to the World</p>
+                    <p className="text-base md:text-lg lg:text-xl text-white/90 leading-relaxed max-w-lg drop-shadow">
                       Where academic excellence meets Christian values. Nurturing tomorrow's leaders with integrity, knowledge, and divine purpose.
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                      <div className="flex items-center space-x-3">
-                        <BookOpen className="h-6 w-6 text-yellow-300" />
+                <div className="space-y-4 lg:space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 lg:p-4 border border-white/30">
+                      <div className="flex items-center space-x-2 lg:space-x-3">
+                        <BookOpen className="h-5 w-5 lg:h-6 lg:w-6 text-accent" />
                         <div>
-                          <p className="font-semibold text-white">JSS & SSS</p>
-                          <p className="text-sm text-white/80">Available Classes</p>
+                          <p className="font-semibold text-white text-sm lg:text-base">JSS & SSS</p>
+                          <p className="text-xs lg:text-sm text-white/80">Available Classes</p>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-white/15 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                      <div className="flex items-center space-x-3">
-                        <Award className="h-6 w-6 text-yellow-300" />
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 lg:p-4 border border-white/30">
+                      <div className="flex items-center space-x-2 lg:space-x-3">
+                        <Award className="h-5 w-5 lg:h-6 lg:w-6 text-accent" />
                         <div>
-                          <p className="font-semibold text-white">Excellence</p>
-                          <p className="text-sm text-white/80">Academic Record</p>
+                          <p className="font-semibold text-white text-sm lg:text-base">Excellence</p>
+                          <p className="text-xs lg:text-sm text-white/80">Academic Record</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
                     <Link to="/admissions">
-                      <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-primary font-semibold px-8 py-4 text-lg shadow-elegant">
+                      <Button size="lg" className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg shadow-elegant">
                         Apply for Admission
-                        <ArrowRight className="h-5 w-5 ml-2" />
+                        <ArrowRight className="h-4 w-4 lg:h-5 lg:w-5 ml-2" />
                       </Button>
                     </Link>
                     <Link to="/about">
-                      <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 backdrop-blur-sm px-8 py-4 text-lg">
+                      <Button size="lg" variant="outline" className="w-full sm:w-auto border-white/40 text-white hover:bg-white/10 backdrop-blur-sm px-6 lg:px-8 py-3 lg:py-4 text-base lg:text-lg">
                         Learn More
                       </Button>
                     </Link>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-white/20">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 pt-4 lg:pt-6 border-t border-white/30">
                   <div className="text-center sm:text-left">
                     <div className="flex items-center space-x-2 justify-center sm:justify-start">
-                      <Phone className="h-4 w-4 text-yellow-300" />
-                      <div className="text-sm">
-                        <a href="tel:+2348027625129" className="hover:text-yellow-300 transition-colors">08027625129</a>
+                      <Phone className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" />
+                      <div className="text-xs lg:text-sm">
+                        <a href="tel:+2348027625129" className="hover:text-accent transition-colors">08027625129</a>
                         <span className="mx-1">•</span>
-                        <a href="tel:+2348033089735" className="hover:text-yellow-300 transition-colors">08033089735</a>
+                        <a href="tel:+2348033089735" className="hover:text-accent transition-colors">08033089735</a>
                       </div>
                     </div>
                   </div>
                   
                   <div className="text-center sm:text-left">
                     <div className="flex items-center space-x-2 justify-center sm:justify-start">
-                      <Mail className="h-4 w-4 text-yellow-300" /> 
-                      <a href="mailto:ogrcs@yahoo.com" className="text-sm hover:text-yellow-300 transition-colors">ogrcs@yahoo.com</a>
+                      <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" /> 
+                      <a href="mailto:ogrcs@yahoo.com" className="text-xs lg:text-sm hover:text-accent transition-colors">ogrcs@yahoo.com</a>
                     </div>
                   </div>
                   
                   <div className="text-center sm:text-left">
                     <div className="flex items-start space-x-2 justify-center sm:justify-start">
-                      <MapPin className="h-4 w-4 text-yellow-300 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-white/90">Ota, Ogun State</span>
+                      <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-accent mt-0.5 flex-shrink-0" />
+                      <span className="text-xs lg:text-sm text-white/90">Ota, Ogun State</span>
                     </div>
                   </div>
                 </div>
@@ -282,14 +293,14 @@ const Home = () => {
               <div className="flex justify-center lg:justify-end">
                 <div className="relative">
                   {/* Decorative Elements */}
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-yellow-400/20 rounded-full blur-xl"></div>
-                  <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                  <div className="absolute -top-2 -right-2 lg:-top-4 lg:-right-4 w-16 h-16 lg:w-24 lg:h-24 bg-accent/20 rounded-full blur-xl"></div>
+                  <div className="absolute -bottom-3 -left-3 lg:-bottom-6 lg:-left-6 w-20 h-20 lg:w-32 lg:h-32 bg-white/10 rounded-full blur-2xl"></div>
                   
-                  <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-2xl">
+                  <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 shadow-2xl">
                     <img 
                       src={schoolFlyer} 
                       alt="Our God Reigns Crystal School - Admission in Progress"
-                      className="rounded-xl shadow-elegant w-full max-w-md mx-auto"
+                      className="rounded-xl shadow-elegant w-full max-w-xs lg:max-w-md mx-auto"
                     />
                   </div>
                 </div>
@@ -300,7 +311,7 @@ const Home = () => {
         
         {/* Bottom Wave */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-12 fill-background">
+          <svg viewBox="0 0 1440 120" className="w-full h-8 lg:h-12 fill-background">
             <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,64C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
           </svg>
         </div>
