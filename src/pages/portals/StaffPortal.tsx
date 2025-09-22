@@ -88,19 +88,37 @@ const StaffPortalContent = () => {
         if (userData.user) {
           setUser(userData.user);
           
-          const { data: profileData } = await supabase
+          const { data: profileData, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('user_id', userData.user.id)
-            .single();
+            .maybeSingle();
           
-          if (profileData) {
+          if (profileError) {
+            console.error('Error fetching profile:', profileError);
+            toast({
+              title: "Profile Error",
+              description: "Could not load your profile. Please contact admin.",
+              variant: "destructive"
+            });
+          } else if (profileData) {
             setProfile(profileData);
             setIsAdmin(profileData.role === 'admin');
+          } else {
+            toast({
+              title: "No Profile Found",
+              description: "No profile found for your account. Please contact admin to set up your profile.",
+              variant: "destructive"
+            });
           }
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load user data. Please refresh the page.",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
