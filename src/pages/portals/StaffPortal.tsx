@@ -13,6 +13,7 @@ import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
 import { ScheduleManager } from "@/components/ScheduleManager";
+import { StudentsManager } from "@/components/StudentsManager";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Users, 
@@ -494,54 +495,7 @@ const StaffPortalContent = () => {
           </TabsContent>
 
           <TabsContent value="students" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Students ({students.length})</CardTitle>
-                <CardDescription>View and manage your students' progress</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {students.map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div>
-                        <h3 className="font-semibold">{student.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Class: {student.class} | Attendance: {student.attendance}%
-                        </p>
-                        {editingStudent === student.id ? (
-                          <div className="flex items-center space-x-2 mt-2">
-                            <Input
-                              value={studentGradeForm.grade}
-                              onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
-                              placeholder="Enter grade"
-                              className="w-20"
-                            />
-                            <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
-                              Cancel
-                            </Button>
-                          </div>
-                        ) : (
-                          <Badge variant="outline">Grade: {student.grade}</Badge>
-                        )}
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
-                          <Edit className="h-4 w-4 mr-1" />
-                          Grade
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={handleSendMessage}>
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          Message
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <StudentsManager isAdmin={isAdmin} />
           </TabsContent>
 
           <TabsContent value="assignments" className="space-y-6">

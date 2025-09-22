@@ -112,7 +112,12 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
       const role = profileData?.role || (session.user.user_metadata as any)?.role || (session.user.app_metadata as any)?.role;
 
       if (profileData) {
-        setProfile(profileData);
+        setProfile({
+          id: profileData.user_id,
+          email: profileData.email || session.user.email || '',
+          full_name: profileData.full_name || '',
+          role: profileData.role || ''
+        });
       }
 
       if (authEvent === 'SIGNED_IN') {
