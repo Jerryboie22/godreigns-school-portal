@@ -76,11 +76,13 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only synchronous updates here to avoid deadlocks
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      // Defer Supabase calls and navigation
+      setTimeout(async () => {
         if (session?.user) {
           // Fetch user profile
           const { data: profileData } = await supabase
@@ -88,14 +90,14 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .select('*')
             .eq('user_id', session.user.id)
             .single();
-          
+
           if (profileData) {
             // Map user_id to id for compatibility
             const profile = {
               ...profileData,
               id: profileData.user_id
             };
-            
+
             if (isUserAuthorized(profileData.role, portalType)) {
               setProfile(profile);
               setIsAuthenticated(true);
@@ -106,8 +108,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
                 title: "Redirected",
                 description: `You've been redirected to your ${profileData.role} portal.`,
               });
-              navigate(correctPortalPath);
-              return;
+              navigate(correctPortalPath, { replace: true });
             }
           } else {
             setIsAuthenticated(false);
@@ -118,8 +119,8 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           setProfile(null);
         }
         setLoading(false);
-      }
-    );
+      }, 0);
+    });
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -185,7 +186,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -235,7 +236,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
         }
       });
 
