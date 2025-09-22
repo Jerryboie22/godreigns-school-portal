@@ -106,30 +106,42 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         .from('profiles')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle();
+
+      // Prefer profile role, fall back to JWT/user metadata
+      const role = profileData?.role || (session.user.user_metadata as any)?.role || (session.user.app_metadata as any)?.role;
 
       if (profileData) {
         setProfile(profileData);
+      }
 
-        if (authEvent === 'SIGNED_IN') {
+      if (authEvent === 'SIGNED_IN') {
+        if (role) {
           setRedirecting(true);
           toast({
             title: "Login Successful",
             description: "Redirecting to your dashboard...",
           });
-          const dashboardUrl = getDashboardUrl(profileData.role);
+          const dashboardUrl = getDashboardUrl(String(role));
+          // Keep spinner visible until navigation
           setTimeout(() => {
             window.location.href = dashboardUrl;
-          }, 800);
+          }, 600);
           return;
-        }
-
-        if (isUserAuthorized(profileData.role, portalType)) {
-          setIsAuthenticated(true);
         } else {
-          setIsAuthenticated(false);
-          setProfile(null);
+          toast({
+            title: "Missing role",
+            description: "No role found on your account. Please contact admin.",
+            variant: "destructive",
+          });
         }
+      }
+
+      if (role && isUserAuthorized(String(role), portalType)) {
+        setIsAuthenticated(true);
+      } else if (role) {
+        setIsAuthenticated(false);
+        setProfile(null);
       }
 
       setLoading(false);
