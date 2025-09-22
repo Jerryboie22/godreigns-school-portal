@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,7 @@ interface AuthGuardProps {
 }
 
 interface UserProfile {
-  user_id: string;
+  id: string;
   email: string;
   full_name: string;
   role: string;
@@ -39,7 +39,6 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
 };
 
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
-  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -57,102 +56,46 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     childName: "", // For parents
   });
 
-  const getPortalPath = (role: string): string | null => {
-    switch (role) {
-      case 'admin':
-        return '/portals/admin';
-      case 'staff':
-      case 'teacher':
-        return '/portals/staff';
-      case 'student':
-        return '/portals/student';
-      case 'parent':
-        return '/portals/parent';
-      default:
-        return null;
-    }
-  };
-
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchProfile = async (uid: string) => {
-      console.log('Fetching profile for uid:', uid);
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', uid)
-        .maybeSingle();
-
-      console.log('Profile fetch result:', { profileData, error });
-
-      if (!isMounted) return;
-
-      if (profileData && isUserAuthorized(profileData.role, portalType)) {
-        console.log('User authorized for portal:', portalType, 'with role:', profileData.role);
-        setProfile(profileData);
-        setIsAuthenticated(true);
-      } else if (profileData && profileData.role && profileData.role !== portalType) {
-        // User is authenticated but accessing wrong portal - redirect to correct one
-        const correctPath = getPortalPath(profileData.role);
-        if (correctPath && correctPath !== window.location.pathname) {
-          navigate(correctPath);
-          return;
-        }
-        console.log('User not authorized. Profile:', profileData, 'Portal type:', portalType);
-        setProfile(null);
-        setIsAuthenticated(false);
-      } else {
-        console.log('User not authorized. Profile:', profileData, 'Portal type:', portalType);
-        setProfile(null);
-        setIsAuthenticated(false);
-      }
-      setLoading(false);
-    };
-
-    // Set up auth state listener FIRST (sync only)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!isMounted) return;
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-
-      // Defer any Supabase calls to avoid deadlocks
-      setTimeout(() => {
-        if (!isMounted) return;
-        if (nextSession?.user) {
-          console.log('Auth state change - fetching profile for user:', nextSession.user.id);
-          fetchProfile(nextSession.user.id);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
+            setProfile(profileData);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+            setProfile(null);
+          }
         } else {
-          console.log('Auth state change - no user, clearing auth state');
-          setProfile(null);
           setIsAuthenticated(false);
-          setLoading(false);
+          setProfile(null);
         }
-      }, 0);
-    });
+        setLoading(false);
+      }
+    );
 
-    // THEN check for existing session
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!isMounted) return;
-      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
-
-      if (session?.user) {
-        console.log('Initial session - fetching profile for user:', session.user.id);
-        fetchProfile(session.user.id);
-      } else {
-        console.log('Initial session - no user found');
-        setIsAuthenticated(false);
-        setProfile(null);
+      if (!session) {
         setLoading(false);
       }
     });
 
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -207,7 +150,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -257,7 +200,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
         }
       });
 

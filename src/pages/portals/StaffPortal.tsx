@@ -1,11 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
+import AuthGuard from "@/components/AuthGuard";
+import { LessonPlanModal } from "@/components/LessonPlanModal";
+import { AttendanceModal } from "@/components/AttendanceModal";
+import { MessageModal } from "@/components/MessageModal";
 import { 
   Users, 
   BookOpen, 
@@ -16,199 +21,288 @@ import {
   CheckSquare,
   MessageSquare,
   Target,
-  LogOut,
+  Plus,
   Edit,
   Trash2,
-  Settings,
-  Bell
+  Send,
+  Download,
+  Eye
 } from "lucide-react";
-import AddScheduleModal from "@/components/modals/AddScheduleModal";
-import AddAssignmentModal from "@/components/modals/AddAssignmentModal";
-import ProfileEditModal from "@/components/modals/ProfileEditModal";
-import NotificationsModal from "@/components/modals/NotificationsModal";
 
-interface LessonSchedule {
-  id: string;
-  subject: string;
-  class_level: string;
-  day_of_week: number;
-  start_time: string;
-  end_time: string;
-  room?: string;
-  notes?: string;
-}
+const StaffPortalContent = () => {
+  const [assignments, setAssignments] = useState([
+    { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
+    { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
+    { id: 3, title: "English Essay", class: "JSS 3C", dueDate: "2025-01-20", status: "Graded", subject: "English" }
+  ]);
+  
+  const [students, setStudents] = useState([
+    { id: 1, name: "Adebayo Oladimeji", class: "JSS 2A", grade: "A", attendance: 95 },
+    { id: 2, name: "Chinyere Okafor", class: "SSS 1B", grade: "B+", attendance: 92 },
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", grade: "A-", attendance: 88 },
+    { id: 4, name: "Fatima Mohammed", class: "JSS 2A", grade: "B+", attendance: 90 },
+    { id: 5, name: "Kemi Adebowale", class: "SSS 1A", grade: "A-", attendance: 93 },
+    { id: 6, name: "Chioma Okwu", class: "JSS 3B", grade: "B", attendance: 87 },
+    { id: 7, name: "Ibrahim Suleiman", class: "SSS 2A", grade: "A", attendance: 96 },
+    { id: 8, name: "Blessing Eze", class: "JSS 1A", grade: "B+", attendance: 89 }
+  ]);
 
-const StaffPortal = () => {
-  const navigate = useNavigate();
+  const [lessonPlans, setLessonPlans] = useState([
+    { id: 1, title: "Introduction to Quadratic Equations", subject: "Mathematics", class: "JSS 2A", date: "2025-01-22", duration: "45 minutes", objectives: "Students will understand basic quadratic equations", activities: "Interactive whiteboard demonstration", materials: "Textbook, calculator", assessment: "Class participation and quiz" },
+    { id: 2, title: "Newton's Laws of Motion", subject: "Physics", class: "SSS 1B", date: "2025-01-23", duration: "60 minutes", objectives: "Explain the three laws of motion", activities: "Practical experiments", materials: "Lab equipment", assessment: "Lab report" }
+  ]);
+
+  const [attendanceRecords, setAttendanceRecords] = useState([
+    { id: 1, class: "JSS 2A", subject: "Mathematics", date: "2025-01-20", presentCount: 28, totalCount: 30 },
+    { id: 2, class: "SSS 1B", subject: "Physics", date: "2025-01-20", presentCount: 25, totalCount: 27 },
+    { id: 3, class: "JSS 3C", subject: "English", date: "2025-01-19", presentCount: 32, totalCount: 35 }
+  ]);
+
+  const [messages, setMessages] = useState([
+    { id: 1, type: "academic_progress", subject: "Math Progress Update", recipientCount: 5, sentAt: "2025-01-20T10:30:00Z" },
+    { id: 2, type: "assignment_reminder", subject: "Physics Assignment Due Tomorrow", recipientCount: 12, sentAt: "2025-01-19T14:15:00Z" }
+  ]);
+
+  const [newAssignment, setNewAssignment] = useState({
+    title: "",
+    class: "",
+    dueDate: "",
+    description: "",
+    subject: ""
+  });
+
   const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [schedules, setSchedules] = useState<LessonSchedule[]>([]);
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const [editingAssignment, setEditingAssignment] = useState<number | null>(null);
+  const [editingStudent, setEditingStudent] = useState<number | null>(null);
+  const [assignmentForm, setAssignmentForm] = useState({ title: "", class: "", dueDate: "", subject: "" });
+  const [studentGradeForm, setStudentGradeForm] = useState({ grade: "" });
 
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
-      }
-      
-      setUser(session.user);
-      
-      // Fetch user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-      
-      setProfile(profileData);
-      await fetchSchedules(session.user.id);
-      await fetchAssignments(session.user.id);
-      
-      // Fetch user profile
-      const { data: userProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-      
-      setProfile(userProfile);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      navigate('/login');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Modal states
+  const [showLessonPlanModal, setShowLessonPlanModal] = useState(false);
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedLessonPlan, setSelectedLessonPlan] = useState<any>(null);
 
-  const fetchAssignments = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('assignments')
-        .select('*')
-        .eq('teacher_id', userId)
-        .order('created_at', { ascending: false });
+  const todaysSchedule = [
+    { time: "8:00 AM", subject: "Mathematics", class: "JSS 2A", room: "Room 12" },
+    { time: "10:00 AM", subject: "English Language", class: "SSS 1B", room: "Room 8" },
+    { time: "12:00 PM", subject: "Physics", class: "SSS 3A", room: "Lab 2" },
+    { time: "2:00 PM", subject: "Free Period", class: "-", room: "-" },
+  ];
 
-      if (error) throw error;
-      setAssignments(data || []);
-    } catch (error) {
-      console.error('Error fetching assignments:', error);
+  const handleCreateAssignment = () => {
+    if (!newAssignment.title || !newAssignment.class || !newAssignment.dueDate) {
       toast({
-        title: "Error",
-        description: "Failed to load assignments.",
-        variant: "destructive",
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
       });
+      return;
     }
-  };
 
-  const fetchSchedules = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('lesson_schedules')
-        .select('*')
-        .eq('staff_id', userId)
-        .order('day_of_week', { ascending: true })
-        .order('start_time', { ascending: true });
+    const assignment = {
+      id: Date.now(),
+      title: newAssignment.title,
+      class: newAssignment.class,
+      dueDate: newAssignment.dueDate,
+      status: "Active",
+      subject: newAssignment.subject || "General"
+    };
 
-      if (error) throw error;
-      setSchedules(data || []);
-    } catch (error) {
-      console.error('Error fetching schedules:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load your schedules.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteSchedule = async (scheduleId: string) => {
-    try {
-      const { error } = await supabase
-        .from('lesson_schedules')
-        .delete()
-        .eq('id', scheduleId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Schedule Deleted",
-        description: "The schedule has been removed successfully.",
-      });
-
-      fetchSchedules(user.id);
-    } catch (error) {
-      console.error('Error deleting schedule:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete schedule.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/login');
-      toast({
-        title: "Logged Out",
-        description: "You have been logged out successfully.",
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const getDayName = (dayNumber: number) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[dayNumber] || 'Unknown';
-  };
-
-  const formatTime = (timeString: string) => {
-    return new Date(`1970-01-01T${timeString}`).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+    setAssignments(prev => [...prev, assignment]);
+    setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" });
+    
+    toast({
+      title: "Assignment Created",
+      description: "New assignment has been created successfully.",
     });
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleDeleteAssignment = (id: number) => {
+    setAssignments(prev => prev.filter(assignment => assignment.id !== id));
+    toast({
+      title: "Assignment Deleted",
+      description: "Assignment has been removed.",
+    });
+  };
+
+  const handleEditAssignment = (assignment: any) => {
+    setEditingAssignment(assignment.id);
+    setAssignmentForm({
+      title: assignment.title,
+      class: assignment.class,
+      dueDate: assignment.dueDate,
+      subject: assignment.subject
+    });
+  };
+
+  const handleSaveAssignment = (id: number) => {
+    setAssignments(prev => prev.map(assignment => 
+      assignment.id === id ? { ...assignment, ...assignmentForm } : assignment
+    ));
+    setEditingAssignment(null);
+    toast({
+      title: "Assignment Updated",
+      description: "Assignment has been updated successfully.",
+    });
+  };
+
+  const handleEditStudentGrade = (student: any) => {
+    setEditingStudent(student.id);
+    setStudentGradeForm({ grade: student.grade });
+  };
+
+  const handleSaveStudentGrade = (studentId: number) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId ? { ...student, grade: studentGradeForm.grade } : student
+    ));
+    setEditingStudent(null);
+    toast({
+      title: "Grade Updated",
+      description: "Student grade has been updated successfully.",
+    });
+  };
+
+  const handleGradeStudent = (studentId: number, newGrade: string) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId ? { ...student, grade: newGrade } : student
+    ));
+    toast({
+      title: "Grade Updated",
+      description: "Student grade has been updated successfully.",
+    });
+  };
+
+  const handleCreateLessonPlan = () => {
+    setSelectedLessonPlan(null);
+    setShowLessonPlanModal(true);
+  };
+
+  const handleEditLessonPlan = (lessonPlan: any) => {
+    setSelectedLessonPlan(lessonPlan);
+    setShowLessonPlanModal(true);
+  };
+
+  const handleSaveLessonPlan = (lessonPlanData: any) => {
+    if (selectedLessonPlan) {
+      setLessonPlans(prev => prev.map(lp => 
+        lp.id === selectedLessonPlan.id ? { ...lp, ...lessonPlanData } : lp
+      ));
+    } else {
+      const newLessonPlan = {
+        id: Date.now(),
+        ...lessonPlanData
+      };
+      setLessonPlans(prev => [...prev, newLessonPlan]);
+    }
+  };
+
+  const handleDeleteLessonPlan = (id: number) => {
+    setLessonPlans(prev => prev.filter(lp => lp.id !== id));
+    toast({
+      title: "Lesson Plan Deleted",
+      description: "Lesson plan has been removed.",
+    });
+  };
+
+  const handleMarkAttendance = () => {
+    setShowAttendanceModal(true);
+  };
+
+  const handleSaveAttendance = (attendanceData: any) => {
+    const newRecord = {
+      id: Date.now(),
+      ...attendanceData
+    };
+    setAttendanceRecords(prev => [...prev, newRecord]);
+  };
+
+  const handleSendMessage = () => {
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessageData = (messageData: any) => {
+    const newMessage = {
+      id: Date.now(),
+      ...messageData,
+      recipientCount: messageData.recipients.length
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const handleExportGrades = () => {
+    // Create CSV data
+    const csvData = [
+      ["Student Name", "Class", "Grade", "Attendance %"],
+      ...students.map(student => [
+        student.name,
+        student.class,
+        student.grade,
+        student.attendance
+      ])
+    ];
+
+    const csvContent = csvData.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `grades_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Grades Exported",
+      description: "Grade records have been downloaded as CSV file.",
+    });
+  };
+
+  const handleGenerateAttendanceReport = () => {
+    // Create attendance summary report
+    const reportData = [
+      ["Class", "Subject", "Date", "Present", "Total", "Attendance %"],
+      ...attendanceRecords.map(record => [
+        record.class,
+        record.subject,
+        record.date,
+        record.presentCount,
+        record.totalCount,
+        `${Math.round((record.presentCount / record.totalCount) * 100)}%`
+      ])
+    ];
+
+    const csvContent = reportData.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `attendance_report_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "Report Generated",
+      description: "Attendance report has been downloaded.",
+    });
+  };
+
+  const handleAction = (action: string) => {
+    toast({
+      title: `${action} Initiated`,
+      description: `${action} action has been processed.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-to-br from-secondary to-secondary/80 text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <GraduationCap className="h-10 w-10" />
-              <div>
-                <h1 className="text-3xl font-bold">Staff Portal</h1>
-                <p className="text-white/90">Welcome back, {profile?.full_name || user?.email}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <NotificationsModal userId={user?.id} />
-              <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-secondary">
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+          <div className="flex items-center space-x-4">
+            <GraduationCap className="h-10 w-10" />
+            <div>
+              <h1 className="text-3xl font-bold">Staff Portal</h1>
+              <p className="text-white/90">Teacher Resources and Student Management</p>
             </div>
           </div>
         </div>
@@ -221,8 +315,8 @@ const StaffPortal = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground text-sm">Total Classes</p>
-                  <p className="text-2xl font-bold text-foreground">{schedules.length}</p>
+                  <p className="text-muted-foreground text-sm">My Classes</p>
+                  <p className="text-2xl font-bold text-foreground">8</p>
                 </div>
                 <Users className="h-8 w-8 text-secondary" />
               </div>
@@ -233,10 +327,10 @@ const StaffPortal = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground text-sm">This Week</p>
-                  <p className="text-2xl font-bold text-foreground">{schedules.length}</p>
+                  <p className="text-muted-foreground text-sm">Total Students</p>
+                  <p className="text-2xl font-bold text-foreground">{students.length}</p>
                 </div>
-                <Calendar className="h-8 w-8 text-primary" />
+                <Target className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -245,12 +339,10 @@ const StaffPortal = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground text-sm">Subjects</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    {new Set(schedules.map(s => s.subject)).size}
-                  </p>
+                  <p className="text-muted-foreground text-sm">Assignments</p>
+                  <p className="text-2xl font-bold text-foreground">{assignments.length}</p>
                 </div>
-                <BookOpen className="h-8 w-8 text-accent" />
+                <FileText className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
@@ -259,245 +351,465 @@ const StaffPortal = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground text-sm">Status</p>
-                  <p className="text-2xl font-bold text-foreground">Active</p>
+                  <p className="text-muted-foreground text-sm">Messages</p>
+                  <p className="text-2xl font-bold text-foreground">7</p>
                 </div>
-                <Target className="h-8 w-8 text-navy" />
+                <MessageSquare className="h-8 w-8 text-navy" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-            <TabsTrigger value="schedule">My Schedule</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>   
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="lessons">Lesson Plans</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
 
           <TabsContent value="schedule" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center">
-                      <Calendar className="h-5 w-5 mr-2 text-primary" />
-                      Your Weekly Schedule
-                    </CardTitle>
-                    <CardDescription>Your teaching schedule for this week</CardDescription>
-                  </div>
-                  <AddScheduleModal onScheduleAdded={() => fetchSchedules(user.id)} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                {schedules.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="h-5 w-5 mr-2 text-primary" />
+                    Today's Schedule
+                  </CardTitle>
+                  <CardDescription>Your classes for today</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <div className="space-y-4">
-                    {schedules.map((schedule) => (
-                      <div key={schedule.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center space-x-4">
+                    {todaysSchedule.map((schedule, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center space-x-3">
                           <div className="w-2 h-12 bg-primary rounded-full"></div>
                           <div>
                             <p className="font-medium">{schedule.subject}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {schedule.class_level} • {schedule.room || 'TBA'}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {getDayName(schedule.day_of_week)}
-                            </p>
+                            <p className="text-sm text-muted-foreground">{schedule.class} - {schedule.room}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">
-                            {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}  
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteSchedule(schedule.id)}
-                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        {schedule.notes && (
-                          <p className="text-xs text-muted-foreground mt-1">{schedule.notes}</p>
+                        <Badge variant="outline">{schedule.time}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-secondary">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button onClick={handleMarkAttendance} className="w-full justify-start">
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    Mark Attendance
+                  </Button>
+                  <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Create Lesson Plan
+                  </Button>
+                  <Button onClick={handleSendMessage} variant="outline" className="w-full justify-start">
+                    <Send className="h-4 w-4 mr-2" />
+                    Message Parents
+                  </Button>
+                  <Link to="/e-learning">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      E-Learning Platform
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="students" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Students ({students.length})</CardTitle>
+                <CardDescription>View and manage your students' progress</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {students.map((student) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{student.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Class: {student.class} | Attendance: {student.attendance}%
+                        </p>
+                        {editingStudent === student.id ? (
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Input
+                              value={studentGradeForm.grade}
+                              onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
+                              placeholder="Enter grade"
+                              className="w-20"
+                            />
+                            <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <Badge variant="outline">Grade: {student.grade}</Badge>
                         )}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium mb-2">No Schedule Found</p>
-                    <p>Your teaching schedule will appear here once it's assigned.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="classes" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-secondary" />
-                  My Classes
-                </CardTitle>
-                <CardDescription>Classes you are teaching</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {schedules.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {Array.from(new Set(schedules.map(s => `${s.subject}-${s.class_level}`))).map((classKey) => {
-                      const schedule = schedules.find(s => `${s.subject}-${s.class_level}` === classKey);
-                      return (
-                        <Card key={classKey} className="hover:shadow-lg transition-all duration-300">
-                          <CardContent className="p-4">
-                            <h3 className="font-semibold text-foreground">{schedule?.subject}</h3>
-                            <p className="text-sm text-muted-foreground">{schedule?.class_level}</p>
-                            <div className="mt-3 space-y-2">
-                              <Button variant="outline" size="sm" className="w-full">
-                                <FileText className="h-4 w-4 mr-2" />
-                                View Details
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No classes assigned yet.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="assignments">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <FileText className="h-5 w-5 text-primary" />
-                      <span>Assignments & Lesson Plans</span>
-                    </CardTitle>
-                    <CardDescription>Manage your assignments and teaching materials</CardDescription>
-                  </div>
-                  <AddAssignmentModal onAssignmentAdded={() => fetchAssignments(user.id)} />
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
+                          <Edit className="h-4 w-4 mr-1" />
+                          Grade
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={handleSendMessage}>
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          Message
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent>
-                {assignments.length > 0 ? (
-                  <div className="space-y-4">
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Assignment Management</h2>
+              <Button onClick={() => setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" })} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Assignment
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create New Assignment</CardTitle>
+                  <CardDescription>Add assignments for your classes</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Input
+                    placeholder="Assignment Title"
+                    value={newAssignment.title}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Subject (e.g., Mathematics)"
+                    value={newAssignment.subject}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, subject: e.target.value }))}
+                  />
+                  <Input
+                    placeholder="Class (e.g., JSS 2A)"
+                    value={newAssignment.class}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, class: e.target.value }))}
+                  />
+                  <Input
+                    type="date"
+                    value={newAssignment.dueDate}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, dueDate: e.target.value }))}
+                  />
+                  <Textarea
+                    placeholder="Assignment Description"
+                    value={newAssignment.description}
+                    onChange={(e) => setNewAssignment(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                  <Button onClick={handleCreateAssignment} className="w-full">
+                    Create Assignment
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Current Assignments ({assignments.length})</CardTitle>
+                  <CardDescription>Manage your active assignments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
                     {assignments.map((assignment) => (
-                      <div key={assignment.id} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-foreground mb-1">{assignment.title}</h4>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {assignment.subject} • {assignment.class_level}
+                      <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        {editingAssignment === assignment.id ? (
+                          <div className="flex-1 space-y-2 mr-4">
+                            <Input
+                              value={assignmentForm.title}
+                              onChange={(e) => setAssignmentForm(prev => ({ ...prev, title: e.target.value }))}
+                              placeholder="Assignment Title"
+                            />
+                            <div className="flex space-x-2">
+                              <Input
+                                value={assignmentForm.subject}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, subject: e.target.value }))}
+                                placeholder="Subject"
+                              />
+                              <Input
+                                value={assignmentForm.class}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, class: e.target.value }))}
+                                placeholder="Class"
+                              />
+                              <Input
+                                type="date"
+                                value={assignmentForm.dueDate}
+                                onChange={(e) => setAssignmentForm(prev => ({ ...prev, dueDate: e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <h4 className="font-semibold">{assignment.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {assignment.subject} | Class: {assignment.class} | Due: {assignment.dueDate}
                             </p>
-                            {assignment.description && (
-                              <p className="text-sm text-muted-foreground mb-2">{assignment.description}</p>
-                            )}
-                            {assignment.due_date && (
-                              <p className="text-sm text-muted-foreground">
-                                Due: {new Date(assignment.due_date).toLocaleDateString()}
-                              </p>
-                            )}
+                            <Badge variant={assignment.status === 'Active' ? 'default' : 'secondary'}>
+                              {assignment.status}
+                            </Badge>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="destructive" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                        )}
+                        <div className="flex space-x-2">
+                          {editingAssignment === assignment.id ? (
+                            <>
+                              <Button size="sm" onClick={() => handleSaveAssignment(assignment.id)}>
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingAssignment(null)}>
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button size="sm" variant="outline" onClick={() => handleEditAssignment(assignment)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => handleDeleteAssignment(assignment.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium mb-2">No Assignments Created</p>
-                    <p>Create your first assignment or lesson plan to get started.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="resources" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BookOpen className="h-5 w-5 mr-2 text-accent" />
-                  Teaching Resources
-                </CardTitle>
-                <CardDescription>Access teaching materials and resources</CardDescription>
+                <CardTitle>Teaching Resources</CardTitle>
+                <CardDescription>Access curriculum materials and teaching aids</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button onClick={() => handleAction("Access Curriculum")} variant="outline" className="h-20 flex flex-col">
+                  <BookOpen className="h-6 w-6 mb-2" />
+                  Curriculum Guide
+                </Button>
+                <Button onClick={() => handleAction("View Lesson Plans")} variant="outline" className="h-20 flex flex-col">
+                  <FileText className="h-6 w-6 mb-2" />
+                  Lesson Plans
+                </Button>
+                <Link to="/library">
+                  <Button variant="outline" className="h-20 flex flex-col w-full">
+                    <Users className="h-6 w-6 mb-2" />
+                    Digital Library
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="lessons" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Lesson Plans ({lessonPlans.length})</h2>
+              <Button onClick={handleCreateLessonPlan} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Lesson Plan
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {lessonPlans.map((lessonPlan) => (
+                <Card key={lessonPlan.id} className="hover:shadow-elegant transition-all duration-300">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg">{lessonPlan.title}</CardTitle>
+                        <CardDescription>{lessonPlan.subject} - {lessonPlan.class}</CardDescription>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditLessonPlan(lessonPlan)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteLessonPlan(lessonPlan.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Date:</span>
+                        <span>{lessonPlan.date}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Duration:</span>
+                        <span>{lessonPlan.duration}</span>
+                      </div>
+                      <div className="mt-3">
+                        <p className="text-sm text-muted-foreground mb-1">Objectives:</p>
+                        <p className="text-sm">{lessonPlan.objectives}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="attendance" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Attendance Records</h2>
+              <Button onClick={handleMarkAttendance} className="flex items-center">
+                <CheckSquare className="h-4 w-4 mr-2" />
+                Mark Attendance
+              </Button>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Attendance ({attendanceRecords.length})</CardTitle>
+                <CardDescription>Track student attendance across your classes</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Teaching resources will be available soon.</p>
+                <div className="space-y-4">
+                  {attendanceRecords.map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{record.class} - {record.subject}</h3>
+                        <p className="text-sm text-muted-foreground">Date: {record.date}</p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Present</p>
+                          <p className="font-bold text-green-600">{record.presentCount}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground">Total</p>
+                          <p className="font-bold">{record.totalCount}</p>
+                        </div>
+                        <Badge variant={
+                          ((record.presentCount / record.totalCount) * 100) >= 85 ? "default" : 
+                          ((record.presentCount / record.totalCount) * 100) >= 70 ? "secondary" : "destructive"
+                        }>
+                          {Math.round((record.presentCount / record.totalCount) * 100)}%
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="profile" className="space-y-6">
+          <TabsContent value="messages" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-primary">Messages to Parents</h2>
+              <Button onClick={handleSendMessage} className="flex items-center">
+                <Send className="h-4 w-4 mr-2" />
+                Send Message
+              </Button>
+            </div>
+            
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center">
-                      <Users className="h-5 w-5 mr-2 text-primary" />
-                      Staff Profile
-                    </CardTitle>
-                    <CardDescription>Your profile information</CardDescription>
-                  </div>
-                  <ProfileEditModal 
-                    currentProfile={profile} 
-                    onProfileUpdated={() => checkAuth()} 
-                  />
-                </div>
+                <CardTitle>Sent Messages ({messages.length})</CardTitle>
+                <CardDescription>Track your communication with parents</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                    <p className="font-medium">{profile?.full_name || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-medium">{profile?.email || user?.email}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Role</label>
-                    <p className="font-medium capitalize">{profile?.role || 'Staff Member'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Subjects Teaching</label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {Array.from(new Set(schedules.map(s => s.subject))).map(subject => (
-                        <Badge key={subject} variant="secondary">{subject}</Badge>
-                      ))}
+                  {messages.map((message) => (
+                    <div key={message.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{message.subject}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {message.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} • 
+                          Sent: {new Date(message.sentAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">{message.recipientCount} recipients</Badge>
+                        <Button size="sm" variant="outline">
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Academic Reports</CardTitle>
+                <CardDescription>Generate and view student performance reports</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button onClick={() => handleAction("Generate Class Report")} className="w-full justify-start">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Generate Class Performance Report
+                </Button>
+                <Button onClick={handleGenerateAttendanceReport} variant="outline" className="w-full justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Generate Attendance Report
+                </Button>
+                <Button onClick={handleExportGrades} variant="outline" className="w-full justify-start">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Grade Records
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <LessonPlanModal
+        isOpen={showLessonPlanModal}
+        onClose={() => setShowLessonPlanModal(false)}
+        onSave={handleSaveLessonPlan}
+        lessonPlan={selectedLessonPlan}
+      />
+
+      <AttendanceModal
+        isOpen={showAttendanceModal}
+        onClose={() => setShowAttendanceModal(false)}
+        onSave={handleSaveAttendance}
+      />
+
+      <MessageModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        onSend={handleSendMessageData}
+      />
     </div>
+  );
+};
+
+const StaffPortal = () => {
+  return (
+    <AuthGuard portalType="staff">
+      <StaffPortalContent />
+    </AuthGuard>
   );
 };
 

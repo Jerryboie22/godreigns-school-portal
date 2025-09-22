@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, 
   BookOpen, 
@@ -23,99 +22,22 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
-  LogOut
+  Eye
 } from "lucide-react";
 
-const AdminPortal = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+const AdminPortalContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeStudents, setActiveStudents] = useState<any[]>([]);
-  const [staff, setStaff] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
-  
-  useEffect(() => {
-    checkAuth();
-    fetchStudents();
-    fetchStaff();
-    fetchTeachers();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
-      }
-      
-      setUser(session.user);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      navigate('/login');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchStudents = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('students')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setActiveStudents(data || []);
-    } catch (error) {
-      console.error('Error fetching students:', error);
-    }
-  };
-
-  const fetchStaff = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'staff')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setStaff(data || []);
-    } catch (error) {
-      console.error('Error fetching staff:', error);
-    }
-  };
-
-  const fetchTeachers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('teachers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setTeachers(data || []);
-    } catch (error) {
-      console.error('Error fetching teachers:', error);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/login');
-      toast({
-        title: "Logged Out",
-        description: "You have been logged out successfully.",
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+  const [activeStudents, setActiveStudents] = useState([
+    { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
+    { id: 2, name: "Chinyere Okafor", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
+    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
+  ]);
+  const [staff, setStaff] = useState([
+    { id: 1, name: "Mrs. Folake Adebisi", position: "English Teacher", department: "Languages", status: "Active" },
+    { id: 2, name: "Mr. Chukwuma Okonkwo", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
+    { id: 3, name: "Miss Aisha Bello", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
+  ]);
+  const { toast } = useToast();
 
   const handleAction = (action: string, id?: number) => {
     toast({
@@ -145,59 +67,34 @@ const AdminPortal = () => {
   const [studentForm, setStudentForm] = useState({ name: "", class: "", admissionNo: "", status: "" });
   const [staffForm, setStaffForm] = useState({ name: "", position: "", department: "", status: "" });
 
-  const handleAddStudent = async () => {
-    try {
-      const newStudentNo = `2025/${String(activeStudents.length + 1).padStart(3, '0')}`;
-      const { error } = await supabase
-        .from('students')
-        .insert({
-          full_name: 'New Student',
-          student_id: newStudentNo,
-          class_level: 'JSS 1'
-        });
-
-      if (error) throw error;
-      
-      await fetchStudents();
-      toast({
-        title: "Student Added",
-        description: "New student has been added to the system.",
-      });
-    } catch (error) {
-      console.error('Error adding student:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add student.",
-        variant: "destructive",
-      });
-    }
+  const handleAddStudent = () => {
+    const newStudent = {
+      id: Date.now(),
+      name: `Kemi Adeyemi`,
+      class: "JSS 1A",
+      admissionNo: `2025/${String(activeStudents.length + 1).padStart(3, '0')}`,
+      status: "Active"
+    };
+    setActiveStudents(prev => [...prev, newStudent]);
+    toast({
+      title: "Student Added",
+      description: "New student has been added to the system.",
+    });
   };
 
-  const handleAddTeacher = async () => {
-    try {
-      const { error } = await supabase
-        .from('teachers')
-        .insert({
-          name: 'New Teacher',
-          subject: 'General',
-          email: `teacher${teachers.length + 1}@school.com`
-        });
-
-      if (error) throw error;
-      
-      await fetchTeachers();
-      toast({
-        title: "Teacher Added",
-        description: "New teacher has been added to the system.",
-      });
-    } catch (error) {
-      console.error('Error adding teacher:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add teacher.",
-        variant: "destructive",
-      });
-    }
+  const handleAddStaff = () => {
+    const newStaff = {
+      id: Date.now(),
+      name: `Dr. Musa Ibrahim`,
+      position: "Teacher",
+      department: "General",
+      status: "Active"
+    };
+    setStaff(prev => [...prev, newStaff]);
+    toast({
+      title: "Staff Added",
+      description: "New staff member has been added to the system.",
+    });
   };
 
   const handleEditStudent = (student: any) => {
@@ -256,33 +153,16 @@ const AdminPortal = () => {
     { action: "Report generated", details: "Monthly academic performance", time: "1 day ago" },
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-primary text-white py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Shield className="h-10 w-10" />
-              <div>
-                <h1 className="text-3xl font-bold">Admin Portal</h1>
-                <p className="text-white/90">Welcome back, {user?.email}</p>
-              </div>
+          <div className="flex items-center space-x-4">
+            <Shield className="h-10 w-10" />
+            <div>
+              <h1 className="text-3xl font-bold">Admin Portal</h1>
+              <p className="text-white/90">Comprehensive School Management System</p>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-primary">
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
           </div>
         </div>
       </div>
@@ -474,9 +354,9 @@ const AdminPortal = () => {
           <TabsContent value="staff">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-primary">Staff Management</h2>
-              <Button onClick={handleAddTeacher} className="flex items-center">
+              <Button onClick={handleAddStaff} className="flex items-center">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Teacher
+                Add Staff
               </Button>
             </div>
             
@@ -752,6 +632,14 @@ const AdminPortal = () => {
         </Card>
       </div>
     </div>
+  );
+};
+
+const AdminPortal = () => {
+  return (
+    <AuthGuard portalType="admin">
+      <AdminPortalContent />
+    </AuthGuard>
   );
 };
 

@@ -1,169 +1,142 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { BookOpen, Calendar, Trophy, Clock, FileText, User, Target, Award, GraduationCap, LogOut, Edit, Trash2 } from "lucide-react";
-import AddClassModal from "@/components/modals/AddClassModal";
-import ProfileEditModal from "@/components/modals/ProfileEditModal";
-import NotificationsModal from "@/components/modals/NotificationsModal";
+import { Input } from "@/components/ui/input";
+import { 
+  BookOpen, 
+  Calendar, 
+  Trophy, 
+  Clock, 
+  FileText,
+  User,
+  Target,
+  Award,
+  GraduationCap,
+  Download,
+  Edit
+} from "lucide-react";
 
-interface EnrolledClass {
-  id: string;
-  class_name: string;
-  subject: string;
-  teacher_name?: string;
-  grade?: string;
-  attendance_percentage: number;
-}
+const StudentPortalContent = () => {
+  const [studentInfo, setStudentInfo] = useState({
+    name: "Adebayo Olamide",
+    class: "SSS 2B",
+    admissionNumber: "OGR/2022/0567",
+    currentTerm: "First Term 2024/2025"
+  });
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", class: "" });
 
-const StudentPortal = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
-  const [enrolledClasses, setEnrolledClasses] = useState<EnrolledClass[]>([]);
-  const [loading, setLoading] = useState(true);
+  const currentGrades = [
+    { subject: "Mathematics", currentGrade: "B+", percentage: 85, target: "A" },
+    { subject: "English Language", currentGrade: "A", percentage: 92, target: "A" },
+    { subject: "Physics", currentGrade: "B", percentage: 78, target: "B+" },
+    { subject: "Chemistry", currentGrade: "B+", percentage: 88, target: "A" },
+    { subject: "Biology", currentGrade: "A", percentage: 95, target: "A" },
+    { subject: "Geography", currentGrade: "B", percentage: 82, target: "B+" },
+  ];
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const assignments = [
+    { subject: "Mathematics", title: "Quadratic Equations", dueDate: "2024-09-22", status: "Submitted", score: "85%" },
+    { subject: "Physics", title: "Simple Harmonic Motion", dueDate: "2024-09-25", status: "Pending", score: "-" },
+    { subject: "English", title: "Literature Essay", dueDate: "2024-09-20", status: "Graded", score: "92%" },
+    { subject: "Chemistry", title: "Organic Compounds", dueDate: "2024-09-28", status: "Not Started", score: "-" },
+  ];
 
-  const checkAuth = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
-      }
-      
-      setUser(session.user);
-      
-      // Fetch user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-      
-      setProfile(profileData);
-      await fetchEnrolledClasses(session.user.id);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      navigate('/login');
-    } finally {
-      setLoading(false);
-    }
+  const schedule = [
+    { time: "8:00 - 9:00", subject: "Mathematics", teacher: "Mr. Chukwuma Adebisi", room: "Room 15" },
+    { time: "9:00 - 10:00", subject: "English Language", teacher: "Mrs. Folake Okafor", room: "Room 8" },
+    { time: "10:00 - 10:30", subject: "Break", teacher: "-", room: "-" },
+    { time: "10:30 - 11:30", subject: "Physics", teacher: "Dr. Kwame Mensah", room: "Lab 2" },
+    { time: "11:30 - 12:30", subject: "Chemistry", teacher: "Mrs. Aisha Balogun", room: "Lab 1" },
+  ];
+
+  const handleEditProfile = () => {
+    setEditingProfile(true);
+    setProfileForm({ name: studentInfo.name, class: studentInfo.class });
   };
 
-  const fetchEnrolledClasses = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('enrolled_classes')
-        .select('*')
-        .eq('student_id', userId);
-
-      if (error) throw error;
-      setEnrolledClasses(data || []);
-    } catch (error) {
-      console.error('Error fetching enrolled classes:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load your classes.",
-        variant: "destructive",
-      });
-    }
+  const handleSaveProfile = () => {
+    setStudentInfo(prev => ({ ...prev, ...profileForm }));
+    setEditingProfile(false);
   };
-
-  const handleDeleteClass = async (classId: string) => {
-    try {
-      const { error } = await supabase
-        .from('enrolled_classes')
-        .delete()
-        .eq('id', classId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Class Removed",
-        description: "You have been unenrolled from this class.",
-      });
-
-      fetchEnrolledClasses(user.id);
-    } catch (error) {
-      console.error('Error removing class:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove class.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/login');
-      toast({
-        title: "Logged Out",
-        description: "You have been logged out successfully.",
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const calculateGPA = () => {
-    if (enrolledClasses.length === 0) return 0;
-    // Mock GPA calculation - in real app would be based on actual grades
-    return 3.6;
-  };
-
-  const calculateOverallAttendance = () => {
-    if (enrolledClasses.length === 0) return 0;
-    const total = enrolledClasses.reduce((sum, cls) => sum + cls.attendance_percentage, 0);
-    return Math.round(total / enrolledClasses.length);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-to-br from-navy to-navy/80 text-navy-foreground py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <GraduationCap className="h-10 w-10" />
-              <div>
-                <h1 className="text-3xl font-bold">Student Portal</h1>
-                <p className="text-navy-foreground/90">Welcome back, {profile?.full_name || user?.email}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <NotificationsModal userId={user?.id} />
-              <Button onClick={handleLogout} variant="outline" className="text-white border-white hover:bg-white hover:text-navy">
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+          <div className="flex items-center space-x-4">
+            <GraduationCap className="h-10 w-10" />
+            <div>
+              <h1 className="text-3xl font-bold">Student Portal</h1>
+              <p className="text-navy-foreground/90">Your Academic Dashboard</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Student Overview */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <User className="h-6 w-6 text-navy" />
+                <span>Student Profile</span>
+              </div>
+              <Button variant="outline" size="sm" onClick={editingProfile ? handleSaveProfile : handleEditProfile}>
+                <Edit className="h-4 w-4 mr-2" />
+                {editingProfile ? 'Save' : 'Edit'}
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-6">
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                <User className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+                <div>
+                  <p className="text-sm text-muted-foreground">Student Name</p>
+                  {editingProfile ? (
+                    <Input
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Student Name"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{studentInfo.name}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Class</p>
+                  {editingProfile ? (
+                    <Input
+                      value={profileForm.class}
+                      onChange={(e) => setProfileForm(prev => ({ ...prev, class: e.target.value }))}
+                      placeholder="Class"
+                    />
+                  ) : (
+                    <p className="font-medium text-foreground">{studentInfo.class}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Current Term</p>
+                  <p className="font-medium text-foreground">{studentInfo.currentTerm}</p>
+                </div>
+              </div>
+              {editingProfile && (
+                <Button variant="outline" onClick={() => setEditingProfile(false)}>
+                  Cancel
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="hover:shadow-elegant transition-all duration-300">
@@ -171,7 +144,7 @@ const StudentPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">GPA</p>
-                  <p className="text-2xl font-bold text-foreground">{calculateGPA()}</p>
+                  <p className="text-2xl font-bold text-foreground">3.6</p>
                 </div>
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
@@ -183,7 +156,7 @@ const StudentPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Attendance</p>
-                  <p className="text-2xl font-bold text-foreground">{calculateOverallAttendance()}%</p>
+                  <p className="text-2xl font-bold text-foreground">98%</p>
                 </div>
                 <Clock className="h-8 w-8 text-secondary" />
               </div>
@@ -194,8 +167,8 @@ const StudentPortal = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground text-sm">Enrolled Classes</p>
-                  <p className="text-2xl font-bold text-foreground">{enrolledClasses.length}</p>
+                  <p className="text-muted-foreground text-sm">Assignments</p>
+                  <p className="text-2xl font-bold text-foreground">15</p>
                 </div>
                 <FileText className="h-8 w-8 text-accent" />
               </div>
@@ -207,7 +180,7 @@ const StudentPortal = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm">Rank</p>
-                  <p className="text-2xl font-bold text-foreground">-</p>
+                  <p className="text-2xl font-bold text-foreground">8/45</p>
                 </div>
                 <Award className="h-8 w-8 text-navy" />
               </div>
@@ -215,112 +188,83 @@ const StudentPortal = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-            <TabsTrigger value="classes">My Classes</TabsTrigger>
+        <Tabs defaultValue="grades" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
             <TabsTrigger value="grades">Grades</TabsTrigger>
+            <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="resources">Resources</TabsTrigger>
+            <TabsTrigger value="progress">Progress</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="classes">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <BookOpen className="h-5 w-5 text-primary" />
-                      <span>Enrolled Classes</span>
-                    </CardTitle>
-                    <CardDescription>Your current class enrollments</CardDescription>
-                  </div>
-                  <AddClassModal onClassAdded={() => fetchEnrolledClasses(user.id)} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                {enrolledClasses.length > 0 ? (
-                  <div className="space-y-4">
-                    {enrolledClasses.map((cls) => (
-                      <div key={cls.id} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium text-foreground">{cls.subject}</h4>
-                          <div className="flex items-center space-x-2">
-                            {cls.grade && (
-                              <Badge variant={cls.grade.startsWith('A') ? 'default' : 'secondary'}>
-                                {cls.grade}
-                              </Badge>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteClass(cls.id)}
-                              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Class: {cls.class_name}
-                          {cls.teacher_name && ` • Teacher: ${cls.teacher_name}`}
-                        </p>
-                        <div className="flex items-center space-x-3">
-                          <span className="text-sm text-muted-foreground">Attendance:</span>
-                          <Progress value={cls.attendance_percentage} className="flex-1" />
-                          <span className="text-sm font-medium">{cls.attendance_percentage}%</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium mb-2">No Classes Found</p>
-                    <p>Your enrolled classes will appear here once you're registered for courses.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           <TabsContent value="grades">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Trophy className="h-5 w-5 text-primary" />
-                  <span>Academic Performance</span>
+                  <span>Current Term Grades</span>
                 </CardTitle>
-                <CardDescription>Your grades and performance</CardDescription>
+                <CardDescription>Your academic performance this term</CardDescription>
               </CardHeader>
               <CardContent>
-                {enrolledClasses.length > 0 ? (
-                  <div className="space-y-4">
-                    {enrolledClasses.map((cls) => (
-                      <div key={cls.id} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium text-foreground">{cls.subject}</h4>
-                            <p className="text-sm text-muted-foreground">{cls.class_name}</p>
-                          </div>
-                          <div className="text-right">
-                            {cls.grade ? (
-                              <Badge variant={cls.grade.startsWith('A') ? 'default' : 'secondary'}>
-                                {cls.grade}
-                              </Badge>
-                            ) : (
-                              <span className="text-sm text-muted-foreground">Grade pending</span>
-                            )}
-                          </div>
+                <div className="space-y-4">
+                  {currentGrades.map((grade, index) => (
+                    <div key={index} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-foreground">{grade.subject}</h4>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={grade.currentGrade.startsWith('A') ? 'default' : 'secondary'}>
+                            {grade.currentGrade}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">Target: {grade.target}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No grades available yet.</p>
-                  </div>
-                )}
+                      <div className="flex items-center space-x-3">
+                        <Progress value={grade.percentage} className="flex-1" />
+                        <span className="text-sm font-medium">{grade.percentage}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <FileText className="h-5 w-5 text-accent" />
+                  <span>Assignments & Tasks</span>
+                </CardTitle>
+                <CardDescription>Your current and upcoming assignments</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {assignments.map((assignment, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground">{assignment.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {assignment.subject} • Due: {assignment.dueDate}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        {assignment.score !== "-" && (
+                          <span className="font-medium">{assignment.score}</span>
+                        )}
+                        <Badge 
+                          variant={
+                            assignment.status === "Graded" ? "default" : 
+                            assignment.status === "Submitted" ? "secondary" : "outline"
+                          }
+                        >
+                          {assignment.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -330,65 +274,107 @@ const StudentPortal = () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-secondary" />
-                  <span>Class Schedule</span>
+                  <span>Today's Schedule</span>
                 </CardTitle>
-                <CardDescription>Your class timetable</CardDescription>
+                <CardDescription>
+                  {new Date().toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Schedule will be available soon.</p>
+                <div className="space-y-4">
+                  {schedule.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <div className="text-sm font-medium text-secondary w-24">{item.time}</div>
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">{item.subject}</p>
+                        {item.teacher !== "-" && (
+                          <p className="text-sm text-muted-foreground">
+                            {item.teacher} • {item.room}
+                          </p>
+                        )}
+                      </div>
+                      <Badge variant={item.subject === "Break" ? "secondary" : "outline"}>
+                        {item.subject === "Break" ? "Break" : "Class"}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="profile">
+          <TabsContent value="resources">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center space-x-2">
-                      <User className="h-5 w-5 text-primary" />
-                      <span>Student Profile</span>
-                    </CardTitle>
-                    <CardDescription>Your profile information</CardDescription>
-                  </div>
-                  <ProfileEditModal 
-                    currentProfile={profile} 
-                    onProfileUpdated={() => checkAuth()} 
-                  />
-                </div>
+                <CardTitle className="flex items-center space-x-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  <span>Learning Resources</span>
+                </CardTitle>
+                <CardDescription>Study materials and educational resources</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                    <p className="font-medium">{profile?.full_name || 'Not set'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-medium">{profile?.email || user?.email}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Role</label>
-                    <p className="font-medium capitalize">{profile?.role || 'Student'}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Enrolled Subjects</label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {Array.from(new Set(enrolledClasses.map(cls => cls.subject))).map(subject => (
-                        <Badge key={subject} variant="secondary">{subject}</Badge>
-                      ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <h4 className="font-medium text-foreground mb-2">Mathematics Notes</h4>
+                      <p className="text-sm text-muted-foreground mb-3">Quadratic Equations and Graphs</p>
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
                     </div>
+                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <h4 className="font-medium text-foreground mb-2">Physics Lab Manual</h4>
+                      <p className="text-sm text-muted-foreground mb-3">Wave Motion Experiments</p>
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Additional learning resources will be available soon.</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="progress">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  <span>Academic Progress</span>
+                </CardTitle>
+                <CardDescription>Track your improvement over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12 text-muted-foreground">
+                  <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Progress tracking will be available soon.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
       </div>
     </div>
+  );
+};
+
+const StudentPortal = () => {
+  return (
+    <AuthGuard portalType="student">
+      <StudentPortalContent />
+    </AuthGuard>
   );
 };
 
