@@ -57,20 +57,23 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    let isMounted = true;
+
+    const init = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
-          // Fetch user profile
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
-          
+
+          if (!isMounted) return;
+
           if (profileData && isUserAuthorized(profileData.role, portalType)) {
             setProfile(profileData);
             setIsAuthenticated(true);
@@ -82,20 +85,45 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           setIsAuthenticated(false);
           setProfile(null);
         }
-        setLoading(false);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    init();
+
+    // Auth state listener for subsequent changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (!isMounted) return;
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
+            setProfile(profileData);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+            setProfile(null);
+          }
+        } else {
+          setIsAuthenticated(false);
+          setProfile(null);
+        }
       }
     );
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (!session) {
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -150,7 +178,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -200,7 +228,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
         }
       });
 
