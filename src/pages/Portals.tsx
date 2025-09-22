@@ -10,7 +10,7 @@ const Portals = () => {
       title: "Admin Portal",
       description: "Comprehensive school management, student records, staff management, and system administration",
       icon: Shield,
-      path: "/portal/admin",
+      path: "/portals/admin",
       color: "primary",
       features: [
         "Complete school management system",
@@ -25,7 +25,7 @@ const Portals = () => {
       title: "Staff Portal", 
       description: "Teacher resources, lesson plans, student management, and academic tools",
       icon: Users,
-      path: "/portal/staff",
+      path: "/portals/staff",
       color: "secondary",
       features: [
         "Student grade management",
@@ -40,7 +40,7 @@ const Portals = () => {
       title: "Parent Portal",
       description: "Monitor your child's progress, communicate with teachers, and stay updated",
       icon: Heart,
-      path: "/portal/parent",
+      path: "/portals/parent",
       color: "accent",
       features: [
         "Child's academic progress tracking",
@@ -55,7 +55,7 @@ const Portals = () => {
       title: "Student Portal",
       description: "Access assignments, grades, resources, and connect with classmates",
       icon: BookOpen,
-      path: "/portal/student", 
+      path: "/portals/student", 
       color: "navy",
       features: [
         "Assignment submission system",

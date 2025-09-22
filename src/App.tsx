@@ -54,9 +54,9 @@ const App = () => (
               <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />
               <Route path="/admin-cms" element={<AdminCMS />} />
-              <Route path="/portal/staff" element={<StaffPortal />} />
-              <Route path="/portal/parent" element={<ParentPortal />} />
-              <Route path="/portal/student" element={<StudentPortal />} />
+              <Route path="/portals/staff" element={<StaffPortal />} />
+              <Route path="/portals/parent" element={<ParentPortal />} />
+              <Route path="/portals/student" element={<StudentPortal />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
