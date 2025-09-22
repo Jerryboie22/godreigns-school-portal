@@ -186,7 +186,7 @@ const Home = () => {
 
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary via-primary-glow to-accent min-h-[80vh] flex items-center overflow-hidden">
+      <section className="relative bg-gradient-to-br from-primary via-primary-glow to-accent min-h-[55vh] flex items-center overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.1)_50%,transparent_75%)] bg-[length:60px_60px] opacity-30"></div>
         
