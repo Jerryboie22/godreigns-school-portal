@@ -327,7 +327,7 @@ const Contact = () => {
                     Apply for Admission
                   </Button>
                 </Link>
-                <Link to="/portals/parent">
+                <Link to="/portal/parent">
                   <Button variant="outline" className="w-full justify-start">
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Parent Portal

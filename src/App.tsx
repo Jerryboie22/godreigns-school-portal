@@ -51,9 +51,6 @@ const App = () => (
         <Route path="/blog/:id" element={<BlogPost />} />
         <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
               <Route path="/portal/admin" element={<AdminPortal />} />
-              <Route path="/portal/staff" element={<StaffPortal />} />
-              <Route path="/portal/parent" element={<ParentPortal />} />
-              <Route path="/portal/student" element={<StudentPortal />} />
               <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />
               <Route path="/admin-cms" element={<AdminCMS />} />
