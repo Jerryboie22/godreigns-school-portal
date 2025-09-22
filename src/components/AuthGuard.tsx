@@ -66,6 +66,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   const [redirecting, setRedirecting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [pendingVerification, setPendingVerification] = useState<string | null>(null);
+  const [authEvent, setAuthEvent] = useState<string | null>(null);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [signupData, setSignupData] = useState({
     name: "",
@@ -77,84 +78,17 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user && event === 'SIGNED_IN') {
-          setRedirecting(true);
-          
-          // Fetch user profile
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          if (profileData) {
-            setProfile(profileData);
-            
-            // Show success message
-            toast({
-              title: "Login Successful",
-              description: "Redirecting to your dashboard...",
-            });
-            
-            // Redirect to external dashboard after a brief delay
-            setTimeout(() => {
-              const dashboardUrl = getDashboardUrl(profileData.role);
-              window.location.href = dashboardUrl;
-            }, 1500);
-            
-            return;
-          }
-        }
-        
-        if (session?.user) {
-          // Fetch user profile for authorization check
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile(profileData);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-            setProfile(null);
-          }
-        } else {
-          setIsAuthenticated(false);
-          setProfile(null);
-        }
-        setLoading(false);
-        setRedirecting(false);
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // Set up auth state listener (sync only)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // Fetch user profile for existing session
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .single();
-        
-        if (profileData && isUserAuthorized(profileData.role, portalType)) {
-          setProfile(profileData);
-          setIsAuthenticated(true);
-        }
-      }
-      
+      setAuthEvent(event);
+    });
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
       if (!session) {
         setLoading(false);
       }
@@ -162,6 +96,49 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
 
     return () => subscription.unsubscribe();
   }, [portalType]);
+
+  // Handle profile fetch and redirection outside of auth callback
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const run = async () => {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (profileData) {
+        setProfile(profileData);
+
+        if (authEvent === 'SIGNED_IN') {
+          setRedirecting(true);
+          toast({
+            title: "Login Successful",
+            description: "Redirecting to your dashboard...",
+          });
+          const dashboardUrl = getDashboardUrl(profileData.role);
+          setTimeout(() => {
+            window.location.href = dashboardUrl;
+          }, 800);
+          return;
+        }
+
+        if (isUserAuthorized(profileData.role, portalType)) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          setProfile(null);
+        }
+      }
+
+      setLoading(false);
+      setRedirecting(false);
+    };
+
+    // Defer to avoid running inside the auth callback tick
+    setTimeout(run, 0);
+  }, [session, portalType, authEvent]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
