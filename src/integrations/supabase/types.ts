@@ -14,6 +14,162 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignments: {
+        Row: {
+          class_level: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          subject: string
+          teacher_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_level: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          subject: string
+          teacher_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_level?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          subject?: string
+          teacher_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      children_records: {
+        Row: {
+          admission_number: string | null
+          attendance_percentage: number | null
+          child_name: string
+          class_level: string
+          created_at: string
+          current_gpa: number | null
+          id: string
+          outstanding_fees: number | null
+          parent_id: string
+          updated_at: string
+        }
+        Insert: {
+          admission_number?: string | null
+          attendance_percentage?: number | null
+          child_name: string
+          class_level: string
+          created_at?: string
+          current_gpa?: number | null
+          id?: string
+          outstanding_fees?: number | null
+          parent_id: string
+          updated_at?: string
+        }
+        Update: {
+          admission_number?: string | null
+          attendance_percentage?: number | null
+          child_name?: string
+          class_level?: string
+          created_at?: string
+          current_gpa?: number | null
+          id?: string
+          outstanding_fees?: number | null
+          parent_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      enrolled_classes: {
+        Row: {
+          attendance_percentage: number | null
+          class_name: string
+          created_at: string
+          grade: string | null
+          id: string
+          student_id: string
+          subject: string
+          teacher_id: string | null
+          teacher_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendance_percentage?: number | null
+          class_name: string
+          created_at?: string
+          grade?: string | null
+          id?: string
+          student_id: string
+          subject: string
+          teacher_id?: string | null
+          teacher_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendance_percentage?: number | null
+          class_name?: string
+          created_at?: string
+          grade?: string | null
+          id?: string
+          student_id?: string
+          subject?: string
+          teacher_id?: string | null
+          teacher_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fee_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          fee_type: string
+          id: string
+          parent_id: string
+          payment_date: string | null
+          payment_method: string | null
+          status: string | null
+          student_id: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          fee_type: string
+          id?: string
+          parent_id: string
+          payment_date?: string | null
+          payment_method?: string | null
+          status?: string | null
+          student_id: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          fee_type?: string
+          id?: string
+          parent_id?: string
+          payment_date?: string | null
+          payment_method?: string | null
+          status?: string | null
+          student_id?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fees: {
         Row: {
           amount: number
@@ -299,7 +455,6 @@ export type Database = {
           created_at: string
           email: string | null
           full_name: string | null
-          id: string
           role: string | null
           updated_at: string
           user_id: string
@@ -309,7 +464,6 @@ export type Database = {
           created_at?: string
           email?: string | null
           full_name?: string | null
-          id?: string
           role?: string | null
           updated_at?: string
           user_id: string
@@ -319,7 +473,6 @@ export type Database = {
           created_at?: string
           email?: string | null
           full_name?: string | null
-          id?: string
           role?: string | null
           updated_at?: string
           user_id?: string
