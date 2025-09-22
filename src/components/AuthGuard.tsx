@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,7 +38,25 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
   return false;
 };
 
+// Helper function to get the correct portal path for a user role
+const getPortalPathForRole = (userRole: string): string => {
+  switch (userRole) {
+    case 'admin':
+      return '/portals/admin';
+    case 'staff':
+    case 'teacher':
+      return '/portals/staff';
+    case 'parent':
+      return '/portals/parent';
+    case 'student':
+      return '/portals/student';
+    default:
+      return '/portals';
+  }
+};
+
 const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -71,14 +89,26 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .eq('user_id', session.user.id)
             .single();
           
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
+          if (profileData) {
             // Map user_id to id for compatibility
             const profile = {
               ...profileData,
               id: profileData.user_id
             };
-            setProfile(profile);
-            setIsAuthenticated(true);
+            
+            if (isUserAuthorized(profileData.role, portalType)) {
+              setProfile(profile);
+              setIsAuthenticated(true);
+            } else {
+              // Redirect to correct portal for user's role
+              const correctPortalPath = getPortalPathForRole(profileData.role);
+              toast({
+                title: "Redirected",
+                description: `You've been redirected to your ${profileData.role} portal.`,
+              });
+              navigate(correctPortalPath);
+              return;
+            }
           } else {
             setIsAuthenticated(false);
             setProfile(null);
@@ -101,7 +131,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, [portalType]);
+  }, [portalType, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
