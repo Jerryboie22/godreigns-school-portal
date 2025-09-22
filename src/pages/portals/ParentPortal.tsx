@@ -25,7 +25,7 @@ const ParentPortalContent = () => {
     name: "Chioma Okafor",
     class: "JSS 2A",
     admissionNumber: "OGR/2023/1234",
-    photo: "/placeholder-student.jpg"
+    photo: "/placeholder.svg"
   });
   const [editingChild, setEditingChild] = useState(false);
   const [childForm, setChildForm] = useState({ name: "", class: "" });

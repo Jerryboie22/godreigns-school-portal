@@ -205,7 +205,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `https://www.ogrcs.com/portal/${portalType}`;
+      const redirectUrl = `https://www.ogrcs.com/portals/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -255,7 +255,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `https://www.ogrcs.com/portal/${portalType}`
+          emailRedirectTo: `https://www.ogrcs.com/portals/${portalType}`
         }
       });
 
