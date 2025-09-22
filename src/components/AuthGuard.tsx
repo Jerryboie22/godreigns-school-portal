@@ -102,13 +102,9 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
               setProfile(profile);
               setIsAuthenticated(true);
             } else {
-              // Redirect to correct portal for user's role
-              const correctPortalPath = getPortalPathForRole(profileData.role);
-              toast({
-                title: "Redirected",
-                description: `You've been redirected to your ${profileData.role} portal.`,
-              });
-              navigate(correctPortalPath, { replace: true });
+              // Set profile but not authenticated to show unauthorized screen
+              setProfile(profile);
+              setIsAuthenticated(false);
             }
           } else {
             setIsAuthenticated(false);
@@ -288,6 +284,46 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   }
 
   if (!isAuthenticated) {
+    // If user has a profile but is not authorized for this portal, show unauthorized screen
+    if (profile) {
+      const userPortalPath = getPortalPathForRole(profile.role);
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
+          <Card className="w-full max-w-md text-center">
+            <CardHeader>
+              <GraduationCap className="h-12 w-12 text-primary mx-auto mb-4" />
+              <CardTitle>Access Denied</CardTitle>
+              <CardDescription>
+                You don't have permission to access the {portalType} portal.
+                <br />
+                You are logged in as a {profile.role}.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Link to={userPortalPath}>
+                <Button className="w-full">
+                  Go to My {profile.role} Portal
+                </Button>
+              </Link>
+              <div className="flex space-x-2">
+                <Link to="/" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    <Home className="h-4 w-4 mr-1" />
+                    Home
+                  </Button>
+                </Link>
+                <Button variant="outline" className="flex-1" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    // If no profile, show login screen
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 p-4">
         <Card className="w-full max-w-md">
