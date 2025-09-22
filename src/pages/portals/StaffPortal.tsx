@@ -126,6 +126,12 @@ const StaffPortalContent = () => {
       setPortalSections(data || []);
     } catch (error) {
       console.error('Error fetching portal sections:', error);
+      // Fallback to default sections if table not accessible yet
+      setPortalSections([
+        { id: '1', section_key: 'schedule', title: 'Schedule', description: 'Your classes and timetable', icon: 'Calendar', order_index: 1, is_visible: true, content_type: 'schedule' },
+        { id: '2', section_key: 'students', title: 'Students', description: 'View and manage your students', icon: 'Users', order_index: 2, is_visible: true, content_type: 'students' },
+        { id: '3', section_key: 'assignments', title: 'Assignments', description: 'Create and manage assignments', icon: 'FileText', order_index: 3, is_visible: true, content_type: 'assignments' }
+      ]);
     }
   };
 

@@ -64,6 +64,12 @@ const StudentPortalContent = () => {
       setPortalSections(data || []);
     } catch (error) {
       console.error('Error fetching portal sections:', error);
+      // Fallback to default sections if table not accessible yet
+      setPortalSections([
+        { id: '1', section_key: 'grades', title: 'Grades', description: 'View your academic performance', icon: 'Trophy', order_index: 1, is_visible: true, content_type: 'grades' },
+        { id: '2', section_key: 'assignments', title: 'Assignments', description: 'View assignments and tasks', icon: 'FileText', order_index: 2, is_visible: true, content_type: 'assignments' },
+        { id: '3', section_key: 'schedule', title: 'Schedule', description: 'Your daily class schedule', icon: 'Clock', order_index: 3, is_visible: true, content_type: 'schedule' }
+      ]);
     }
   };
 
