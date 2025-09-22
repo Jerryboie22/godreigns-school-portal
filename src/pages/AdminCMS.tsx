@@ -256,12 +256,9 @@ const AdminCMS = () => {
       setEditingContent(null);
       await fetchData();
       
-      // Force real-time update by triggering a manual refresh
-      window.dispatchEvent(new CustomEvent('homepageContentUpdated'));
-      
       toast({
         title: "Success",
-        description: "Homepage content updated successfully! Changes will appear immediately.",
+        description: "Homepage content updated successfully!",
       });
     } catch (error: any) {
       toast({
