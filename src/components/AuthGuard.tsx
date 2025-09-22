@@ -31,9 +31,9 @@ const isUserAuthorized = (userRole: string, portalType: string): boolean => {
   // Direct role match
   if (userRole === portalType) return true;
   
-  // Staff and teacher are equivalent
-  if ((userRole === 'staff' || userRole === 'teacher') && 
-      (portalType === 'staff' || portalType === 'teacher')) return true;
+  // Staff and teacher are equivalent - both can access staff portal
+  if ((userRole === 'staff' || userRole === 'teacher') && portalType === 'staff') return true;
+  if (userRole === 'staff' && portalType === 'teacher') return true;
   
   return false;
 };
