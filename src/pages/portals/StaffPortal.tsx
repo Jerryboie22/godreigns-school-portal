@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import AuthGuard from "@/components/AuthGuard";
-import { supabase } from "@/integrations/supabase/client";
 import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
@@ -27,27 +26,10 @@ import {
   Trash2,
   Send,
   Download,
-  Eye,
-  BarChart
+  Eye
 } from "lucide-react";
 
-interface PortalSection {
-  id: string;
-  section_key: string;
-  title: string;
-  description: string | null;
-  icon: string;
-  order_index: number;
-  is_visible: boolean;
-  content_type: string;
-}
-
-const iconMap = {
-  Calendar, Users, FileText, BookOpen, CheckSquare, MessageSquare, BarChart
-};
-
 const StaffPortalContent = () => {
-  const [portalSections, setPortalSections] = useState<PortalSection[]>([]);
   const [assignments, setAssignments] = useState([
     { id: 1, title: "Mathematics Assignment 1", class: "JSS 2A", dueDate: "2025-01-25", status: "Active", subject: "Mathematics" },
     { id: 2, title: "Science Project", class: "SSS 1B", dueDate: "2025-01-30", status: "Active", subject: "Physics" },
@@ -108,37 +90,6 @@ const StaffPortalContent = () => {
     { time: "12:00 PM", subject: "Physics", class: "SSS 3A", room: "Lab 2" },
     { time: "2:00 PM", subject: "Free Period", class: "-", room: "-" },
   ];
-
-  useEffect(() => {
-    fetchPortalSections();
-  }, []);
-
-  const fetchPortalSections = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('portal_sections')
-        .select('*')
-        .eq('portal_type', 'staff')
-        .eq('is_visible', true)
-        .order('order_index', { ascending: true });
-
-      if (error) throw error;
-      setPortalSections(data || []);
-    } catch (error) {
-      console.error('Error fetching portal sections:', error);
-      // Fallback to default sections if table not accessible yet
-      setPortalSections([
-        { id: '1', section_key: 'schedule', title: 'Schedule', description: 'Your classes and timetable', icon: 'Calendar', order_index: 1, is_visible: true, content_type: 'schedule' },
-        { id: '2', section_key: 'students', title: 'Students', description: 'View and manage your students', icon: 'Users', order_index: 2, is_visible: true, content_type: 'students' },
-        { id: '3', section_key: 'assignments', title: 'Assignments', description: 'Create and manage assignments', icon: 'FileText', order_index: 3, is_visible: true, content_type: 'assignments' }
-      ]);
-    }
-  };
-
-  const renderIcon = (iconName: string) => {
-    const IconComponent = iconMap[iconName as keyof typeof iconMap];
-    return IconComponent ? <IconComponent className="h-5 w-5 mr-2 text-primary" /> : <FileText className="h-5 w-5 mr-2 text-primary" />;
-  };
 
   const handleCreateAssignment = () => {
     if (!newAssignment.title || !newAssignment.class || !newAssignment.dueDate) {
@@ -213,6 +164,16 @@ const StaffPortalContent = () => {
     });
   };
 
+  const handleGradeStudent = (studentId: number, newGrade: string) => {
+    setStudents(prev => prev.map(student => 
+      student.id === studentId ? { ...student, grade: newGrade } : student
+    ));
+    toast({
+      title: "Grade Updated",
+      description: "Student grade has been updated successfully.",
+    });
+  };
+
   const handleCreateLessonPlan = () => {
     setSelectedLessonPlan(null);
     setShowLessonPlanModal(true);
@@ -265,12 +226,13 @@ const StaffPortalContent = () => {
     const newMessage = {
       id: Date.now(),
       ...messageData,
-      recipientCount: messageData.recipients?.length || 0
+      recipientCount: messageData.recipients.length
     };
     setMessages(prev => [...prev, newMessage]);
   };
 
   const handleExportGrades = () => {
+    // Create CSV data
     const csvData = [
       ["Student Name", "Class", "Grade", "Attendance %"],
       ...students.map(student => [
@@ -297,6 +259,7 @@ const StaffPortalContent = () => {
   };
 
   const handleGenerateAttendanceReport = () => {
+    // Create attendance summary report
     const reportData = [
       ["Class", "Subject", "Date", "Present", "Total", "Attendance %"],
       ...attendanceRecords.map(record => [
@@ -324,121 +287,204 @@ const StaffPortalContent = () => {
     });
   };
 
-  const renderSectionContent = (section: PortalSection) => {
-    switch (section.content_type) {
-      case 'schedule':
-        return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  const handleAction = (action: string) => {
+    toast({
+      title: `${action} Initiated`,
+      description: `${action} action has been processed.`,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="bg-gradient-to-br from-secondary to-secondary/80 text-white py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center space-x-4">
+            <GraduationCap className="h-10 w-10" />
+            <div>
+              <h1 className="text-3xl font-bold">Staff Portal</h1>
+              <p className="text-white/90">Teacher Resources and Student Management</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        {/* Quick Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="hover:shadow-elegant transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm">My Classes</p>
+                  <p className="text-2xl font-bold text-foreground">8</p>
+                </div>
+                <Users className="h-8 w-8 text-secondary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-elegant transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm">Total Students</p>
+                  <p className="text-2xl font-bold text-foreground">{students.length}</p>
+                </div>
+                <Target className="h-8 w-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-elegant transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm">Assignments</p>
+                  <p className="text-2xl font-bold text-foreground">{assignments.length}</p>
+                </div>
+                <FileText className="h-8 w-8 text-accent" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-elegant transition-all duration-300">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-muted-foreground text-sm">Messages</p>
+                  <p className="text-2xl font-bold text-foreground">7</p>
+                </div>
+                <MessageSquare className="h-8 w-8 text-navy" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="schedule" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="students">Students</TabsTrigger>
+            <TabsTrigger value="assignments">Assignments</TabsTrigger>
+            <TabsTrigger value="lessons">Lesson Plans</TabsTrigger>
+            <TabsTrigger value="attendance">Attendance</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="schedule" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="h-5 w-5 mr-2 text-primary" />
+                    Today's Schedule
+                  </CardTitle>
+                  <CardDescription>Your classes for today</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {todaysSchedule.map((schedule, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-2 h-12 bg-primary rounded-full"></div>
+                          <div>
+                            <p className="font-medium">{schedule.subject}</p>
+                            <p className="text-sm text-muted-foreground">{schedule.class} - {schedule.room}</p>
+                          </div>
+                        </div>
+                        <Badge variant="outline">{schedule.time}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-secondary">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button onClick={handleMarkAttendance} className="w-full justify-start">
+                    <CheckSquare className="h-4 w-4 mr-2" />
+                    Mark Attendance
+                  </Button>
+                  <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Create Lesson Plan
+                  </Button>
+                  <Button onClick={handleSendMessage} variant="outline" className="w-full justify-start">
+                    <Send className="h-4 w-4 mr-2" />
+                    Message Parents
+                  </Button>
+                  <Link to="/e-learning">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      E-Learning Platform
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="students" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  {renderIcon(section.icon)}
-                  Today's Schedule
-                </CardTitle>
-                <CardDescription>Your classes for today</CardDescription>
+                <CardTitle>My Students ({students.length})</CardTitle>
+                <CardDescription>View and manage your students' progress</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {todaysSchedule.map((schedule, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-2 h-12 bg-primary rounded-full"></div>
-                        <div>
-                          <p className="font-medium">{schedule.subject}</p>
-                          <p className="text-sm text-muted-foreground">{schedule.class} - {schedule.room}</p>
-                        </div>
+                  {students.map((student) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold">{student.name}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Class: {student.class} | Attendance: {student.attendance}%
+                        </p>
+                        {editingStudent === student.id ? (
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Input
+                              value={studentGradeForm.grade}
+                              onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
+                              placeholder="Enter grade"
+                              className="w-20"
+                            />
+                            <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <Badge variant="outline">Grade: {student.grade}</Badge>
+                        )}
                       </div>
-                      <Badge variant="outline">{schedule.time}</Badge>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
+                          <Edit className="h-4 w-4 mr-1" />
+                          Grade
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={handleSendMessage}>
+                          <MessageSquare className="h-4 w-4 mr-1" />
+                          Message
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-secondary">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button onClick={handleMarkAttendance} className="w-full justify-start">
-                  <CheckSquare className="h-4 w-4 mr-2" />
-                  Mark Attendance
-                </Button>
-                <Button onClick={handleCreateLessonPlan} variant="outline" className="w-full justify-start">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Create Lesson Plan
-                </Button>
-                <Button onClick={handleSendMessage} variant="outline" className="w-full justify-start">
-                  <Send className="h-4 w-4 mr-2" />
-                  Message Parents
-                </Button>
-                <Link to="/e-learning">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    E-Learning Platform
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        );
-
-      case 'students':
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>My Students ({students.length})</CardTitle>
-              <CardDescription>View and manage your students' progress</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {students.map((student) => (
-                  <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div>
-                      <h3 className="font-semibold">{student.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Class: {student.class} | Attendance: {student.attendance}%
-                      </p>
-                      {editingStudent === student.id ? (
-                        <div className="flex items-center space-x-2 mt-2">
-                          <Input
-                            value={studentGradeForm.grade}
-                            onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
-                            placeholder="Enter grade"
-                            className="w-24"
-                          />
-                          <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
-                            Save
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
-                            Cancel
-                          </Button>
-                        </div>
-                      ) : (
-                        <Badge variant="secondary" className="mt-1">Grade: {student.grade}</Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEditStudentGrade(student)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        );
-
-      case 'assignments':
-        return (
-          <div className="space-y-6">
+          <TabsContent value="assignments" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-primary">Assignment Management</h2>
+              <Button onClick={() => setNewAssignment({ title: "", class: "", dueDate: "", description: "", subject: "" })} className="flex items-center">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Assignment
+              </Button>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -551,12 +597,34 @@ const StaffPortalContent = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        );
+          </TabsContent>
 
-      case 'lessons':
-        return (
-          <div className="space-y-6">
+          <TabsContent value="resources" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Teaching Resources</CardTitle>
+                <CardDescription>Access curriculum materials and teaching aids</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button onClick={() => handleAction("Access Curriculum")} variant="outline" className="h-20 flex flex-col">
+                  <BookOpen className="h-6 w-6 mb-2" />
+                  Curriculum Guide
+                </Button>
+                <Button onClick={() => handleAction("View Lesson Plans")} variant="outline" className="h-20 flex flex-col">
+                  <FileText className="h-6 w-6 mb-2" />
+                  Lesson Plans
+                </Button>
+                <Link to="/library">
+                  <Button variant="outline" className="h-20 flex flex-col w-full">
+                    <Users className="h-6 w-6 mb-2" />
+                    Digital Library
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="lessons" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-primary">Lesson Plans ({lessonPlans.length})</h2>
               <Button onClick={handleCreateLessonPlan} className="flex items-center">
@@ -603,12 +671,9 @@ const StaffPortalContent = () => {
                 </Card>
               ))}
             </div>
-          </div>
-        );
+          </TabsContent>
 
-      case 'attendance':
-        return (
-          <div className="space-y-6">
+          <TabsContent value="attendance" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-primary">Attendance Records</h2>
               <Button onClick={handleMarkAttendance} className="flex items-center">
@@ -651,12 +716,9 @@ const StaffPortalContent = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        );
+          </TabsContent>
 
-      case 'messages':
-        return (
-          <div className="space-y-6">
+          <TabsContent value="messages" className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold text-primary">Messages to Parents</h2>
               <Button onClick={handleSendMessage} className="flex items-center">
@@ -693,140 +755,31 @@ const StaffPortalContent = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        );
+          </TabsContent>
 
-      case 'reports':
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Academic Reports</CardTitle>
-              <CardDescription>Generate and view student performance reports</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button onClick={handleGenerateAttendanceReport} variant="outline" className="w-full justify-start">
-                <Calendar className="h-4 w-4 mr-2" />
-                Generate Attendance Report
-              </Button>
-              <Button onClick={handleExportGrades} variant="outline" className="w-full justify-start">
-                <Download className="h-4 w-4 mr-2" />
-                Export Grade Records
-              </Button>
-            </CardContent>
-          </Card>
-        );
-
-      default:
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                {renderIcon(section.icon)}
-                {section.title}
-              </CardTitle>
-              <CardDescription>{section.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Content for {section.title} will be available soon.</p>
-              </div>
-            </CardContent>
-          </Card>
-        );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="bg-gradient-to-br from-secondary to-secondary/80 text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center space-x-4">
-            <GraduationCap className="h-10 w-10" />
-            <div>
-              <h1 className="text-3xl font-bold">Staff Portal</h1>
-              <p className="text-white/90">Teacher Resources and Student Management</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        {/* Quick Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:shadow-elegant transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">My Classes</p>
-                  <p className="text-2xl font-bold text-foreground">8</p>
-                </div>
-                <Users className="h-8 w-8 text-secondary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">Total Students</p>
-                  <p className="text-2xl font-bold text-foreground">{students.length}</p>
-                </div>
-                <Target className="h-8 w-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">Assignments</p>
-                  <p className="text-2xl font-bold text-foreground">{assignments.length}</p>
-                </div>
-                <FileText className="h-8 w-8 text-accent" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-all duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm">Messages</p>
-                  <p className="text-2xl font-bold text-foreground">7</p>
-                </div>
-                <MessageSquare className="h-8 w-8 text-navy" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {portalSections.length > 0 && (
-          <Tabs defaultValue={portalSections[0]?.section_key || "schedule"} className="space-y-6">
-            <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${Math.min(portalSections.length, 7)}, minmax(0, 1fr))` }}>
-              {portalSections.map((section) => (
-                <TabsTrigger key={section.section_key} value={section.section_key}>
-                  {section.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {portalSections.map((section) => (
-              <TabsContent key={section.section_key} value={section.section_key} className="space-y-6">
-                {renderSectionContent(section)}
-              </TabsContent>
-            ))}
-          </Tabs>
-        )}
-
-        {portalSections.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <GraduationCap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Loading portal sections...</p>
-          </div>
-        )}
+          <TabsContent value="reports" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Academic Reports</CardTitle>
+                <CardDescription>Generate and view student performance reports</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button onClick={() => handleAction("Generate Class Report")} className="w-full justify-start">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Generate Class Performance Report
+                </Button>
+                <Button onClick={handleGenerateAttendanceReport} variant="outline" className="w-full justify-start">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Generate Attendance Report
+                </Button>
+                <Button onClick={handleExportGrades} variant="outline" className="w-full justify-start">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Grade Records
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}

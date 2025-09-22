@@ -12,7 +12,6 @@ import { getAnalytics } from "@/hooks/useAnalytics";
 import { toast } from "@/hooks/use-toast";
 import { useSitemapUpdate } from "@/hooks/useSitemapUpdate";
 import ImageManager from "@/components/ImageManager";
-import PortalSectionManager from "@/components/PortalSectionManager";
 import {
   Plus,
   Edit,
