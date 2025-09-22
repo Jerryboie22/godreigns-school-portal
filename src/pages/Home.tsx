@@ -43,7 +43,7 @@ const Home = () => {
   useEffect(() => {
     fetchDynamicContent();
     
-    // Set up real-time subscriptions
+    // Set up real-time subscriptions with improved error handling
     const postsChannel = supabase
       .channel('homepage-posts-changes')
       .on(
@@ -53,7 +53,8 @@ const Home = () => {
           schema: 'public',
           table: 'posts'
         },
-        () => {
+        (payload) => {
+          console.log('Posts updated:', payload);
           fetchBlogPosts();
         }
       )
@@ -68,7 +69,8 @@ const Home = () => {
           schema: 'public',
           table: 'gallery_images'
         },
-        () => {
+        (payload) => {
+          console.log('Gallery updated:', payload);
           fetchGalleryImages();
         }
       )
@@ -83,32 +85,45 @@ const Home = () => {
           schema: 'public',
           table: 'homepage_content'
         },
-        () => {
+        (payload) => {
+          console.log('Homepage content updated:', payload);
           fetchHomepageContent();
         }
       )
       .subscribe();
 
-    const imagesChannel = supabase
-      .channel('homepage-images-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'homepage_images'
-        },
-        () => {
-          fetchHomepageImages();
+    // Only subscribe to homepage_images if it exists
+    let imagesChannel = null;
+    supabase
+      .from('homepage_images')
+      .select('count', { count: 'exact', head: true })
+      .then(({ error }) => {
+        if (!error) {
+          imagesChannel = supabase
+            .channel('homepage-images-changes')
+            .on(
+              'postgres_changes',
+              {
+                event: '*',
+                schema: 'public',
+                table: 'homepage_images'
+              },
+              (payload) => {
+                console.log('Homepage images updated:', payload);
+                fetchHomepageImages();
+              }
+            )
+            .subscribe();
         }
-      )
-      .subscribe();
+      });
 
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(galleryChannel);
       supabase.removeChannel(contentChannel);
-      supabase.removeChannel(imagesChannel);
+      if (imagesChannel) {
+        supabase.removeChannel(imagesChannel);
+      }
     };
   }, []);
 
@@ -120,11 +135,17 @@ const Home = () => {
 
   const fetchHomepageImages = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('homepage_images')
         .select('*')
         .eq('is_active', true)
         .order('order_index', { ascending: true });
+
+      if (error) {
+        console.warn('Homepage images table not available:', error);
+        setHomepageImages({});
+        return;
+      }
 
       if (data) {
         const imagesBySection = data.reduce((acc: any, img: any) => {
@@ -136,6 +157,7 @@ const Home = () => {
       }
     } catch (error) {
       console.error('Error fetching homepage images:', error);
+      setHomepageImages({});
     }
   };
 
