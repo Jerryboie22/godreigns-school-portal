@@ -23,6 +23,7 @@ import {
   Bell
 } from "lucide-react";
 import AddScheduleModal from "@/components/modals/AddScheduleModal";
+import AddAssignmentModal from "@/components/modals/AddAssignmentModal";
 import ProfileEditModal from "@/components/modals/ProfileEditModal";
 import NotificationsModal from "@/components/modals/NotificationsModal";
 
@@ -43,6 +44,7 @@ const StaffPortal = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [schedules, setSchedules] = useState<LessonSchedule[]>([]);
+  const [assignments, setAssignments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,11 +70,41 @@ const StaffPortal = () => {
       
       setProfile(profileData);
       await fetchSchedules(session.user.id);
+      await fetchAssignments(session.user.id);
+      
+      // Fetch user profile
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      setProfile(userProfile);
     } catch (error) {
       console.error('Auth check failed:', error);
       navigate('/login');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAssignments = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('assignments')
+        .select('*')
+        .eq('teacher_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setAssignments(data || []);
+    } catch (error) {
+      console.error('Error fetching assignments:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load assignments.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -239,7 +271,7 @@ const StaffPortal = () => {
         <Tabs defaultValue="schedule" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
             <TabsTrigger value="schedule">My Schedule</TabsTrigger>
-            <TabsTrigger value="classes">Classes</TabsTrigger>
+            <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>   
             <TabsTrigger value="profile">Profile</TabsTrigger>
           </TabsList>
@@ -339,6 +371,63 @@ const StaffPortal = () => {
                   <div className="text-center py-12 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No classes assigned yet.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="assignments">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center space-x-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <span>Assignments & Lesson Plans</span>
+                    </CardTitle>
+                    <CardDescription>Manage your assignments and teaching materials</CardDescription>
+                  </div>
+                  <AddAssignmentModal onAssignmentAdded={() => fetchAssignments(user.id)} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                {assignments.length > 0 ? (
+                  <div className="space-y-4">
+                    {assignments.map((assignment) => (
+                      <div key={assignment.id} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h4 className="font-medium text-foreground mb-1">{assignment.title}</h4>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {assignment.subject} • {assignment.class_level}
+                            </p>
+                            {assignment.description && (
+                              <p className="text-sm text-muted-foreground mb-2">{assignment.description}</p>
+                            )}
+                            {assignment.due_date && (
+                              <p className="text-sm text-muted-foreground">
+                                Due: {new Date(assignment.due_date).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Button variant="outline" size="sm">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="destructive" size="sm">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">No Assignments Created</p>
+                    <p>Create your first assignment or lesson plan to get started.</p>
                   </div>
                 )}
               </CardContent>

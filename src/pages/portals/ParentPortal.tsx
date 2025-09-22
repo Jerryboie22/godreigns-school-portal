@@ -23,6 +23,7 @@ import {
   CreditCard
 } from "lucide-react";
 import AddChildModal from "@/components/modals/AddChildModal";
+import PaymentModal from "@/components/modals/PaymentModal";
 import ProfileEditModal from "@/components/modals/ProfileEditModal";
 import NotificationsModal from "@/components/modals/NotificationsModal";
 
@@ -42,6 +43,7 @@ const ParentPortal = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [childrenRecords, setChildrenRecords] = useState<ChildRecord[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,11 +69,41 @@ const ParentPortal = () => {
       
       setProfile(profileData);
       await fetchChildrenRecords(session.user.id);
+      await fetchPayments(session.user.id);
+      
+      // Fetch user profile
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      
+      setProfile(userProfile);
     } catch (error) {
       console.error('Auth check failed:', error);
       navigate('/login');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPayments = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('fee_payments')
+        .select('*')
+        .eq('parent_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPayments(data || []);
+    } catch (error) {
+      console.error('Error fetching payments:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load payment history.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -392,14 +424,13 @@ const ParentPortal = () => {
                               {child.outstanding_fees > 0 ? 'Outstanding' : 'Paid'}
                             </Badge>
                             {child.outstanding_fees > 0 && (
-                              <Button
-                                size="sm"
-                                onClick={() => handlePayFees(child.id)}
-                                className="h-8 flex items-center gap-1"
-                              >
-                                <CreditCard className="h-3 w-3" />
-                                Pay
-                              </Button>
+                              <PaymentModal 
+                                childId={child.id} 
+                                onPaymentCompleted={() => {
+                                  fetchChildrenRecords(user.id);
+                                  fetchPayments(user.id);
+                                }}
+                              />
                             )}
                           </div>
                         </div>
@@ -427,6 +458,33 @@ const ParentPortal = () => {
                         <CreditCard className="h-4 w-4 mr-2" />
                         Pay All Outstanding Fees
                       </Button>
+                    </div>
+                    
+                    {/* Payment History */}
+                    <div className="pt-6 border-t">
+                      <h3 className="text-lg font-medium mb-4">Payment History</h3>
+                      {payments.length > 0 ? (
+                        <div className="space-y-3">
+                          {payments.slice(0, 5).map((payment) => (
+                            <div key={payment.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                              <div>
+                                <p className="font-medium">{payment.fee_type}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(payment.payment_date).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium">₦{payment.amount.toLocaleString()}</p>
+                                <Badge variant="default" className="text-xs">
+                                  {payment.status}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-center py-4">No payment history found.</p>
+                      )}
                     </div>
                   </div>
                 ) : (
