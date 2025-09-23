@@ -102,6 +102,7 @@ const Gallery = () => {
           src: item.image_url,
           image_url: item.image_url,
           title: item.title,
+          category: item.category || "General",
           description: item.description || ""
         }));
         setGalleryImages(formattedData);

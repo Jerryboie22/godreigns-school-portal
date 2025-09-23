@@ -32,7 +32,6 @@ const Home = () => {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [homepageContent, setHomepageContent] = useState<any[]>([]);
-  const [homepageImages, setHomepageImages] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   // Fallback images if database is empty
@@ -89,54 +88,17 @@ const Home = () => {
       )
       .subscribe();
 
-    const imagesChannel = supabase
-      .channel('homepage-images-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'homepage_images'
-        },
-        () => {
-          fetchHomepageImages();
-        }
-      )
-      .subscribe();
-
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(galleryChannel);
       supabase.removeChannel(contentChannel);
-      supabase.removeChannel(imagesChannel);
     };
   }, []);
 
   const fetchDynamicContent = async () => {
     setLoading(true);
-    await Promise.all([fetchBlogPosts(), fetchGalleryImages(), fetchHomepageContent(), fetchHomepageImages()]);
+    await Promise.all([fetchBlogPosts(), fetchGalleryImages(), fetchHomepageContent()]);
     setLoading(false);
-  };
-
-  const fetchHomepageImages = async () => {
-    try {
-      const { data } = await supabase
-        .from('homepage_images')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_index', { ascending: true });
-
-      if (data) {
-        const imagesBySection = data.reduce((acc: any, img: any) => {
-          if (!acc[img.section]) acc[img.section] = [];
-          acc[img.section].push(img);
-          return acc;
-        }, {});
-        setHomepageImages(imagesBySection);
-      }
-    } catch (error) {
-      console.error('Error fetching homepage images:', error);
-    }
   };
 
   const fetchHomepageContent = async () => {
@@ -229,7 +191,7 @@ const Home = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${homepageImages.hero?.[0]?.image_url || studentsGreenUniforms})`,
+            backgroundImage: `url(${studentsGreenUniforms})`,
           }}
         >
           {/* Dark Overlay for better text contrast */}
@@ -309,8 +271,8 @@ const Home = () => {
                   
                   <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 shadow-2xl">
                     <img 
-                      src={homepageImages.hero?.[1]?.image_url || schoolFlyer} 
-                      alt={homepageImages.hero?.[1]?.alt_text || "Our God Reigns Crystal School - Admission in Progress"}
+                      src={schoolFlyer} 
+                      alt="Our God Reigns Crystal School - Admission in Progress"
                       className="rounded-xl shadow-elegant w-full max-w-xs lg:max-w-md mx-auto"
                     />
                   </div>
@@ -335,8 +297,8 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
                 <img 
-                  src={homepageImages.about?.[0]?.image_url || graduateIndividual} 
-                  alt={homepageImages.about?.[0]?.alt_text || "Our God Reigns Crystal School Graduate"}
+                  src={graduateIndividual} 
+                  alt="Our God Reigns Crystal School Graduate"
                   className="rounded-lg shadow-elegant w-full max-w-lg"
                 />
               </div>
