@@ -14,13 +14,10 @@ import { toast } from "sonner";
 
 interface HomepageImage {
   id: string;
-  section: string;
-  title: string;
+  title: string | null;
   description: string | null;
   image_url: string;
-  alt_text: string;
-  order_index: number;
-  is_active: boolean;
+  thumbnail_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -31,12 +28,8 @@ const ImageManager = () => {
   const [selectedImage, setSelectedImage] = useState<HomepageImage | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    section: '',
     title: '',
-    description: '',
-    alt_text: '',
-    order_index: 0,
-    is_active: true
+    description: ''
   });
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -61,7 +54,7 @@ const ImageManager = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'homepage_images'
+          table: 'gallery_images'
         },
         () => {
           fetchHomepageImages();
@@ -77,10 +70,9 @@ const ImageManager = () => {
   const fetchHomepageImages = async () => {
     try {
       const { data, error } = await supabase
-        .from('homepage_images')
+        .from('gallery_images')
         .select('*')
-        .order('section', { ascending: true })
-        .order('order_index', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setImages(data || []);
@@ -132,7 +124,7 @@ const ImageManager = () => {
       if (selectedImage) {
         // Update existing image
         const { error } = await supabase
-          .from('homepage_images')
+          .from('gallery_images')
           .update(imageData)
           .eq('id', selectedImage.id);
 
@@ -146,7 +138,7 @@ const ImageManager = () => {
         }
 
         const { error } = await supabase
-          .from('homepage_images')
+          .from('gallery_images')
           .insert([imageData]);
 
         if (error) throw error;
@@ -166,12 +158,8 @@ const ImageManager = () => {
   const handleEdit = (image: HomepageImage) => {
     setSelectedImage(image);
     setFormData({
-      section: image.section,
-      title: image.title,
-      description: image.description || '',
-      alt_text: image.alt_text,
-      order_index: image.order_index,
-      is_active: image.is_active
+      title: image.title || '',
+      description: image.description || ''
     });
     setIsEditing(true);
   };
@@ -181,7 +169,7 @@ const ImageManager = () => {
 
     try {
       const { error } = await supabase
-        .from('homepage_images')
+        .from('gallery_images')
         .delete()
         .eq('id', id);
 
@@ -196,12 +184,8 @@ const ImageManager = () => {
   const resetForm = () => {
     setSelectedImage(null);
     setFormData({
-      section: '',
       title: '',
-      description: '',
-      alt_text: '',
-      order_index: 0,
-      is_active: true
+      description: ''
     });
     setUploadFile(null);
   };
@@ -235,36 +219,6 @@ const ImageManager = () => {
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="section">Section</Label>
-                  <Select 
-                    value={formData.section} 
-                    onValueChange={(value) => setFormData({...formData, section: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select section" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sections.map((section) => (
-                        <SelectItem key={section.value} value={section.value}>
-                          {section.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="order_index">Order</Label>
-                  <Input
-                    type="number"
-                    value={formData.order_index}
-                    onChange={(e) => setFormData({...formData, order_index: parseInt(e.target.value) || 0})}
-                  />
-                </div>
-              </div>
-
               <div>
                 <Label htmlFor="title">Title</Label>
                 <Input
@@ -283,15 +237,6 @@ const ImageManager = () => {
               </div>
 
               <div>
-                <Label htmlFor="alt_text">Alt Text</Label>
-                <Input
-                  value={formData.alt_text}
-                  onChange={(e) => setFormData({...formData, alt_text: e.target.value})}
-                  required
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="image">Image File</Label>
                 <Input
                   type="file"
@@ -303,14 +248,6 @@ const ImageManager = () => {
                     Leave empty to keep current image
                   </p>
                 )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
-                />
-                <Label>Active</Label>
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">
@@ -330,26 +267,24 @@ const ImageManager = () => {
         {images.map((image) => (
           <Card key={image.id} className="overflow-hidden">
             <div className="aspect-video relative">
-              <img
-                src={image.image_url}
-                alt={image.alt_text}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3EImage Not Available%3C/text%3E%3C/svg%3E";
-                }}
-              />
-              <div className="absolute top-2 right-2">
-                <Badge variant={image.is_active ? "default" : "secondary"}>
-                  {image.is_active ? "Active" : "Inactive"}
-                </Badge>
-              </div>
+                <img
+                  src={image.image_url}
+                  alt={image.title || 'Gallery image'}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3EImage Not Available%3C/text%3E%3C/svg%3E";
+                  }}
+                />
+                <div className="absolute top-2 right-2">
+                  <Badge variant="default">Gallery</Badge>
+                </div>
             </div>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg">{image.title}</CardTitle>
+                  <CardTitle className="text-lg">{image.title || 'Untitled'}</CardTitle>
                   <CardDescription>
-                    {sections.find(s => s.value === image.section)?.label} - Order: {image.order_index}
+                    Gallery Image - {new Date(image.created_at).toLocaleDateString()}
                   </CardDescription>
                 </div>
               </div>

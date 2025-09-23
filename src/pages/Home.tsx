@@ -96,7 +96,7 @@ const Home = () => {
         {
           event: '*',
           schema: 'public',
-          table: 'homepage_images'
+          table: 'homepage_content'
         },
         () => {
           fetchHomepageImages();
@@ -121,9 +121,9 @@ const Home = () => {
   const fetchHomepageImages = async () => {
     try {
       const { data } = await supabase
-        .from('homepage_images')
+        .from('homepage_content')
         .select('*')
-        .eq('is_active', true)
+        .eq('is_visible', true)
         .order('order_index', { ascending: true });
 
       if (data) {
@@ -160,7 +160,7 @@ const Home = () => {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('status', 'published')
+        .eq('published', true)
         .order('created_at', { ascending: false })
         .limit(6);
 
@@ -172,8 +172,8 @@ const Home = () => {
           title: post.title,
           excerpt: post.excerpt || post.content.substring(0, 120) + '...',
           date: new Date(post.created_at).toISOString().split('T')[0],
-          category: post.category || 'News',
-          image: post.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3ENo Image%3C/text%3E%3C/svg%3E"
+          category: 'News',
+          image: post.featured_image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f3f4f6'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='.3em' font-family='Arial, sans-serif' font-size='14' fill='%236b7280'%3ENo Image%3C/text%3E%3C/svg%3E"
         }));
         setBlogPosts(formattedPosts);
       } else {
