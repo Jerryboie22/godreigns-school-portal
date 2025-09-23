@@ -17,7 +17,7 @@ interface AuthGuardProps {
 }
 
 interface UserProfile {
-  id: string;
+  user_id: string;
   email: string;
   full_name: string;
   role: string;
@@ -68,7 +68,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('user_id', session.user.id)
             .single();
           
           if (profileData && isUserAuthorized(profileData.role, portalType)) {

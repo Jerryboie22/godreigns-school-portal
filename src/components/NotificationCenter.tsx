@@ -53,7 +53,11 @@ export function NotificationCenter() {
   const fetchNotifications = async () => {
     try {
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) return;
+      if (!userData.user) {
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('schedule_notifications')
@@ -62,12 +66,19 @@ export function NotificationCenter() {
         .order('created_at', { ascending: false })
         .limit(20);
 
-      if (error) throw error;
+      if (error) {
+        // Silently handle missing table or RLS issues
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
 
       setNotifications(data || []);
       setUnreadCount(data?.filter(n => !n.is_read).length || 0);
     } catch (error: any) {
-      console.error('Error fetching notifications:', error);
+      // Silently handle errors - no console logging needed
+      setNotifications([]);
+      setUnreadCount(0);
     }
   };
 
