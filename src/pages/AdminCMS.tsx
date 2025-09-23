@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAnalytics } from "@/hooks/useAnalytics";
 import { toast } from "@/hooks/use-toast";
 import { useSitemapUpdate } from "@/hooks/useSitemapUpdate";
+import ImageManager from "@/components/ImageManager";
 import {
   Plus,
   Edit,
@@ -426,15 +427,12 @@ const AdminCMS = () => {
     }
 
     try {
-      // Create teacher record directly
+      // Create teacher record
       const { error: teacherError } = await supabase
         .from('teachers')
         .insert([{
-          user_id: null, // Will be linked later when user registers
+          name: newTeacher.name,
           subject: newTeacher.subject,
-          department: newTeacher.department,
-          employee_id: newTeacher.employee_id,
-          hire_date: newTeacher.hire_date
         }]);
 
       if (teacherError) throw teacherError;
