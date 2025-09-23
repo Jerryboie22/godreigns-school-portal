@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import AuthGuard from "@/components/AuthGuard";
+import SimpleAuthGuard from "@/components/SimpleAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -637,9 +637,9 @@ const AdminPortalContent = () => {
 
 const AdminPortal = () => {
   return (
-    <AuthGuard portalType="admin">
+    <SimpleAuthGuard allowedRoles={['admin']}>
       <AdminPortalContent />
-    </AuthGuard>
+    </SimpleAuthGuard>
   );
 };
 

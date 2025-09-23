@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import AuthGuard from "@/components/AuthGuard";
+import SimpleAuthGuard from "@/components/SimpleAuthGuard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -372,9 +372,9 @@ const StudentPortalContent = () => {
 
 const StudentPortal = () => {
   return (
-    <AuthGuard portalType="student">
+    <SimpleAuthGuard allowedRoles={['student']}>
       <StudentPortalContent />
-    </AuthGuard>
+    </SimpleAuthGuard>
   );
 };
 

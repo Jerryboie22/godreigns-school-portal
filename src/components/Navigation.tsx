@@ -79,10 +79,17 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-            {navItems.map(item => <Link key={item.path} to={item.path} className={`transition-colors hover:text-primary font-medium text-sm xl:text-base ${isActive(item.path) ? "text-primary" : "text-foreground"}`}>
-                {item.label}
-              </Link>)}
+          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
+            <div className="flex items-center space-x-6 xl:space-x-8">
+              {navItems.map(item => <Link key={item.path} to={item.path} className={`transition-colors hover:text-primary font-medium text-sm xl:text-base ${isActive(item.path) ? "text-primary" : "text-foreground"}`}>
+                  {item.label}
+                </Link>)}
+            </div>
+            <Link to="/login">
+              <Button variant="outline" size="sm" className="ml-4">
+                Login
+              </Button>
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -97,6 +104,11 @@ const Navigation = () => {
               {navItems.map(item => <Link key={item.path} to={item.path} className={`transition-colors hover:text-primary font-medium ${isActive(item.path) ? "text-primary" : "text-foreground"}`} onClick={() => setIsOpen(false)}>
                   {item.label}
                 </Link>)}
+              <Link to="/login" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" size="sm" className="self-start">
+                  Login
+                </Button>
+              </Link>
             </div>
           </nav>}
       </div>
