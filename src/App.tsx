@@ -50,7 +50,6 @@ const App = () => (
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogPost />} />
         <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
-              <Route path="/portal/admin" element={<AdminPortal />} />
               <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />
               <Route path="/admin-cms" element={<AdminCMS />} />
