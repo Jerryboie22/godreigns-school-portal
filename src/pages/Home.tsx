@@ -142,7 +142,7 @@ const Home = () => {
         .order('order_index', { ascending: true });
 
       if (error) {
-        // Silently handle missing table - no console warning needed
+        console.warn('Homepage images table not available:', error);
         setHomepageImages({});
         return;
       }
@@ -156,7 +156,7 @@ const Home = () => {
         setHomepageImages(imagesBySection);
       }
     } catch (error) {
-      // Silently handle errors - no console logging needed for missing tables
+      console.error('Error fetching homepage images:', error);
       setHomepageImages({});
     }
   };

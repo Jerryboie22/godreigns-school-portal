@@ -17,7 +17,7 @@ interface AuthGuardProps {
 }
 
 interface UserProfile {
-  user_id: string;
+  id: string;
   email: string;
   full_name: string;
   role: string;
@@ -57,93 +57,52 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchProfile = (uid: string) => {
-      setTimeout(async () => {
-        try {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('user_id', uid)
-            .maybeSingle();
-
-          if (cancelled) return;
-
-          if (profileData) {
-            const userRole = profileData.role;
-            const roleToPortalMap: Record<string, string> = {
-              admin: 'admin',
-              teacher: 'staff',
-              staff: 'staff',
-              parent: 'parent',
-              student: 'student',
-            };
-            const expectedPortal = roleToPortalMap[userRole];
-
-            if (expectedPortal) {
-              setProfile(profileData);
-              setIsAuthenticated(true);
-              if (expectedPortal !== portalType) {
-                window.location.replace(`/portals/${expectedPortal}`);
-                return;
-              }
-            } else {
-              setIsAuthenticated(false);
-              setProfile(null);
-            }
+            .eq('id', session.user.id)
+            .single();
+          
+          if (profileData && isUserAuthorized(profileData.role, portalType)) {
+            setProfile(profileData);
+            setIsAuthenticated(true);
           } else {
-            // No profile yet
             setIsAuthenticated(false);
             setProfile(null);
           }
-        } finally {
-          if (!cancelled) setLoading(false);
+        } else {
+          setIsAuthenticated(false);
+          setProfile(null);
         }
-      }, 0);
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setIsAuthenticated(false);
-        setProfile(null);
         setLoading(false);
       }
-    });
+    );
 
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (cancelled) return;
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
+      if (!session) {
         setLoading(false);
       }
     });
 
-    // Safety timeout
-    const timeout = setTimeout(() => {
-      if (!cancelled) setLoading(false);
-    }, 5000);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeout);
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
@@ -154,43 +113,11 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           description: error.message,
           variant: "destructive",
         });
-      } else if (data.user) {
-        // Fetch user profile to get role
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('user_id', data.user.id)
-          .single();
-
-        if (profileData) {
-          const userRole = profileData.role;
-          
-          // Redirect based on user role instead of current portal
-          const roleToPortalMap: Record<string, string> = {
-            'admin': '/portals/admin',
-            'teacher': '/portals/staff',
-            'staff': '/portals/staff',
-            'parent': '/portals/parent',
-            'student': '/portals/student'
-          };
-
-          const redirectPath = roleToPortalMap[userRole] || `/portals/${userRole}`;
-          
-          toast({
-            title: "Login Successful",
-            description: `Welcome back! Redirecting to your ${userRole} dashboard...`,
-          });
-          
-          // Redirect to appropriate portal
-          setTimeout(() => {
-            window.location.href = redirectPath;
-          }, 1000);
-        } else {
-          toast({
-            title: "Login Successful",
-            description: "Welcome back!",
-          });
-        }
+      } else {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back!",
+        });
       }
     } catch (error) {
       toast({
@@ -223,9 +150,9 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
       
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
@@ -243,34 +170,12 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           description: error.message,
           variant: "destructive"
         });
-      } else if (data.user) {
-        // For confirmed users (if email confirmation is disabled), redirect immediately
-        if (data.user.email_confirmed_at) {
-          const roleToPortalMap: Record<string, string> = {
-            'admin': '/portals/admin',
-            'teacher': '/portals/staff',
-            'staff': '/portals/staff',
-            'parent': '/portals/parent',
-            'student': '/portals/student'
-          };
-
-          const redirectPath = roleToPortalMap[portalType] || `/portals/${portalType}`;
-          
-          toast({
-            title: "Account Created Successfully",
-            description: `Welcome! Redirecting to your ${portalType} dashboard...`,
-          });
-          
-          setTimeout(() => {
-            window.location.href = redirectPath;
-          }, 1000);
-        } else {
-          setPendingVerification(signupData.email);
-          toast({
-            title: "Verification Email Sent",
-            description: "Please check your email to verify your account.",
-          });
-        }
+      } else {
+        setPendingVerification(signupData.email);
+        toast({
+          title: "Verification Email Sent",
+          description: "Please check your email to verify your account.",
+        });
       }
     } catch (error) {
       toast({
@@ -295,7 +200,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
         }
       });
 

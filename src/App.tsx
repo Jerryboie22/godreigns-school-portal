@@ -23,8 +23,6 @@ import AdminCMS from "./pages/AdminCMS";
 import StaffPortal from "./pages/portals/StaffPortal";
 import ParentPortal from "./pages/portals/ParentPortal";
 import StudentPortal from "./pages/portals/StudentPortal";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,28 +47,16 @@ const App = () => (
               <Route path="/portals" element={<Portals />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:id" element={<BlogPost />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              
-              {/* Role-based portal routes */}
-              <Route path="/admin" element={<AdminPortal />} />
-              <Route path="/staff" element={<StaffPortal />} />
-              <Route path="/parent" element={<ParentPortal />} />
-              <Route path="/student" element={<StudentPortal />} />
-              
-              {/* Legacy admin routes */}
-              <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/admin/school-fees" element={<SchoolFeesAdmin />} />
+              <Route path="/portal/admin" element={<AdminPortal />} />
+              <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/admin/cms" element={<AdminCMS />} />
               <Route path="/admin-cms" element={<AdminCMS />} />
-              
-              {/* Legacy portal routes - redirect to new ones */}
-              <Route path="/portals/admin" element={<AdminPortal />} />
               <Route path="/portals/staff" element={<StaffPortal />} />
               <Route path="/portals/parent" element={<ParentPortal />} />
               <Route path="/portals/student" element={<StudentPortal />} />
-              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

@@ -2,7 +2,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Shield, Users, Heart, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import PortalCard from "@/components/PortalCard";
 import logo from "@/assets/logo.jpeg";
 
 const Portals = () => {

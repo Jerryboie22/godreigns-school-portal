@@ -3,42 +3,28 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
+
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const navItems = [{
-    label: "Home",
-    path: "/"
-  }, {
-    label: "About",
-    path: "/about"
-  }, {
-    label: "Admissions",
-    path: "/admissions"
-  }, {
-    label: "Library",
-    path: "/library"
-  }, {
-    label: "E-Learning",
-    path: "/e-learning"
-  }, {
-    label: "School Fees",
-    path: "/school-fees"
-  }, {
-    label: "Portals",
-    path: "/portals"
-  }, {
-    label: "Gallery",
-    path: "/gallery"
-  }, {
-    label: "Blog",
-    path: "/blog"
-  }, {
-    label: "Contact",
-    path: "/contact"
-  }];
+
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "About", path: "/about" },
+    { label: "Admissions", path: "/admissions" },
+    { label: "Library", path: "/library" },
+    { label: "E-Learning", path: "/e-learning" },
+    { label: "School Fees", path: "/school-fees" },
+    { label: "Portals", path: "/portals" },
+    { label: "Gallery", path: "/gallery" },
+    { label: "Blog", path: "/blog" },
+    { label: "Contact", path: "/contact" }
+  ];
+
   const isActive = (path: string) => location.pathname === path;
-  return <>
+
+  return (
+    <>
       {/* Top Contact Bar */}
       <div className="bg-primary text-white py-2 text-sm">
         <div className="container mx-auto px-4">
@@ -58,7 +44,7 @@ const Navigation = () => {
               </a>
               <div className="hidden md:flex items-center space-x-1 text-xs">
                 <MapPin className="h-3 w-3 flex-shrink-0" />
-                <span>23, Bolanle Awosika Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
+                <span>23, Bolanle Awosiku Street, off Ilogbo Road, Borehole, Ota, Ogun State</span>
               </div>
             </div>
             <div className="hidden lg:block text-xs whitespace-nowrap font-medium">
@@ -79,40 +65,54 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
-            <div className="flex items-center space-x-6 xl:space-x-8">
-              {navItems.map(item => <Link key={item.path} to={item.path} className={`transition-colors hover:text-primary font-medium text-sm xl:text-base ${isActive(item.path) ? "text-primary" : "text-foreground"}`}>
-                  {item.label}
-                </Link>)}
-            </div>
-            <Link to="/login">
-              <Button variant="outline" size="sm" className="ml-4">
-                Login
-              </Button>
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`transition-colors hover:text-primary font-medium text-sm xl:text-base ${
+                  isActive(item.path) ? "text-primary" : "text-foreground"
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Mobile Menu Button */}
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
 
         {/* Mobile Navigation */}
-        {isOpen && <nav className="lg:hidden pb-6 border-t border-border mt-4 pt-4">
+        {isOpen && (
+          <nav className="lg:hidden pb-6 border-t border-border mt-4 pt-4">
             <div className="flex flex-col space-y-4">
-              {navItems.map(item => <Link key={item.path} to={item.path} className={`transition-colors hover:text-primary font-medium ${isActive(item.path) ? "text-primary" : "text-foreground"}`} onClick={() => setIsOpen(false)}>
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`transition-colors hover:text-primary font-medium ${
+                    isActive(item.path) ? "text-primary" : "text-foreground"
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
                   {item.label}
-                </Link>)}
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <Button variant="outline" size="sm" className="self-start">
-                  Login
-                </Button>
-              </Link>
+                </Link>
+              ))}
             </div>
-          </nav>}
+          </nav>
+        )}
       </div>
     </header>
-    </>;
+    </>
+  );
 };
+
 export default Navigation;
