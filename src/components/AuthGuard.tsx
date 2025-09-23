@@ -71,9 +71,48 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             .eq('user_id', session.user.id)
             .single();
           
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile(profileData);
-            setIsAuthenticated(true);
+          if (profileData) {
+            const userRole = profileData.role;
+            
+            // Check if user is on the correct portal
+            const roleToPortalMap: Record<string, string> = {
+              'admin': 'admin',
+              'teacher': 'staff',
+              'staff': 'staff',
+              'parent': 'parent',  
+              'student': 'student'
+            };
+
+            const expectedPortal = roleToPortalMap[userRole];
+            
+            if (expectedPortal && isUserAuthorized(userRole, portalType)) {
+              setProfile(profileData);
+              setIsAuthenticated(true);
+              
+              // If user is authorized but on wrong portal type, redirect them
+              if (expectedPortal !== portalType && event === 'SIGNED_IN') {
+                const redirectPath = `/portals/${expectedPortal}`;
+                toast({
+                  title: "Redirecting",
+                  description: `Redirecting you to your ${userRole} dashboard...`,
+                });
+                setTimeout(() => {
+                  window.location.href = redirectPath;
+                }, 1000);
+                return;
+              }
+            } else {
+              // User not authorized for this portal
+              setIsAuthenticated(false);
+              setProfile(null);
+              if (event === 'SIGNED_IN') {
+                toast({
+                  title: "Access Denied",
+                  description: `You don't have access to the ${portalType} portal. Please contact administration.`,
+                  variant: "destructive",
+                });
+              }
+            }
           } else {
             setIsAuthenticated(false);
             setProfile(null);
@@ -102,7 +141,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     e.preventDefault();
     
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginData.email,
         password: loginData.password,
       });
@@ -113,11 +152,43 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
+      } else if (data.user) {
+        // Fetch user profile to get role
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (profileData) {
+          const userRole = profileData.role;
+          
+          // Redirect based on user role instead of current portal
+          const roleToPortalMap: Record<string, string> = {
+            'admin': '/portals/admin',
+            'teacher': '/portals/staff',
+            'staff': '/portals/staff',
+            'parent': '/portals/parent',
+            'student': '/portals/student'
+          };
+
+          const redirectPath = roleToPortalMap[userRole] || `/portals/${userRole}`;
+          
+          toast({
+            title: "Login Successful",
+            description: `Welcome back! Redirecting to your ${userRole} dashboard...`,
+          });
+          
+          // Redirect to appropriate portal
+          setTimeout(() => {
+            window.location.href = redirectPath;
+          }, 1000);
+        } else {
+          toast({
+            title: "Login Successful",
+            description: "Welcome back!",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -152,7 +223,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     try {
       const redirectUrl = `${window.location.origin}/portals/${portalType}`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
         options: {
@@ -170,12 +241,34 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           description: error.message,
           variant: "destructive"
         });
-      } else {
-        setPendingVerification(signupData.email);
-        toast({
-          title: "Verification Email Sent",
-          description: "Please check your email to verify your account.",
-        });
+      } else if (data.user) {
+        // For confirmed users (if email confirmation is disabled), redirect immediately
+        if (data.user.email_confirmed_at) {
+          const roleToPortalMap: Record<string, string> = {
+            'admin': '/portals/admin',
+            'teacher': '/portals/staff',
+            'staff': '/portals/staff',
+            'parent': '/portals/parent',
+            'student': '/portals/student'
+          };
+
+          const redirectPath = roleToPortalMap[portalType] || `/portals/${portalType}`;
+          
+          toast({
+            title: "Account Created Successfully",
+            description: `Welcome! Redirecting to your ${portalType} dashboard...`,
+          });
+          
+          setTimeout(() => {
+            window.location.href = redirectPath;
+          }, 1000);
+        } else {
+          setPendingVerification(signupData.email);
+          toast({
+            title: "Verification Email Sent",
+            description: "Please check your email to verify your account.",
+          });
+        }
       }
     } catch (error) {
       toast({
