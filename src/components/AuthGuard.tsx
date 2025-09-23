@@ -88,30 +88,15 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
             if (expectedPortal && isUserAuthorized(userRole, portalType)) {
               setProfile(profileData);
               setIsAuthenticated(true);
-              
-              // If user is authorized but on wrong portal type, redirect them
-              if (expectedPortal !== portalType && event === 'SIGNED_IN') {
-                const redirectPath = `/portals/${expectedPortal}`;
-                toast({
-                  title: "Redirecting",
-                  description: `Redirecting you to your ${userRole} dashboard...`,
-                });
-                setTimeout(() => {
-                  window.location.href = redirectPath;
-                }, 1000);
-                return;
-              }
+            } else if (expectedPortal && expectedPortal !== portalType) {
+              // User is authorized but on wrong portal, redirect them
+              const redirectPath = `/portals/${expectedPortal}`;
+              window.location.replace(redirectPath);
+              return;
             } else {
               // User not authorized for this portal
               setIsAuthenticated(false);
               setProfile(null);
-              if (event === 'SIGNED_IN') {
-                toast({
-                  title: "Access Denied",
-                  description: `You don't have access to the ${portalType} portal. Please contact administration.`,
-                  variant: "destructive",
-                });
-              }
             }
           } else {
             setIsAuthenticated(false);
