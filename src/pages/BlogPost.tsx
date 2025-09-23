@@ -23,20 +23,20 @@ const BlogPost = () => {
         .from('posts')
         .select('*')
         .eq('id', id)
-        .eq('published', true)
+        .eq('status', 'published')
         .single();
       
       if (data) {
         // Get the public URL for the image if it exists
-        let imageUrl = data.featured_image;
-        if (data.featured_image && data.featured_image.startsWith('http')) {
+        let imageUrl = data.image;
+        if (data.image && data.image.startsWith('http')) {
           // If image is already a full URL, use it
-          imageUrl = data.featured_image;
-        } else if (data.featured_image && !data.featured_image.startsWith('http')) {
+          imageUrl = data.image;
+        } else if (data.image && !data.image.startsWith('http')) {
           // If image is a storage path, get the public URL
           const { data: publicUrlData } = supabase.storage
             .from('blog-images')
-            .getPublicUrl(data.featured_image);
+            .getPublicUrl(data.image);
           imageUrl = publicUrlData.publicUrl;
         }
         
@@ -61,17 +61,15 @@ const BlogPost = () => {
     try {
       const { data } = await supabase
         .from('posts')
-        .select('id, title, created_at')
-        .eq('published', true)
+        .select('id, title, category, created_at')
+        .eq('status', 'published')
         .order('created_at', { ascending: false });
       
       if (data) {
-        const formattedPosts = data.map(p => ({
+        setAllPosts(data.map(p => ({
           ...p,
-          date: new Date(p.created_at).toISOString().split('T')[0],
-          category: 'News'
-        }));
-        setAllPosts(formattedPosts);
+          date: new Date(p.created_at).toISOString().split('T')[0]
+        })));
       } else {
         setAllPosts(staticBlogPosts);
       }

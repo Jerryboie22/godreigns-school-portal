@@ -39,8 +39,8 @@ export const generateSitemap = async (): Promise<string> => {
     // Fetch published blog posts
     const { data: posts } = await supabase
       .from('posts')
-      .select('id, updated_at, created_at, title')
-      .eq('published', true)
+      .select('id, updated_at, created_at, title, category')
+      .eq('status', 'published')
       .order('created_at', { ascending: false });
 
     if (posts) {

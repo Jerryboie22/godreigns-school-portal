@@ -39,11 +39,12 @@ const SchoolFeesAdmin = () => {
   const fetchData = async () => {
     try {
       const { data: feesData } = await supabase
-        .from('school_fees')
+        .from('fees')
         .select(`
           *,
-          profiles!student_profile_id (
-            full_name
+          students (
+            student_id,
+            profiles (full_name)
           )
         `)
         .order('created_at', { ascending: false });
@@ -85,13 +86,14 @@ const SchoolFeesAdmin = () => {
     }
 
     try {
-      const { error } = await supabase.from('school_fees').insert([{
-        student_profile_id: newFee.student_id,
+      const { error } = await supabase.from('fees').insert([{
+        student_id: newFee.student_id,
+        student_name: 'Student Name', // Add proper student name lookup
+        class_level: 'JSS1', // Add proper class level
+        fee_type: newFee.description,
         amount: parseFloat(newFee.amount),
         due_date: newFee.due_date,
-        status: newFee.status,
-        term: '1st Term',
-        academic_year: '2024/2025'
+        status: newFee.status
       }]);
 
       if (error) throw error;
@@ -121,10 +123,10 @@ const SchoolFeesAdmin = () => {
   const handleMarkPaid = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('school_fees')
+        .from('fees')
         .update({ 
           status: 'paid',
-          payment_date: new Date().toISOString().split('T')[0]
+          paid_date: new Date().toISOString().split('T')[0]
         })
         .eq('id', id);
 
@@ -149,7 +151,7 @@ const SchoolFeesAdmin = () => {
 
     try {
       const { error } = await supabase
-        .from('school_fees')
+        .from('fees')
         .delete()
         .eq('id', id);
 
@@ -209,8 +211,8 @@ const SchoolFeesAdmin = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {students.map(student => (
-                      <SelectItem key={student.id} value={student.profile_id}>
-                        {student.profiles?.full_name || 'Unknown'} - {student.class}
+                      <SelectItem key={student.id} value={student.id}>
+                        {student.profiles?.full_name || 'Unknown'} ({student.student_id})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -309,16 +311,16 @@ const SchoolFeesAdmin = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold">
-                          {fee.profiles?.full_name || 'Unknown Student'}
+                          {fee.students?.profiles?.full_name || 'Unknown Student'}
                         </h3>
-                        <Badge variant="outline">{fee.student_profile_id}</Badge>
+                        <Badge variant="outline">{fee.students?.student_id}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-1">Term: {fee.term}, Academic Year: {fee.academic_year}</p>
+                      <p className="text-sm text-muted-foreground mb-1">{fee.description}</p>
                       <p className="font-semibold text-lg mb-2">₦{parseFloat(fee.amount).toLocaleString()}</p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>Due: {new Date(fee.due_date).toLocaleDateString()}</span>
-                        {fee.payment_date && (
-                          <span>Paid: {new Date(fee.payment_date).toLocaleDateString()}</span>
+                        {fee.paid_date && (
+                          <span>Paid: {new Date(fee.paid_date).toLocaleDateString()}</span>
                         )}
                         <Badge variant={
                           fee.status === 'paid' ? 'default' : 

@@ -50,7 +50,7 @@ const Blog = () => {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('published', true)
+        .eq('status', 'published')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -62,7 +62,7 @@ const Blog = () => {
           readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
           date: new Date(post.created_at).toISOString().split('T')[0],
           // Ensure image has fallback
-          image: post.featured_image || placeholderImage
+          image: post.image || placeholderImage
         }));
         setPosts(mappedPosts);
       } else {
