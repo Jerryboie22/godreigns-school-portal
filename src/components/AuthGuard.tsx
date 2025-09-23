@@ -57,69 +57,86 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
   });
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Fetch user profile
+    let cancelled = false;
+
+    const fetchProfile = (uid: string) => {
+      setTimeout(async () => {
+        try {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-          
+            .eq('user_id', uid)
+            .maybeSingle();
+
+          if (cancelled) return;
+
           if (profileData) {
             const userRole = profileData.role;
-            
-            // Check if user is on the correct portal
             const roleToPortalMap: Record<string, string> = {
-              'admin': 'admin',
-              'teacher': 'staff',
-              'staff': 'staff',
-              'parent': 'parent',  
-              'student': 'student'
+              admin: 'admin',
+              teacher: 'staff',
+              staff: 'staff',
+              parent: 'parent',
+              student: 'student',
             };
-
             const expectedPortal = roleToPortalMap[userRole];
-            
-            if (expectedPortal && isUserAuthorized(userRole, portalType)) {
+
+            if (expectedPortal) {
               setProfile(profileData);
               setIsAuthenticated(true);
-            } else if (expectedPortal && expectedPortal !== portalType) {
-              // User is authorized but on wrong portal, redirect them
-              const redirectPath = `/portals/${expectedPortal}`;
-              window.location.replace(redirectPath);
-              return;
+              if (expectedPortal !== portalType) {
+                window.location.replace(`/portals/${expectedPortal}`);
+                return;
+              }
             } else {
-              // User not authorized for this portal
               setIsAuthenticated(false);
               setProfile(null);
             }
           } else {
+            // No profile yet
             setIsAuthenticated(false);
             setProfile(null);
           }
-        } else {
-          setIsAuthenticated(false);
-          setProfile(null);
+        } finally {
+          if (!cancelled) setLoading(false);
         }
-        setLoading(false);
-      }
-    );
+      }, 0);
+    };
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (!session) {
+
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setIsAuthenticated(false);
+        setProfile(null);
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // Safety timeout
+    const timeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 5000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
