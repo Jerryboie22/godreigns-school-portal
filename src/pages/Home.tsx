@@ -261,33 +261,6 @@ const Home = () => {
                     </Link>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 pt-4 lg:pt-6 border-t border-white/30">
-                  <div className="text-center sm:text-left">
-                    <div className="flex items-center space-x-2 justify-center sm:justify-start">
-                      <Phone className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" />
-                      <div className="text-xs lg:text-sm">
-                        <a href="tel:+2348027625129" className="hover:text-accent transition-colors">08027625129</a>
-                        <span className="mx-1">•</span>
-                        <a href="tel:+2348033089735" className="hover:text-accent transition-colors">08033089735</a>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center sm:text-left">
-                    <div className="flex items-center space-x-2 justify-center sm:justify-start">
-                      <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" /> 
-                      <a href="mailto:ogrcs@yahoo.com" className="text-xs lg:text-sm hover:text-accent transition-colors">ogrcs@yahoo.com</a>
-                    </div>
-                  </div>
-                  
-                  <div className="text-center sm:text-left">
-                    <div className="flex items-start space-x-2 justify-center sm:justify-start">
-                      <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-accent mt-0.5 flex-shrink-0" />
-                      <span className="text-xs lg:text-sm text-white/90">Ota, Ogun State</span>
-                    </div>
-                  </div>
-                </div>
               </div>
               
               <div className="flex justify-center lg:justify-end">
