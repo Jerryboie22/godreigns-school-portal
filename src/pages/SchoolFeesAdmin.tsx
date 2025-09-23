@@ -88,10 +88,8 @@ const SchoolFeesAdmin = () => {
     try {
       const { error } = await supabase.from('fees').insert([{
         student_id: newFee.student_id,
-        student_name: 'Student Name', // Add proper student name lookup
-        class_level: 'JSS1', // Add proper class level
-        fee_type: newFee.description,
         amount: parseFloat(newFee.amount),
+        description: newFee.description,
         due_date: newFee.due_date,
         status: newFee.status
       }]);

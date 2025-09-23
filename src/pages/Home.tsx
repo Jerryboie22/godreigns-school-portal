@@ -32,7 +32,6 @@ const Home = () => {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [homepageContent, setHomepageContent] = useState<any[]>([]);
-  const [homepageImages, setHomepageImages] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   // Fallback images if database is empty
@@ -43,7 +42,7 @@ const Home = () => {
   useEffect(() => {
     fetchDynamicContent();
     
-    // Set up real-time subscriptions with improved error handling
+    // Set up real-time subscriptions
     const postsChannel = supabase
       .channel('homepage-posts-changes')
       .on(
@@ -53,8 +52,7 @@ const Home = () => {
           schema: 'public',
           table: 'posts'
         },
-        (payload) => {
-          console.log('Posts updated:', payload);
+        () => {
           fetchBlogPosts();
         }
       )
@@ -69,8 +67,7 @@ const Home = () => {
           schema: 'public',
           table: 'gallery_images'
         },
-        (payload) => {
-          console.log('Gallery updated:', payload);
+        () => {
           fetchGalleryImages();
         }
       )
@@ -85,80 +82,23 @@ const Home = () => {
           schema: 'public',
           table: 'homepage_content'
         },
-        (payload) => {
-          console.log('Homepage content updated:', payload);
+        () => {
           fetchHomepageContent();
         }
       )
       .subscribe();
 
-    // Only subscribe to homepage_images if it exists
-    let imagesChannel = null;
-    supabase
-      .from('homepage_images')
-      .select('count', { count: 'exact', head: true })
-      .then(({ error }) => {
-        if (!error) {
-          imagesChannel = supabase
-            .channel('homepage-images-changes')
-            .on(
-              'postgres_changes',
-              {
-                event: '*',
-                schema: 'public',
-                table: 'homepage_images'
-              },
-              (payload) => {
-                console.log('Homepage images updated:', payload);
-                fetchHomepageImages();
-              }
-            )
-            .subscribe();
-        }
-      });
-
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(galleryChannel);
       supabase.removeChannel(contentChannel);
-      if (imagesChannel) {
-        supabase.removeChannel(imagesChannel);
-      }
     };
   }, []);
 
   const fetchDynamicContent = async () => {
     setLoading(true);
-    await Promise.all([fetchBlogPosts(), fetchGalleryImages(), fetchHomepageContent(), fetchHomepageImages()]);
+    await Promise.all([fetchBlogPosts(), fetchGalleryImages(), fetchHomepageContent()]);
     setLoading(false);
-  };
-
-  const fetchHomepageImages = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('homepage_images')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_index', { ascending: true });
-
-      if (error) {
-        console.warn('Homepage images table not available:', error);
-        setHomepageImages({});
-        return;
-      }
-
-      if (data) {
-        const imagesBySection = data.reduce((acc: any, img: any) => {
-          if (!acc[img.section]) acc[img.section] = [];
-          acc[img.section].push(img);
-          return acc;
-        }, {});
-        setHomepageImages(imagesBySection);
-      }
-    } catch (error) {
-      console.error('Error fetching homepage images:', error);
-      setHomepageImages({});
-    }
   };
 
   const fetchHomepageContent = async () => {
@@ -251,7 +191,7 @@ const Home = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${homepageImages.hero?.[0]?.image_url || studentsGreenUniforms})`,
+            backgroundImage: `url(${studentsGreenUniforms})`,
           }}
         >
           {/* Dark Overlay for better text contrast */}
@@ -321,6 +261,33 @@ const Home = () => {
                     </Link>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 pt-4 lg:pt-6 border-t border-white/30">
+                  <div className="text-center sm:text-left">
+                    <div className="flex items-center space-x-2 justify-center sm:justify-start">
+                      <Phone className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" />
+                      <div className="text-xs lg:text-sm">
+                        <a href="tel:+2348027625129" className="hover:text-accent transition-colors">08027625129</a>
+                        <span className="mx-1">•</span>
+                        <a href="tel:+2348033089735" className="hover:text-accent transition-colors">08033089735</a>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center sm:text-left">
+                    <div className="flex items-center space-x-2 justify-center sm:justify-start">
+                      <Mail className="h-3 w-3 lg:h-4 lg:w-4 text-accent flex-shrink-0" /> 
+                      <a href="mailto:ogrcs@yahoo.com" className="text-xs lg:text-sm hover:text-accent transition-colors">ogrcs@yahoo.com</a>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center sm:text-left">
+                    <div className="flex items-start space-x-2 justify-center sm:justify-start">
+                      <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-accent mt-0.5 flex-shrink-0" />
+                      <span className="text-xs lg:text-sm text-white/90">Ota, Ogun State</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div className="flex justify-center lg:justify-end">
@@ -331,8 +298,8 @@ const Home = () => {
                   
                   <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-white/20 shadow-2xl">
                     <img 
-                      src={homepageImages.hero?.[1]?.image_url || schoolFlyer} 
-                      alt={homepageImages.hero?.[1]?.alt_text || "Our God Reigns Crystal School - Admission in Progress"}
+                      src={schoolFlyer} 
+                      alt="Our God Reigns Crystal School - Admission in Progress"
                       className="rounded-xl shadow-elegant w-full max-w-xs lg:max-w-md mx-auto"
                     />
                   </div>
@@ -357,8 +324,8 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="flex justify-center">
                 <img 
-                  src={homepageImages.about?.[0]?.image_url || graduateIndividual} 
-                  alt={homepageImages.about?.[0]?.alt_text || "Our God Reigns Crystal School Graduate"}
+                  src={graduateIndividual} 
+                  alt="Our God Reigns Crystal School Graduate"
                   className="rounded-lg shadow-elegant w-full max-w-lg"
                 />
               </div>

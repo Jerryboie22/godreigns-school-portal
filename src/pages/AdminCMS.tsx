@@ -11,7 +11,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAnalytics } from "@/hooks/useAnalytics";
 import { toast } from "@/hooks/use-toast";
 import { useSitemapUpdate } from "@/hooks/useSitemapUpdate";
-import ImageManager from "@/components/ImageManager";
 import {
   Plus,
   Edit,
@@ -256,12 +255,9 @@ const AdminCMS = () => {
       setEditingContent(null);
       await fetchData();
       
-      // Force real-time update by triggering a manual refresh
-      window.dispatchEvent(new CustomEvent('homepageContentUpdated'));
-      
       toast({
         title: "Success",
-        description: "Homepage content updated successfully! Changes will appear immediately.",
+        description: "Homepage content updated successfully!",
       });
     } catch (error: any) {
       toast({
@@ -430,12 +426,15 @@ const AdminCMS = () => {
     }
 
     try {
-      // Create teacher record
+      // Create teacher record directly
       const { error: teacherError } = await supabase
         .from('teachers')
         .insert([{
-          name: newTeacher.name,
+          user_id: null, // Will be linked later when user registers
           subject: newTeacher.subject,
+          department: newTeacher.department,
+          employee_id: newTeacher.employee_id,
+          hire_date: newTeacher.hire_date
         }]);
 
       if (teacherError) throw teacherError;
