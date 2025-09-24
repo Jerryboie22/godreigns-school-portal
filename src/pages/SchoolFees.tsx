@@ -3,70 +3,55 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CreditCard, Building, Phone, Mail, Calendar, AlertCircle } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
-
 const SchoolFees = () => {
-  const schoolFees = [
-    {
-      class: "JSS 1",
-      freshStudents: "₦100,500",
-      returningStudents: "N/A",
-      notes: "Fresh students with E-books & Exercise books (Textbooks not included)"
-    },
-    {
-      class: "JSS 2", 
-      freshStudents: "₦175,500",
-      returningStudents: "₦115,500",
-      notes: "Returning students in JSS 2 are 10 days in 8 months"
-    },
-    {
-      class: "JSS 3",
-      freshStudents: "N/A",
-      returningStudents: "N/A", 
-      notes: "Refer to JSS 3 bill for fresh students. The JSS 3 bill is for the period"
-    },
-    {
-      class: "SSS 1 (Science)",
-      freshStudents: "₦185,500",
-      returningStudents: "N/A",
-      notes: "Fresh students with E-notes & Exercise books (Textbooks not included)"
-    },
-    {
-      class: "SSS 1 (Others)",
-      freshStudents: "₦179,500",
-      returningStudents: "N/A",
-      notes: ""
-    },
-    {
-      class: "SSS 2 (Science)",
-      freshStudents: "₦195,500",
-      returningStudents: "₦122,500",
-      notes: ""
-    },
-    {
-      class: "SSS 2 (Others)",
-      freshStudents: "N/A",
-      returningStudents: "₦122,500",
-      notes: ""
-    }
-  ];
-
-  const boardingFees = [
-    {
-      class: "JSS 1-3",
-      hostelOnly: "₦200,000",
-      hostelChurch: "₦50,000",
-      uniforms: "₦50,000"
-    },
-    {
-      class: "SSS 1-3", 
-      hostelOnly: "₦200,000",
-      hostelChurch: "₦50,000",
-      uniforms: "₦50,000"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const schoolFees = [{
+    class: "JSS 1",
+    freshStudents: "₦100,500",
+    returningStudents: "N/A",
+    notes: "Fresh students with E-books & Exercise books (Textbooks not included)"
+  }, {
+    class: "JSS 2",
+    freshStudents: "₦175,500",
+    returningStudents: "₦115,500",
+    notes: "Returning students in JSS 2 are 10 days in 8 months"
+  }, {
+    class: "JSS 3",
+    freshStudents: "N/A",
+    returningStudents: "N/A",
+    notes: "Refer to JSS 3 bill for fresh students. The JSS 3 bill is for the period"
+  }, {
+    class: "SSS 1 (Science)",
+    freshStudents: "₦185,500",
+    returningStudents: "N/A",
+    notes: "Fresh students with E-notes & Exercise books (Textbooks not included)"
+  }, {
+    class: "SSS 1 (Others)",
+    freshStudents: "₦179,500",
+    returningStudents: "N/A",
+    notes: ""
+  }, {
+    class: "SSS 2 (Science)",
+    freshStudents: "₦195,500",
+    returningStudents: "₦122,500",
+    notes: ""
+  }, {
+    class: "SSS 2 (Others)",
+    freshStudents: "N/A",
+    returningStudents: "₦122,500",
+    notes: ""
+  }];
+  const boardingFees = [{
+    class: "JSS 1-3",
+    hostelOnly: "₦200,000",
+    hostelChurch: "₦50,000",
+    uniforms: "₦50,000"
+  }, {
+    class: "SSS 1-3",
+    hostelOnly: "₦200,000",
+    hostelChurch: "₦50,000",
+    uniforms: "₦50,000"
+  }];
+  return <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-hero text-white py-16">
         <div className="container mx-auto px-4 text-center">
@@ -122,16 +107,14 @@ const SchoolFees = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {schoolFees.map((fee, index) => (
-                        <tr key={index} className="border-b hover:bg-muted/50">
+                      {schoolFees.map((fee, index) => <tr key={index} className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <Badge variant="outline">{fee.class}</Badge>
                           </td>
                           <td className="py-3 px-4 font-semibold text-primary">{fee.freshStudents}</td>
                           <td className="py-3 px-4 font-semibold text-secondary">{fee.returningStudents}</td>
                           <td className="py-3 px-4 text-sm text-muted-foreground">{fee.notes}</td>
-                        </tr>
-                      ))}
+                        </tr>)}
                     </tbody>
                   </table>
                 </div>
@@ -167,16 +150,14 @@ const SchoolFees = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {boardingFees.map((fee, index) => (
-                        <tr key={index} className="border-b hover:bg-muted/50">
+                      {boardingFees.map((fee, index) => <tr key={index} className="border-b hover:bg-muted/50">
                           <td className="py-3 px-4">
                             <Badge variant="outline">{fee.class}</Badge>
                           </td>
                           <td className="py-3 px-4 font-semibold text-primary">{fee.hostelOnly}</td>
                           <td className="py-3 px-4 font-semibold text-secondary">{fee.hostelChurch}</td>
                           <td className="py-3 px-4 font-semibold text-accent">{fee.uniforms}</td>
-                        </tr>
-                      ))}
+                        </tr>)}
                     </tbody>
                   </table>
                 </div>
@@ -247,7 +228,7 @@ const SchoolFees = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Account Number:</span>
-                      <span className="font-semibold text-primary">0029836079</span>
+                      <span className="font-semibold text-primary">0039836079</span>
                     </div>
                   </div>
                   <div className="p-3 bg-secondary/10 rounded-lg">
@@ -344,8 +325,6 @@ const SchoolFees = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default SchoolFees;
