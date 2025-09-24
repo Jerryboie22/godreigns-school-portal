@@ -386,6 +386,76 @@ const Home = () => {
           </section>
         );
 
+      case 'proprietress_address':
+        return (
+          <section key={section.id} className="py-16 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
+            <div className="container mx-auto px-4">
+              <div className="max-w-5xl mx-auto">
+                <Card className="overflow-hidden shadow-elegant bg-gradient-to-br from-white via-primary/5 to-accent/5 border-primary/20">
+                  <CardContent className="p-8 lg:p-12">
+                    <div className="text-center mb-8">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6">
+                        <Heart className="h-8 w-8 text-primary" />
+                      </div>
+                      <h2 className="text-2xl lg:text-3xl font-bold text-primary mb-4">
+                        {title || "Proprietress Welcome Address"}
+                      </h2>
+                    </div>
+                    
+                    {image_url && (
+                      <div className="flex justify-center mb-8">
+                        <div className="relative">
+                          <img 
+                            src={image_url} 
+                            alt="Proprietress"
+                            className="rounded-lg shadow-elegant w-32 h-32 lg:w-40 lg:h-40 object-cover border-4 border-primary/20"
+                            onError={handleImageError}
+                          />
+                          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                            <Award className="h-4 w-4 text-accent-foreground" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="prose prose-lg max-w-none">
+                      <div className="text-muted-foreground text-base lg:text-lg leading-relaxed space-y-4 text-justify">
+                        {content && content.split('\n\n').map((paragraph: string, index: number) => {
+                          if (paragraph.includes('Pastor (Mrs) Kehinde Adetuberu')) {
+                            return (
+                              <div key={index} className="text-right mt-8 border-t border-primary/20 pt-6">
+                                <p className="font-semibold text-primary text-lg">
+                                  {paragraph}
+                                </p>
+                              </div>
+                            );
+                          }
+                          return (
+                            <p key={index} className="mb-4">
+                              {paragraph}
+                            </p>
+                          );
+                        })}
+                      </div>
+                      
+                      {link_url && link_text && (
+                        <div className="text-center mt-8">
+                          <Link to={link_url}>
+                            <Button className="bg-primary hover:bg-primary/90 text-lg px-8 py-3">
+                              {link_text}
+                              <ArrowRight className="h-5 w-5 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </section>
+        );
+
       default:
         return null;
     }
