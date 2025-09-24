@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   BookOpen, 
   Calendar, 
@@ -17,18 +22,41 @@ import {
   Award,
   GraduationCap,
   Download,
-  Edit
+  Edit,
+  Save,
+  X
 } from "lucide-react";
 
 const StudentPortalContent = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
   const [studentInfo, setStudentInfo] = useState({
     name: "Adebayo Olamide",
     class: "SSS 2B",
     admissionNumber: "OGR/2022/0567",
-    currentTerm: "First Term 2024/2025"
+    currentTerm: "First Term 2024/2025",
+    email: "",
+    address: "",
+    parentContact: "",
+    dateOfBirth: "",
+    gender: "",
+    bloodGroup: "",
+    medicalConditions: "",
+    previousSchool: ""
   });
   const [editingProfile, setEditingProfile] = useState(false);
-  const [profileForm, setProfileForm] = useState({ name: "", class: "" });
+  const [profileForm, setProfileForm] = useState({ 
+    name: "", 
+    class: "", 
+    email: "",
+    address: "",
+    parentContact: "",
+    dateOfBirth: "",
+    gender: "",
+    bloodGroup: "",
+    medicalConditions: "",
+    previousSchool: ""
+  });
 
   const currentGrades = [
     { subject: "Mathematics", currentGrade: "B+", percentage: 85, target: "A" },
@@ -54,14 +82,135 @@ const StudentPortalContent = () => {
     { time: "11:30 - 12:30", subject: "Chemistry", teacher: "Mrs. Aisha Balogun", room: "Lab 1" },
   ];
 
-  const handleEditProfile = () => {
-    setEditingProfile(true);
-    setProfileForm({ name: studentInfo.name, class: studentInfo.class });
+  useEffect(() => {
+    fetchStudentProfile();
+  }, []);
+
+  const fetchStudentProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: student, error } = await supabase
+        .from('students')
+        .select(`
+          *,
+          profiles(full_name, email)
+        `)
+        .eq('profile_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('Student profile not found:', error);
+        return;
+      }
+
+      if (student) {
+        setStudentInfo({
+          name: student.profiles?.full_name || "Student",
+          class: student.class || "",
+          admissionNumber: student.student_id || "",
+          currentTerm: "First Term 2024/2025",
+          email: student.profiles?.email || "",
+          address: student.address || "",
+          parentContact: student.parent_contact || "",
+          dateOfBirth: (student as any).date_of_birth || "",
+          gender: (student as any).gender || "",
+          bloodGroup: (student as any).blood_group || "",
+          medicalConditions: (student as any).medical_conditions || "",
+          previousSchool: (student as any).previous_school || ""
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching student profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSaveProfile = () => {
-    setStudentInfo(prev => ({ ...prev, ...profileForm }));
-    setEditingProfile(false);
+  const handleEditProfile = () => {
+    setEditingProfile(true);
+    setProfileForm({ 
+      name: studentInfo.name, 
+      class: studentInfo.class,
+      email: studentInfo.email,
+      address: studentInfo.address,
+      parentContact: studentInfo.parentContact,
+      dateOfBirth: studentInfo.dateOfBirth,
+      gender: studentInfo.gender,
+      bloodGroup: studentInfo.bloodGroup,
+      medicalConditions: studentInfo.medicalConditions,
+      previousSchool: studentInfo.previousSchool
+    });
+  };
+
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Update student record
+      const { error: studentError } = await supabase
+        .from('students')
+        .update({
+          class: profileForm.class,
+          address: profileForm.address,
+          parent_contact: profileForm.parentContact,
+          date_of_birth: profileForm.dateOfBirth || null,
+          gender: profileForm.gender || null,
+          blood_group: profileForm.bloodGroup || null,
+          medical_conditions: profileForm.medicalConditions || null,
+          previous_school: profileForm.previousSchool || null
+        })
+        .eq('profile_id', user.id);
+
+      if (studentError) {
+        console.warn('Student update error:', studentError);
+      }
+
+      // Update profile if name or email changed
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: profileForm.name,
+          email: profileForm.email
+        })
+        .eq('id', user.id);
+
+      if (profileError) {
+        console.warn('Profile update error:', profileError);
+      }
+
+      setStudentInfo(prev => ({ 
+        ...prev, 
+        name: profileForm.name,
+        class: profileForm.class,
+        email: profileForm.email,
+        address: profileForm.address,
+        parentContact: profileForm.parentContact,
+        dateOfBirth: profileForm.dateOfBirth,
+        gender: profileForm.gender,
+        bloodGroup: profileForm.bloodGroup,
+        medicalConditions: profileForm.medicalConditions,
+        previousSchool: profileForm.previousSchool
+      }));
+      setEditingProfile(false);
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully."
+      });
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -188,14 +337,217 @@ const StudentPortalContent = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="grades" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="grades">Grades</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
             <TabsTrigger value="progress">Progress</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="profile">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <User className="h-5 w-5 text-primary" />
+                  <span>Personal Information</span>
+                </CardTitle>
+                <CardDescription>Edit your personal details and contact information</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {editingProfile ? (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name</Label>
+                          <Input
+                            id="name"
+                            value={profileForm.name}
+                            onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={profileForm.email}
+                            onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="class">Class</Label>
+                          <Select value={profileForm.class} onValueChange={(value) => setProfileForm(prev => ({ ...prev, class: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select class" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="JSS 1">JSS 1</SelectItem>
+                              <SelectItem value="JSS 2">JSS 2</SelectItem>
+                              <SelectItem value="JSS 3">JSS 3</SelectItem>
+                              <SelectItem value="SSS 1">SSS 1</SelectItem>
+                              <SelectItem value="SSS 2">SSS 2</SelectItem>
+                              <SelectItem value="SSS 3">SSS 3</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="parentContact">Parent Contact</Label>
+                          <Input
+                            id="parentContact"
+                            value={profileForm.parentContact}
+                            onChange={(e) => setProfileForm(prev => ({ ...prev, parentContact: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                          <Input
+                            id="dateOfBirth"
+                            type="date"
+                            value={profileForm.dateOfBirth}
+                            onChange={(e) => setProfileForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="gender">Gender</Label>
+                          <Select value={profileForm.gender} onValueChange={(value) => setProfileForm(prev => ({ ...prev, gender: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="bloodGroup">Blood Group</Label>
+                          <Select value={profileForm.bloodGroup} onValueChange={(value) => setProfileForm(prev => ({ ...prev, bloodGroup: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select blood group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="A+">A+</SelectItem>
+                              <SelectItem value="A-">A-</SelectItem>
+                              <SelectItem value="B+">B+</SelectItem>
+                              <SelectItem value="B-">B-</SelectItem>
+                              <SelectItem value="AB+">AB+</SelectItem>
+                              <SelectItem value="AB-">AB-</SelectItem>
+                              <SelectItem value="O+">O+</SelectItem>
+                              <SelectItem value="O-">O-</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="previousSchool">Previous School</Label>
+                          <Input
+                            id="previousSchool"
+                            value={profileForm.previousSchool}
+                            onChange={(e) => setProfileForm(prev => ({ ...prev, previousSchool: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Textarea
+                        id="address"
+                        value={profileForm.address}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, address: e.target.value }))}
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="medicalConditions">Medical Conditions</Label>
+                      <Textarea
+                        id="medicalConditions"
+                        value={profileForm.medicalConditions}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, medicalConditions: e.target.value }))}
+                        rows={3}
+                        placeholder="Any medical conditions or allergies"
+                      />
+                    </div>
+
+                    <div className="flex space-x-4 pt-4">
+                      <Button onClick={handleSaveProfile} disabled={loading}>
+                        <Save className="h-4 w-4 mr-2" />
+                        {loading ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                      <Button variant="outline" onClick={() => setEditingProfile(false)}>
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Full Name</Label>
+                          <p className="font-medium">{studentInfo.name}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Email</Label>
+                          <p className="font-medium">{studentInfo.email || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Class</Label>
+                          <p className="font-medium">{studentInfo.class}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Parent Contact</Label>
+                          <p className="font-medium">{studentInfo.parentContact || 'Not provided'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Date of Birth</Label>
+                          <p className="font-medium">{studentInfo.dateOfBirth || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Gender</Label>
+                          <p className="font-medium">{studentInfo.gender || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Blood Group</Label>
+                          <p className="font-medium">{studentInfo.bloodGroup || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-sm text-muted-foreground">Previous School</Label>
+                          <p className="font-medium">{studentInfo.previousSchool || 'Not provided'}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Address</Label>
+                      <p className="font-medium">{studentInfo.address || 'Not provided'}</p>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Medical Conditions</Label>
+                      <p className="font-medium">{studentInfo.medicalConditions || 'None reported'}</p>
+                    </div>
+
+                    <Button onClick={handleEditProfile}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="grades">
             <Card>

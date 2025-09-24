@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,9 @@ import AuthGuard from "@/components/AuthGuard";
 import { LessonPlanModal } from "@/components/LessonPlanModal";
 import { AttendanceModal } from "@/components/AttendanceModal";
 import { MessageModal } from "@/components/MessageModal";
+import { StudentForm } from "@/components/StudentForm";
+import { ParentForm } from "@/components/ParentForm";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, 
   BookOpen, 
@@ -26,7 +29,8 @@ import {
   Trash2,
   Send,
   Download,
-  Eye
+  Eye,
+  Heart
 } from "lucide-react";
 
 const StaffPortalContent = () => {
@@ -36,16 +40,9 @@ const StaffPortalContent = () => {
     { id: 3, title: "English Essay", class: "JSS 3C", dueDate: "2025-01-20", status: "Graded", subject: "English" }
   ]);
   
-  const [students, setStudents] = useState([
-    { id: 1, name: "Adebayo Oladimeji", class: "JSS 2A", grade: "A", attendance: 95 },
-    { id: 2, name: "Chinyere Okafor", class: "SSS 1B", grade: "B+", attendance: 92 },
-    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", grade: "A-", attendance: 88 },
-    { id: 4, name: "Fatima Mohammed", class: "JSS 2A", grade: "B+", attendance: 90 },
-    { id: 5, name: "Kemi Adebowale", class: "SSS 1A", grade: "A-", attendance: 93 },
-    { id: 6, name: "Chioma Okwu", class: "JSS 3B", grade: "B", attendance: 87 },
-    { id: 7, name: "Ibrahim Suleiman", class: "SSS 2A", grade: "A", attendance: 96 },
-    { id: 8, name: "Blessing Eze", class: "JSS 1A", grade: "B+", attendance: 89 }
-  ]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [parents, setParents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [lessonPlans, setLessonPlans] = useState([
     { id: 1, title: "Introduction to Quadratic Equations", subject: "Mathematics", class: "JSS 2A", date: "2025-01-22", duration: "45 minutes", objectives: "Students will understand basic quadratic equations", activities: "Interactive whiteboard demonstration", materials: "Textbook, calculator", assessment: "Class participation and quiz" },
@@ -83,6 +80,12 @@ const StaffPortalContent = () => {
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedLessonPlan, setSelectedLessonPlan] = useState<any>(null);
+  
+  // New states for student and parent management
+  const [showStudentForm, setShowStudentForm] = useState(false);
+  const [showParentForm, setShowParentForm] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [selectedParent, setSelectedParent] = useState<any>(null);
 
   const todaysSchedule = [
     { time: "8:00 AM", subject: "Mathematics", class: "JSS 2A", room: "Room 12" },
@@ -361,14 +364,16 @@ const StaffPortalContent = () => {
         </div>
 
         <Tabs defaultValue="schedule" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
+            <TabsTrigger value="parents">Parents</TabsTrigger>
             <TabsTrigger value="assignments">Assignments</TabsTrigger>
             <TabsTrigger value="lessons">Lesson Plans</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="management">Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="schedule" className="space-y-6">
@@ -428,54 +433,185 @@ const StaffPortalContent = () => {
           </TabsContent>
 
           <TabsContent value="students" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Students ({students.length})</CardTitle>
-                <CardDescription>View and manage your students' progress</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {students.map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div>
-                        <h3 className="font-semibold">{student.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Class: {student.class} | Attendance: {student.attendance}%
-                        </p>
-                        {editingStudent === student.id ? (
-                          <div className="flex items-center space-x-2 mt-2">
-                            <Input
-                              value={studentGradeForm.grade}
-                              onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
-                              placeholder="Enter grade"
-                              className="w-20"
-                            />
-                            <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
-                              Save
+            {showStudentForm ? (
+              <StudentForm
+                student={selectedStudent}
+                onSave={(studentData) => {
+                  // Refresh data - use existing setStudents for now
+                  setShowStudentForm(false);
+                  setSelectedStudent(null);
+                }}
+                onCancel={() => {
+                  setShowStudentForm(false);
+                  setSelectedStudent(null);
+                }}
+              />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Students Management ({students.length})</CardTitle>
+                      <CardDescription>Add, edit, and manage student information</CardDescription>
+                    </div>
+                    <Button onClick={() => {
+                      setSelectedStudent(null);
+                      setShowStudentForm(true);
+                    }}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Student
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {loading ? (
+                    <div className="text-center py-8">Loading students...</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {students.map((student) => (
+                        <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{student.name}</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1 text-sm text-muted-foreground">
+                              <span>ID: {student.student_id || 'N/A'}</span>
+                              <span>Class: {student.class || 'N/A'}</span>
+                              <span>Section: {student.section || 'N/A'}</span>
+                              <span>Contact: {student.parent_contact || 'N/A'}</span>
+                            </div>
+                            {editingStudent === student.id ? (
+                              <div className="flex items-center space-x-2 mt-2">
+                                <Input
+                                  value={studentGradeForm.grade}
+                                  onChange={(e) => setStudentGradeForm({ grade: e.target.value })}
+                                  placeholder="Enter grade"
+                                  className="w-20"
+                                />
+                                <Button size="sm" onClick={() => handleSaveStudentGrade(student.id)}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2 mt-2">
+                                {student.grade && <Badge variant="outline">Grade: {student.grade}</Badge>}
+                                {student.attendance && <Badge variant="secondary">Attendance: {student.attendance}%</Badge>}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex space-x-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => {
+                                setSelectedStudent(student);
+                                setShowStudentForm(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-1" />
+                              Edit
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
-                              Cancel
+                            <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
+                              <Target className="h-4 w-4 mr-1" />
+                              Grade
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={handleSendMessage}>
+                              <MessageSquare className="h-4 w-4 mr-1" />
+                              Message
                             </Button>
                           </div>
-                        ) : (
-                          <Badge variant="outline">Grade: {student.grade}</Badge>
-                        )}
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline" onClick={() => handleEditStudentGrade(student)}>
-                          <Edit className="h-4 w-4 mr-1" />
-                          Grade
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={handleSendMessage}>
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          Message
-                        </Button>
-                      </div>
+                        </div>
+                      ))}
+                      {students.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>No students found. Add your first student to get started.</p>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="parents" className="space-y-6">
+            {showParentForm ? (
+              <ParentForm
+                parent={selectedParent}
+                onSave={(parentData) => {
+                  // Refresh data - use existing setParents for now
+                  setShowParentForm(false);
+                  setSelectedParent(null);
+                }}
+                onCancel={() => {
+                  setShowParentForm(false);
+                  setSelectedParent(null);
+                }}
+              />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Parents & Guardians ({parents.length})</CardTitle>
+                      <CardDescription>Manage parent and guardian information</CardDescription>
+                    </div>
+                    <Button onClick={() => {
+                      setSelectedParent(null);
+                      setShowParentForm(true);
+                    }}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Parent
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {parents.map((parent) => (
+                      <div key={parent.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{parent.full_name}</h3>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-1 text-sm text-muted-foreground">
+                            <span>Relationship: {parent.relationship || 'N/A'}</span>
+                            <span>Phone: {parent.phone || 'N/A'}</span>
+                            <span>Email: {parent.email || 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center space-x-2 mt-2">
+                            {parent.emergency_contact && <Badge variant="destructive">Emergency Contact</Badge>}
+                            {parent.occupation && <Badge variant="outline">Occupation: {parent.occupation}</Badge>}
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => {
+                              setSelectedParent(parent);
+                              setShowParentForm(true);
+                            }}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={handleSendMessage}>
+                            <MessageSquare className="h-4 w-4 mr-1" />
+                            Message
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {parents.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No parents found. Add parent information to improve communication.</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="assignments" className="space-y-6">
