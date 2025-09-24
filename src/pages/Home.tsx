@@ -485,6 +485,7 @@ const Home = () => {
                         src={schoolFlyer} 
                         alt="Our God Reigns Crystal School - Admission in Progress"
                         className="rounded-xl shadow-elegant w-full max-w-xs lg:max-w-md mx-auto"
+                        onError={handleImageError}
                       />
                     </div>
                   </div>
@@ -501,7 +502,92 @@ const Home = () => {
         </section>
       }
 
-      {/* 2. Proprietress' Address */}
+      {/* 2. Celebrating Our Graduates */}
+      <section className="py-16 bg-gradient-to-br from-accent/5 via-primary/5 to-accent/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-accent to-accent/80 rounded-full mb-6 shadow-elegant">
+                <Trophy className="h-10 w-10 text-accent-foreground" />
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-primary mb-4">
+                Celebrating Our Graduates
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Our graduates continue to make us proud with their exceptional achievements in academics and leadership across the world.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-primary/20">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">98%</div>
+                      <div className="text-sm text-muted-foreground">WAEC Success Rate</div>
+                    </div>
+                  </div>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-accent/20">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-accent mb-2">95%</div>
+                      <div className="text-sm text-muted-foreground">University Admission</div>
+                    </div>
+                  </div>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-primary/20">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">50+</div>
+                      <div className="text-sm text-muted-foreground">Awards Won</div>
+                    </div>
+                  </div>
+                  <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-accent/20">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-accent mb-2">100%</div>
+                      <div className="text-sm text-muted-foreground">Leadership Ready</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/gallery" className="flex-1">
+                    <Button className="w-full bg-primary hover:bg-primary/90">
+                      View Graduate Gallery
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link to="/about#achievements" className="flex-1">
+                    <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent/10">
+                      Our Achievements
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img 
+                    src={graduateIndividual} 
+                    alt="Celebrating our graduates - Academic Excellence"
+                    className="w-full h-96 object-cover"
+                    onError={handleImageError}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 right-6 text-white">
+                    <h3 className="text-xl font-bold mb-2">Excellence in Every Graduate</h3>
+                    <p className="text-white/90 text-sm leading-relaxed">
+                      Preparing students not just for examinations, but for life's greatest challenges with unwavering faith and determination.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/20 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Proprietress' Address */}
       {homepageContent.find(section => section.section_type === 'proprietress_address') && 
         renderDynamicSection(homepageContent.find(section => section.section_type === 'proprietress_address'))
       }
