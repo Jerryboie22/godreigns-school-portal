@@ -888,114 +888,257 @@ const AdminCMS = () => {
           {/* Homepage Content Editing */}
           <TabsContent value="homepage">
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    Homepage Content Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {homepageContent.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg font-medium mb-2">No Homepage Content</p>
-                      <p className="text-sm">Create your first homepage section to get started.</p>
+              {/* Overview Header */}
+              <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2">Homepage Content Management</h2>
+                      <p className="text-muted-foreground">Manage your website's homepage sections and content</p>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {homepageContent.map(content => (
-                        <div key={content.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className="font-semibold">{content.title || content.section_type}</h3>
-                                <Badge variant="outline" className="text-xs">
-                                  {content.section_type}
-                                </Badge>
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground mb-1">Total Sections</div>
+                      <div className="text-3xl font-bold text-primary">{homepageContent.length}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {homepageContent.length === 0 ? (
+                <Card>
+                  <CardContent className="py-12">
+                    <div className="text-center text-muted-foreground">
+                      <Home className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                      <h3 className="text-xl font-semibold mb-2">No Homepage Content Yet</h3>
+                      <p className="max-w-md mx-auto">Your homepage sections will appear here once they're created in the database. Each section can be customized with images, text, and links.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-6">
+                  {homepageContent
+                    .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+                    .map((content, index) => (
+                    <Card key={content.id} className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${!content.is_visible ? 'opacity-60 border-dashed' : 'border-solid'}`}>
+                      <div className="flex">
+                        {/* Left: Content Preview */}
+                        <div className="flex-1 p-6">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
+                                #{index + 1}
                               </div>
-                              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                                {content.content ? content.content.substring(0, 120) + (content.content.length > 120 ? '...' : '') : 'No content'}
-                              </p>
-                              <div className="flex items-center gap-2">
-                                <Badge variant={content.is_visible ? 'default' : 'secondary'} className="text-xs">
-                                  {content.is_visible ? 'Published' : 'Hidden'}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">Order: {content.order_index}</span>
+                              <div>
+                                <h3 className="font-semibold text-lg">{content.title || `${content.section_type} Section`}</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs capitalize">
+                                    {content.section_type?.replace('_', ' ')}
+                                  </Badge>
+                                  <Badge variant={content.is_visible ? 'default' : 'secondary'} className="text-xs">
+                                    {content.is_visible ? (
+                                      <><Eye className="h-3 w-3 mr-1" />Published</>
+                                    ) : (
+                                      <><X className="h-3 w-3 mr-1" />Hidden</>
+                                    )}
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
+                          </div>
+
+                          {content.content && (
+                            <div className="mb-4">
+                              <h4 className="text-sm font-medium text-muted-foreground mb-2">Content</h4>
+                              <p className="text-sm leading-relaxed line-clamp-3 bg-muted/30 p-3 rounded-md">
+                                {content.content}
+                              </p>
+                            </div>
+                          )}
+
+                          {(content.link_url || content.link_text) && (
+                            <div className="mb-4">
+                              <h4 className="text-sm font-medium text-muted-foreground mb-2">Link</h4>
+                              <div className="flex items-center gap-2 text-sm">
+                                <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
+                                  {content.link_text || 'Learn More'}
+                                </span>
+                                {content.link_url && (
+                                  <span className="text-xs text-muted-foreground font-mono bg-muted p-1 rounded">
+                                    {content.link_url}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="flex justify-end">
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button size="sm" variant="outline" onClick={() => setEditingContent(content)}>
-                                  <Edit className="h-3 w-3" />
+                                <Button size="sm" onClick={() => setEditingContent(content)}>
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit Section
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
+                              <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
                                 <DialogHeader>
-                                  <DialogTitle>Edit Homepage Content</DialogTitle>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    <Settings className="h-5 w-5" />
+                                    Edit {content.section_type?.replace('_', ' ')} Section
+                                  </DialogTitle>
                                 </DialogHeader>
                                 {editingContent && (
-                                  <div className="space-y-4 max-h-96 overflow-y-auto">
-                                    <Input
-                                      placeholder="Title"
-                                      value={editingContent.title || ''}
-                                      onChange={(e) => setEditingContent({...editingContent, title: e.target.value})}
-                                    />
-                                    <Textarea
-                                      placeholder="Content"
-                                      rows={4}
-                                      value={editingContent.content || ''}
-                                      onChange={(e) => setEditingContent({...editingContent, content: e.target.value})}
-                                    />
-                                    <div>
-                                      <label className="text-sm font-medium mb-2 block">Image</label>
-                                      {editingContent.image_url && (
-                                        <img src={editingContent.image_url} alt="Preview" className="w-full h-32 object-cover rounded border mb-2" />
-                                      )}
-                                      <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) handleContentImageUpload(file);
-                                        }}
-                                        className="block w-full text-sm"
-                                        disabled={uploading}
-                                      />
+                                  <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
+                                    {/* Section Info */}
+                                    <div className="bg-muted/30 p-4 rounded-lg">
+                                      <h4 className="font-medium mb-2">Section Information</h4>
+                                      <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                          <span className="text-muted-foreground">Type:</span>
+                                          <span className="ml-2 font-medium capitalize">{editingContent.section_type?.replace('_', ' ')}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-muted-foreground">Order:</span>
+                                          <span className="ml-2 font-medium">#{editingContent.order_index}</span>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <Input
-                                      placeholder="Link URL (optional)"
-                                      value={editingContent.link_url || ''}
-                                      onChange={(e) => setEditingContent({...editingContent, link_url: e.target.value})}
-                                    />
-                                    <Input
-                                      placeholder="Link Text (optional)"
-                                      value={editingContent.link_text || ''}
-                                      onChange={(e) => setEditingContent({...editingContent, link_text: e.target.value})}
-                                    />
-                                    <div className="flex items-center gap-2">
-                                      <input
-                                        type="checkbox"
-                                        checked={editingContent.is_visible}
-                                        onChange={(e) => setEditingContent({...editingContent, is_visible: e.target.checked})}
-                                      />
-                                      <label className="text-sm">Visible on website</label>
+
+                                    {/* Content Fields */}
+                                    <div className="space-y-4">
+                                      <div>
+                                        <label className="text-sm font-medium mb-2 block">Section Title</label>
+                                        <Input
+                                          placeholder="Enter section title..."
+                                          value={editingContent.title || ''}
+                                          onChange={(e) => setEditingContent({...editingContent, title: e.target.value})}
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="text-sm font-medium mb-2 block">Content</label>
+                                        <Textarea
+                                          placeholder="Enter section content..."
+                                          rows={5}
+                                          value={editingContent.content || ''}
+                                          onChange={(e) => setEditingContent({...editingContent, content: e.target.value})}
+                                          className="resize-none"
+                                        />
+                                      </div>
+
+                                      <div>
+                                        <label className="text-sm font-medium mb-2 block">Section Image</label>
+                                        {editingContent.image_url && (
+                                          <div className="mb-3">
+                                            <img 
+                                              src={editingContent.image_url} 
+                                              alt="Section preview" 
+                                              className="w-full h-48 object-cover rounded-lg border"
+                                            />
+                                          </div>
+                                        )}
+                                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                              const file = e.target.files?.[0];
+                                              if (file) handleContentImageUpload(file);
+                                            }}
+                                            className="hidden"
+                                            id="image-upload"
+                                            disabled={uploading}
+                                          />
+                                          <label htmlFor="image-upload" className="cursor-pointer">
+                                            <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                                            <p className="text-sm text-muted-foreground">
+                                              {uploading ? 'Uploading...' : 'Click to upload image'}
+                                            </p>
+                                          </label>
+                                        </div>
+                                      </div>
+
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="text-sm font-medium mb-2 block">Link URL</label>
+                                          <Input
+                                            placeholder="https://example.com"
+                                            value={editingContent.link_url || ''}
+                                            onChange={(e) => setEditingContent({...editingContent, link_url: e.target.value})}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium mb-2 block">Link Text</label>
+                                          <Input
+                                            placeholder="Learn More"
+                                            value={editingContent.link_text || ''}
+                                            onChange={(e) => setEditingContent({...editingContent, link_text: e.target.value})}
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                                        <div>
+                                          <h4 className="font-medium">Visibility</h4>
+                                          <p className="text-sm text-muted-foreground">Control whether this section appears on the website</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                          <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                              type="checkbox"
+                                              checked={editingContent.is_visible}
+                                              onChange={(e) => setEditingContent({...editingContent, is_visible: e.target.checked})}
+                                              className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                          </label>
+                                          <span className="text-sm font-medium">
+                                            {editingContent.is_visible ? 'Published' : 'Hidden'}
+                                          </span>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <Button onClick={handleUpdateHomepageContent} disabled={uploading}>
-                                      {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                                      Update Content
-                                    </Button>
+
+                                    <div className="flex justify-end gap-3 pt-4 border-t">
+                                      <Button variant="outline" onClick={() => setEditingContent(null)}>
+                                        Cancel
+                                      </Button>
+                                      <Button onClick={handleUpdateHomepageContent} disabled={uploading}>
+                                        {uploading ? (
+                                          <><Loader2 className="h-4 w-4 animate-spin mr-2" />Saving...</>
+                                        ) : (
+                                          <><Save className="h-4 w-4 mr-2" />Save Changes</>
+                                        )}
+                                      </Button>
+                                    </div>
                                   </div>
                                 )}
                               </DialogContent>
                             </Dialog>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+
+                        {/* Right: Image Preview */}
+                        <div className="w-64 bg-muted/20">
+                          {content.image_url ? (
+                            <img 
+                              src={content.image_url} 
+                              alt={content.title || 'Section image'} 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                              <div className="text-center">
+                                <Image className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                <p className="text-xs">No image</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
 
