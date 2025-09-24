@@ -73,7 +73,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
           
           if (profileData && isUserAuthorized(profileData.role, portalType)) {
             setProfile({
-              id: profileData.user_id,
+              id: profileData.id,
               email: profileData.email,
               full_name: profileData.full_name,
               role: profileData.role
