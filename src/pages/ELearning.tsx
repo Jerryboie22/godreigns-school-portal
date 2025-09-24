@@ -72,12 +72,12 @@ const ELearning = () => {
           <p className="text-xl mb-2">Digital Education Excellence</p>
           <p className="text-lg opacity-90">Learn Anywhere, Anytime with Our Advanced E-Learning System</p>
           <div className="mt-8">
-            <Link to="/portal/student">
+            <Link to="/portals/student">
               <Button size="lg" variant="secondary" className="text-lg px-8 mr-4">
                 Student Login
               </Button>
             </Link>
-            <Link to="/portal/staff">
+            <Link to="/portals/staff">
               <Button size="lg" variant="outline" className="text-lg px-8 bg-white/10 hover:bg-white/20 border-white">
                 Teacher Portal
               </Button>
@@ -257,7 +257,7 @@ const ELearning = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/portal/student">
+              <Link to="/portals/student">
                 <Button size="lg" className="text-lg px-8">
                   Get Started Free
                 </Button>

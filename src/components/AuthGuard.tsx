@@ -25,16 +25,13 @@ interface UserProfile {
 
 // Helper function to check if user role is authorized for portal type
 const isUserAuthorized = (userRole: string, portalType: string): boolean => {
-  // Admin can access all portals
-  if (userRole === 'admin') return true;
-  
+  // Admins and super admins can access all portals
+  if (userRole === 'admin' || userRole === 'super_admin') return true;
   // Direct role match
   if (userRole === portalType) return true;
-  
   // Staff and teacher are equivalent
-  if ((userRole === 'staff' || userRole === 'teacher') && 
+  if ((userRole === 'staff' || userRole === 'teacher') &&
       (portalType === 'staff' || portalType === 'teacher')) return true;
-  
   return false;
 };
 
@@ -155,7 +152,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -205,7 +202,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
         }
       });
 
