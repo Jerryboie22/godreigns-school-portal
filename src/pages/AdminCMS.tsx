@@ -195,7 +195,7 @@ const AdminCMS = () => {
   const handleUpdatePost = async () => {
     if (!editingPost) return;
 
-    if (editingPost.published && !editingPost.featured_image) {
+    if (editingPost.status === 'published' && !editingPost.image) {
       toast({
         title: "Featured Image Required",
         description: "Cannot publish a post without a featured image!",
@@ -212,8 +212,8 @@ const AdminCMS = () => {
           slug: editingPost.slug,
           content: editingPost.content,
           excerpt: editingPost.excerpt,
-          featured_image: editingPost.featured_image,
-          published: editingPost.published
+          featured_image: editingPost.image,
+          published: editingPost.status === 'published'
         })
         .eq('id', editingPost.id);
 
@@ -379,7 +379,7 @@ const AdminCMS = () => {
       const imageUrl = await uploadImageToStorage(file, 'blog-images');
       
       if (isEdit && editingPost) {
-        setEditingPost({ ...editingPost, featured_image: imageUrl });
+        setEditingPost({ ...editingPost, image: imageUrl });
       } else {
         setNewPost({ ...newPost, image: imageUrl });
       }
@@ -747,9 +747,9 @@ const AdminCMS = () => {
                                     
                                     <div>
                                       <label className="text-sm font-medium mb-2 block">Featured Image</label>
-                                       {editingPost.featured_image && (
-                                         <img src={editingPost.featured_image} alt="Preview" className="w-full h-32 object-cover rounded border mb-2" />
-                                       )}
+                                      {editingPost.image && (
+                                        <img src={editingPost.image} alt="Preview" className="w-full h-32 object-cover rounded border mb-2" />
+                                      )}
                                       <input
                                         type="file"
                                         accept="image/*"
@@ -765,7 +765,7 @@ const AdminCMS = () => {
                                      <div className="flex gap-2">
                                        <select
                                          value={editingPost.published ? 'published' : 'draft'}
-                                         onChange={(e) => setEditingPost({...editingPost, published: e.target.value === 'published'})}
+                                         onChange={(e) => setEditingPost({...editingPost, status: e.target.value, published: e.target.value === 'published'})}
                                          className="flex-1 px-3 py-2 border rounded"
                                        >
                                          <option value="draft">Draft</option>

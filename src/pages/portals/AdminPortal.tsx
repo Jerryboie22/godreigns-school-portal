@@ -451,7 +451,7 @@ const AdminPortalContent = () => {
               </CardHeader>
               <CardContent>
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Link to="/portals/staff">
+                  <Link to="/portal/staff">
                     <Button 
                       className="h-24 text-left flex-col items-start p-4 w-full"
                     >
@@ -510,7 +510,7 @@ const AdminPortalContent = () => {
                       </div>
                     </Button>
                   </Link>
-                  <Link to="/portals/parent">
+                  <Link to="/portal/parent">
                     <Button 
                       className="h-24 text-left flex-col items-start p-4 w-full" 
                       variant="outline"
