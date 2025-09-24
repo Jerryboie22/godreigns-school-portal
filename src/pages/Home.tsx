@@ -5,7 +5,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import PortalCard from "@/components/PortalCard";
 import SuccessModal from "@/components/SuccessModal";
-import { ChevronLeft, ChevronRight, Users, Award, BookOpen, Shield, Heart, Target, Eye, Calendar, ArrowRight, Phone, Mail, MapPin, Clock, CreditCard, ChevronDown } from "lucide-react";
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Users, 
+  Award, 
+  BookOpen, 
+  Shield, 
+  Heart, 
+  Target, 
+  Eye, 
+  Calendar, 
+  ArrowRight, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  CreditCard, 
+  ChevronDown,
+  Star,
+  Trophy,
+  Lightbulb,
+  Globe,
+  CheckCircle,
+  Play
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 import logo from "@/assets/logo.jpeg";
@@ -567,200 +591,373 @@ const Home = () => {
         </section>
       )}
 
-      {/* Graduation Success Section */}
-      <section className="py-16 bg-gradient-to-br from-emerald-50 via-green-50 to-yellow-50">
-        <div className="container mx-auto px-4">
+      {/* Excellence Statistics Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 via-background to-accent/10 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.1)_50%,transparent_75%)] bg-[length:60px_60px]"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="flex justify-center">
-                <img 
-                  src={graduateIndividual} 
-                  alt="Our God Reigns Crystal School Graduate"
-                  className="rounded-lg shadow-elegant w-full max-w-lg"
-                />
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-2 mb-6">
+                <Star className="h-4 w-4 text-primary mr-2" />
+                <span className="text-primary font-semibold">Academic Excellence</span>
               </div>
-              <div>
-                <h2 className="text-3xl font-bold text-emerald-800 mb-4">Celebrating Our Graduates</h2>
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Our graduates represent the pinnacle of academic excellence and moral integrity. Each year, 
-                  we celebrate their achievements as they transition to the next phase of their educational journey, 
-                  equipped with knowledge, character, and the light to illuminate the world.
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <Award className="h-5 w-5 text-yellow-600" />
-                    <span className="text-gray-700">Outstanding WAEC & NECO Performance</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <BookOpen className="h-5 w-5 text-emerald-600" />
-                    <span className="text-gray-700">Comprehensive Academic Foundation</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Heart className="h-5 w-5 text-red-500" />
-                    <span className="text-gray-700">Strong Christian Values & Character</span>
-                  </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
+                Where Dreams Take Flight
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Empowering students to achieve extraordinary success through world-class education, 
+                innovative teaching methods, and unwavering commitment to excellence.
+              </p>
+            </div>
+            
+            {/* Statistics Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-6 text-center border border-primary/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trophy className="h-8 w-8 text-primary" />
                 </div>
-                <Link to="/gallery" className="inline-block mt-6">
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                    View More Achievements
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
+                <div className="text-3xl font-bold text-primary mb-2">95%</div>
+                <p className="text-muted-foreground font-medium">WAEC Success Rate</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-accent/5 to-accent/10 rounded-2xl p-6 text-center border border-accent/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="h-8 w-8 text-accent-foreground" />
+                </div>
+                <div className="text-3xl font-bold text-primary mb-2">12+</div>
+                <p className="text-muted-foreground font-medium">Years Experience</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-secondary/5 to-secondary/10 rounded-2xl p-6 text-center border border-secondary/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-secondary" />
+                </div>
+                <div className="text-3xl font-bold text-primary mb-2">500+</div>
+                <p className="text-muted-foreground font-medium">Students Mentored</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 rounded-2xl p-6 text-center border border-emerald-500/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-emerald-600" />
+                </div>
+                <div className="text-3xl font-bold text-primary mb-2">50+</div>
+                <p className="text-muted-foreground font-medium">Awards Won</p>
+              </div>
+            </div>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="bg-white rounded-2xl p-8 shadow-soft hover:shadow-elegant transition-all duration-300 border border-border/50">
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
+                  <Lightbulb className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">Innovative Learning</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Modern teaching methods combined with digital tools to enhance understanding and engagement.
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-2xl p-8 shadow-soft hover:shadow-elegant transition-all duration-300 border border-border/50">
+                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-6">
+                  <Heart className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">Character Building</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Nurturing moral values and leadership skills alongside academic excellence.
+                </p>
+              </div>
+              
+              <div className="bg-white rounded-2xl p-8 shadow-soft hover:shadow-elegant transition-all duration-300 border border-border/50">
+                <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-6">
+                  <Globe className="h-6 w-6 text-secondary" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-4">Global Standards</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  International curriculum standards adapted for Nigerian students to compete globally.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* About Our School */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* About Our School - Enhanced Design */}
+      <section className="py-20 bg-gradient-to-br from-background via-muted/30 to-background relative">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-primary mb-4">About Our God Reigns Crystal School</h2>
-              <p className="text-xl text-muted-foreground">A place for academic and moral excellence - Light to the World</p>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center bg-accent/10 rounded-full px-6 py-3 mb-6">
+                <CheckCircle className="h-5 w-5 text-accent-foreground mr-2" />
+                <span className="text-accent-foreground font-semibold">About Our School</span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">Our God Reigns Crystal School</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                A place for academic and moral excellence - Light to the World
+              </p>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
               <div className="order-2 lg:order-1">
-                <div className="bg-accent/20 rounded-lg p-6 mb-8">
-                  <h3 className="text-2xl font-bold text-primary mb-2">Admission in Progress</h3>
-                  <p className="text-lg text-primary">into JSS & SSS Classes</p>
-                  <p className="text-sm text-muted-foreground mt-2">Academic Session 2025/2026</p>
+                <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-8 mb-8 border border-accent/20">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center">
+                      <Calendar className="h-6 w-6 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-primary">Admission in Progress</h3>
+                      <p className="text-accent-foreground font-medium">Academic Session 2025/2026</p>
+                    </div>
+                  </div>
+                  <p className="text-lg text-primary mb-4">Into JSS & SSS Classes</p>
+                  <Link to="/admissions">
+                    <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                      Apply Now <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
                 </div>
-                <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                  Our God Reigns Crystal School stands as a beacon of excellence in education, dedicated to nurturing young minds 
-                  with both academic knowledge and moral values. We provide a comprehensive learning environment where students 
-                  develop critical thinking skills, character, and leadership qualities that will serve them throughout their lives.
-                </p>
-                <Link to="/about">
-                  <Button className="text-lg px-6">
-                    Learn More About Us
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
+                
+                <div className="space-y-6">
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    Our God Reigns Crystal School stands as a beacon of excellence in education, dedicated to nurturing young minds 
+                    with both academic knowledge and moral values. We provide a comprehensive learning environment where students 
+                    develop critical thinking skills, character, and leadership qualities.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-muted-foreground">Expert Teachers</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-muted-foreground">Modern Facilities</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-muted-foreground">Christian Values</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                        <CheckCircle className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-muted-foreground">Excellence Record</span>
+                    </div>
+                  </div>
+                  
+                  <Link to="/about">
+                    <Button size="lg" className="text-lg px-8 py-4">
+                      Learn More About Us
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </Link>
+                </div>
               </div>
+              
               <div className="flex justify-center order-1 lg:order-2">
-                <img 
-                  src={galleryImages[0] || graduateIndividual} 
-                  alt="Our God Reigns Crystal School Students"
-                  className="rounded-lg shadow-elegant w-full max-w-md"
-                  onError={handleImageError}
+                <div className="relative">
+                  <div className="absolute -top-6 -right-6 w-24 h-24 bg-primary/10 rounded-full blur-2xl"></div>
+                  <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-accent/10 rounded-full blur-3xl"></div>
+                  <img 
+                    src={galleryImages[0] || graduateIndividual} 
+                    alt="Our God Reigns Crystal School Students"
+                    className="rounded-2xl shadow-elegant w-full max-w-lg relative z-10 border-4 border-white"
+                    onError={handleImageError}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Vision & Mission Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Card className="p-8 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-elegant transition-all duration-300">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+                      <Eye className="h-8 w-8 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl text-primary">Our Vision</CardTitle>
+                      <p className="text-muted-foreground">What drives us forward</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    To provide qualitative and affordable education. To raise God fearing leaders who will be 
+                    Light to the World in their respective fields.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="p-8 bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:shadow-elegant transition-all duration-300">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center">
+                      <Target className="h-8 w-8 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl text-primary">Our Mission</CardTitle>
+                      <p className="text-muted-foreground">How we achieve excellence</p>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    To maintain high standard at all times. To ensure our services are affordable. 
+                    To nurture students in the way of the Lord and mentor them to occupy leadership positions.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Access Portals - Enhanced */}
+      <section className="py-20 bg-gradient-to-br from-navy/5 via-primary/5 to-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center bg-navy/10 rounded-full px-6 py-3 mb-6">
+                <Shield className="h-5 w-5 text-navy mr-2" />
+                <span className="text-navy font-semibold">Digital Access</span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">School Portals</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Seamlessly connect with our digital ecosystem for enhanced learning and management experiences
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl transform rotate-1 group-hover:rotate-2 transition-transform duration-300"></div>
+                <PortalCard
+                  title="Admin Portal"
+                  description="Comprehensive school administration and management access for leadership team"
+                  icon={Shield}
+                  path="/portals/admin"
+                  color="primary"
+                />
+              </div>
+              
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-secondary/5 rounded-2xl transform -rotate-1 group-hover:-rotate-2 transition-transform duration-300"></div>
+                <PortalCard
+                  title="Staff Portal"
+                  description="Dedicated platform for teachers and staff with resources and tools"
+                  icon={Users}
+                  path="/portals/staff"
+                  color="secondary"
+                />
+              </div>
+              
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/5 rounded-2xl transform rotate-1 group-hover:rotate-2 transition-transform duration-300"></div>
+                <PortalCard
+                  title="Parent Portal"
+                  description="Monitor your child's academic progress and school activities"
+                  icon={Heart}
+                  path="/portals/parent"
+                  color="accent"
+                />
+              </div>
+              
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-navy/20 to-navy/5 rounded-2xl transform -rotate-1 group-hover:-rotate-2 transition-transform duration-300"></div>
+                <PortalCard
+                  title="Student Portal"
+                  description="Interactive learning platform with materials, grades, and resources"
+                  icon={BookOpen}
+                  path="/portals/student"
+                  color="navy"
                 />
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-              <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Eye className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-primary">Our Vision</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    To provide qualitative and affordable education. To raise God fearing leaders.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="p-6 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Target className="h-6 w-6 text-accent" />
-                    <CardTitle className="text-primary">Our Mission</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    To maintain high standard at all times. To always ensure that our services are not overpriced. 
-                    To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="text-center mt-12">
+              <Link to="/portals">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2">
+                  Explore All Portals
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Access Portals */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-primary mb-4">Access School Portals</h2>
-              <p className="text-xl text-muted-foreground">Quick access to our digital learning and management systems</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <PortalCard
-                title="Admin Portal"
-                description="School administration and management access"
-                icon={Shield}
-                path="/portals/admin"
-                color="primary"
-              />
-              
-              <PortalCard
-                title="Staff Portal"
-                description="Teachers and staff resources"
-                icon={Users}
-                path="/portals/staff"
-                color="secondary"
-              />
-              
-              <PortalCard
-                title="Parent Portal"
-                description="Track your child's progress"
-                icon={Heart}
-                path="/portals/parent"
-                color="accent"
-              />
-              
-              <PortalCard
-                title="Student Portal"
-                description="Access learning materials and grades"
-                icon={BookOpen}
-                path="/portals/student"
-                color="navy"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Campus Life & Gallery */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-primary mb-4">Campus Life & Gallery</h2>
-              <p className="text-xl text-muted-foreground">Discover life at Our God Reigns Crystal School</p>
+      {/* Campus Life & Gallery - Enhanced */}
+      <section className="py-20 bg-gradient-to-br from-background via-primary/5 to-accent/10 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-3 mb-6">
+                <Play className="h-5 w-5 text-primary mr-2" />
+                <span className="text-primary font-semibold">Campus Life</span>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">Life at Our School</h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Experience the vibrant community and rich activities that make our school a second home for students
+              </p>
             </div>
             
             {galleryImages.length > 0 && (
-              <div className="relative bg-white rounded-lg shadow-elegant overflow-hidden mb-8">
-                <div className="relative h-96">
+              <div className="relative bg-white rounded-2xl shadow-elegant overflow-hidden mb-12 border border-border/50">
+                <div className="relative h-[32rem]">
                   <img 
                     src={galleryImages[currentGalleryImage]} 
                     alt={`Gallery Image ${currentGalleryImage + 1}`}
                     className="w-full h-full object-cover"
                     onError={handleImageError}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <p className="text-sm opacity-90">
-                      Image {currentGalleryImage + 1} of {galleryImages.length}
-                    </p>
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  
+                  {/* Content Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-2xl font-bold mb-2">Campus Moments</h3>
+                        <p className="text-white/90">
+                          Image {currentGalleryImage + 1} of {galleryImages.length}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {galleryImages.map((_, index) => (
+                          <button
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                              index === currentGalleryImage ? 'bg-white w-8' : 'bg-white/50'
+                            }`}
+                            onClick={() => setCurrentGalleryImage(index)}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   
+                  {/* Navigation Buttons */}
                   {galleryImages.length > 1 && (
                     <>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+                        className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm border border-white/20"
                         onClick={prevImage}
                       >
                         <ChevronLeft className="h-6 w-6" />
@@ -769,7 +966,7 @@ const Home = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+                        className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm border border-white/20"
                         onClick={nextImage}
                       >
                         <ChevronRight className="h-6 w-6" />
@@ -780,10 +977,37 @@ const Home = () => {
               </div>
             )}
             
+            {/* Activity Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-3">Academic Excellence</h3>
+                <p className="text-muted-foreground">Rigorous curriculum and innovative teaching methods ensure academic success.</p>
+              </Card>
+              
+              <Card className="p-6 bg-gradient-to-br from-accent/5 to-accent/10 border-accent/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-accent-foreground" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-3">Community Events</h3>
+                <p className="text-muted-foreground">Regular events and activities foster school spirit and community bonding.</p>
+              </Card>
+              
+              <Card className="p-6 bg-gradient-to-br from-secondary/5 to-secondary/10 border-secondary/20 hover:shadow-elegant transition-all duration-300">
+                <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                  <Award className="h-6 w-6 text-secondary" />
+                </div>
+                <h3 className="text-xl font-bold text-primary mb-3">Achievements</h3>
+                <p className="text-muted-foreground">Celebrating student accomplishments in academics, sports, and leadership.</p>
+              </Card>
+            </div>
+            
             <div className="text-center">
               <Link to="/gallery">
-                <Button size="lg" className="bg-gradient-primary">
-                  View Full Gallery
+                <Button size="lg" className="bg-gradient-primary text-lg px-8 py-4">
+                  Explore Full Gallery
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
               </Link>
