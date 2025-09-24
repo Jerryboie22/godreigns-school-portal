@@ -25,12 +25,18 @@ interface UserProfile {
 
 // Helper function to check if user role is authorized for portal type
 const isUserAuthorized = (userRole: string, portalType: string): boolean => {
-  // Admin can access all portals
-  if (userRole === 'admin') return true;
-  
+  // Super admins and admins can access everything
+  if (userRole === 'admin' || userRole === 'super_admin') return true;
+
+  // Admin portal is restricted
+  if (portalType === 'admin') return userRole === 'admin' || userRole === 'super_admin';
+
+  // Treat "user" as a general authenticated role for non-admin portals
+  if (userRole === 'user') return true;
+
   // Direct role match
   if (userRole === portalType) return true;
-  
+
   // Staff and teacher are equivalent
   if ((userRole === 'staff' || userRole === 'teacher') && 
       (portalType === 'staff' || portalType === 'teacher')) return true;
@@ -56,52 +62,53 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     childName: "", // For parents
   });
 
-  useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Fetch user profile
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (profileData && isUserAuthorized(profileData.role, portalType)) {
-            setProfile({
-              id: profileData.id, // Use id instead of user_id
-              email: profileData.email,
-              full_name: profileData.full_name,
-              role: profileData.role
-            });
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-            setProfile(null);
-          }
+useEffect(() => {
+  // Set up auth state listener FIRST (no async in callback to avoid deadlocks)
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    setSession(session);
+    setUser(session?.user ?? null);
+
+    if (session?.user) {
+      // Defer Supabase calls to avoid blocking the callback
+      setTimeout(async () => {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user!.id)
+          .maybeSingle();
+
+        if (profileData && isUserAuthorized(profileData.role, portalType)) {
+          setProfile({
+            id: profileData.id,
+            email: profileData.email,
+            full_name: profileData.full_name,
+            role: profileData.role
+          });
+          setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
           setProfile(null);
         }
         setLoading(false);
-      }
-    );
+      }, 0);
+    } else {
+      setIsAuthenticated(false);
+      setProfile(null);
+      setLoading(false);
+    }
+  });
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (!session) {
-        setLoading(false);
-      }
-    });
+  // THEN check for existing session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session);
+    setUser(session?.user ?? null);
+    if (!session) {
+      setLoading(false);
+    }
+  });
 
-    return () => subscription.unsubscribe();
-  }, [portalType]);
+  return () => subscription.unsubscribe();
+}, [portalType]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +162,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/portal/${portalType}`;
+      const redirectUrl = `${window.location.origin}/portals/${portalType}`;
       
       const { error } = await supabase.auth.signUp({
         email: signupData.email,
@@ -205,7 +212,7 @@ const AuthGuard = ({ children, portalType }: AuthGuardProps) => {
         type: 'signup',
         email: pendingVerification,
         options: {
-          emailRedirectTo: `${window.location.origin}/portal/${portalType}`
+          emailRedirectTo: `${window.location.origin}/portals/${portalType}`
         }
       });
 
