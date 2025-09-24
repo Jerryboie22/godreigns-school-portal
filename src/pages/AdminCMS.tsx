@@ -44,6 +44,7 @@ const AdminCMS = () => {
 
   const [newPost, setNewPost] = useState({
     title: '',
+    slug: '',
     content: '',
     excerpt: '',
     image: '',
@@ -165,17 +166,17 @@ const AdminCMS = () => {
     try {
       const { error } = await supabase.from('posts').insert([{
         title: newPost.title,
+        slug: newPost.slug,
         content: newPost.content,
         excerpt: newPost.excerpt || newPost.content.substring(0, 150) + '...',
-        image: newPost.image,
-        category: newPost.category,
-        status: newPost.status,
+        featured_image: newPost.image,
+        published: newPost.status === 'published',
         author_id: (await supabase.auth.getUser()).data.user?.id
       }]);
 
       if (error) throw error;
 
-      setNewPost({ title: '', content: '', excerpt: '', image: '', category: 'General', status: 'draft' });
+      setNewPost({ title: '', slug: '', content: '', excerpt: '', image: '', category: 'General', status: 'draft' });
       await fetchData();
       
       toast({
@@ -208,11 +209,11 @@ const AdminCMS = () => {
         .from('posts')
         .update({
           title: editingPost.title,
+          slug: editingPost.slug,
           content: editingPost.content,
           excerpt: editingPost.excerpt,
-          image: editingPost.image,
-          category: editingPost.category,
-          status: editingPost.status
+          featured_image: editingPost.image,
+          published: editingPost.status === 'published'
         })
         .eq('id', editingPost.id);
 
@@ -577,6 +578,15 @@ const AdminCMS = () => {
                   </div>
                   
                   <div>
+                    <label className="text-sm font-medium mb-2 block">URL Slug</label>
+                    <Input 
+                      placeholder="post-url-slug"
+                      value={newPost.slug}
+                      onChange={(e) => setNewPost({...newPost, slug: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
                     <label className="text-sm font-medium mb-2 block">Excerpt</label>
                     <Textarea 
                       placeholder="Short description..."
@@ -690,9 +700,9 @@ const AdminCMS = () => {
                             </p>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                              <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
-                                {post.status}
-                              </Badge>
+                               <Badge variant={post.published ? 'default' : 'secondary'}>
+                                 {post.published ? 'published' : 'draft'}
+                               </Badge>
                               <Badge variant="outline">{post.category}</Badge>
                             </div>
                           </div>
@@ -711,12 +721,17 @@ const AdminCMS = () => {
                                   <DialogTitle>Edit Post</DialogTitle>
                                 </DialogHeader>
                                 {editingPost && (
-                                  <div className="space-y-4">
-                                    <Input
-                                      placeholder="Title"
-                                      value={editingPost.title}
-                                      onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-                                    />
+                                   <div className="space-y-4">
+                                     <Input
+                                       placeholder="Title"
+                                       value={editingPost.title}
+                                       onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
+                                     />
+                                     <Input
+                                       placeholder="URL Slug"
+                                       value={editingPost.slug || ''}
+                                       onChange={(e) => setEditingPost({...editingPost, slug: e.target.value})}
+                                     />
                                     <Textarea
                                       placeholder="Excerpt"
                                       rows={2}
@@ -747,15 +762,15 @@ const AdminCMS = () => {
                                       />
                                     </div>
 
-                                    <div className="flex gap-2">
-                                      <select
-                                        value={editingPost.status}
-                                        onChange={(e) => setEditingPost({...editingPost, status: e.target.value})}
-                                        className="flex-1 px-3 py-2 border rounded"
-                                      >
-                                        <option value="draft">Draft</option>
-                                        <option value="published">Published</option>
-                                      </select>
+                                     <div className="flex gap-2">
+                                       <select
+                                         value={editingPost.published ? 'published' : 'draft'}
+                                         onChange={(e) => setEditingPost({...editingPost, status: e.target.value, published: e.target.value === 'published'})}
+                                         className="flex-1 px-3 py-2 border rounded"
+                                       >
+                                         <option value="draft">Draft</option>
+                                         <option value="published">Published</option>
+                                       </select>
                                       <Button onClick={handleUpdatePost} disabled={uploading}>
                                         Update Post
                                       </Button>
