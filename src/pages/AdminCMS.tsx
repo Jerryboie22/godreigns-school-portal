@@ -896,77 +896,104 @@ const AdminCMS = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {homepageContent.map(content => (
-                      <div key={content.id} className="border rounded-lg p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold mb-1">{content.title || content.section_key}</h3>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {content.content?.substring(0, 100)}...
-                            </p>
-                            <Badge variant={content.is_visible ? 'default' : 'secondary'}>
-                              {content.is_visible ? 'Visible' : 'Hidden'}
-                            </Badge>
+                  {homepageContent.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-lg font-medium mb-2">No Homepage Content</p>
+                      <p className="text-sm">Create your first homepage section to get started.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {homepageContent.map(content => (
+                        <div key={content.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-semibold">{content.title || content.section_type}</h3>
+                                <Badge variant="outline" className="text-xs">
+                                  {content.section_type}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                                {content.content ? content.content.substring(0, 120) + (content.content.length > 120 ? '...' : '') : 'No content'}
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Badge variant={content.is_visible ? 'default' : 'secondary'} className="text-xs">
+                                  {content.is_visible ? 'Published' : 'Hidden'}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">Order: {content.order_index}</span>
+                              </div>
+                            </div>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button size="sm" variant="outline" onClick={() => setEditingContent(content)}>
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>Edit Homepage Content</DialogTitle>
+                                </DialogHeader>
+                                {editingContent && (
+                                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                                    <Input
+                                      placeholder="Title"
+                                      value={editingContent.title || ''}
+                                      onChange={(e) => setEditingContent({...editingContent, title: e.target.value})}
+                                    />
+                                    <Textarea
+                                      placeholder="Content"
+                                      rows={4}
+                                      value={editingContent.content || ''}
+                                      onChange={(e) => setEditingContent({...editingContent, content: e.target.value})}
+                                    />
+                                    <div>
+                                      <label className="text-sm font-medium mb-2 block">Image</label>
+                                      {editingContent.image_url && (
+                                        <img src={editingContent.image_url} alt="Preview" className="w-full h-32 object-cover rounded border mb-2" />
+                                      )}
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) handleContentImageUpload(file);
+                                        }}
+                                        className="block w-full text-sm"
+                                        disabled={uploading}
+                                      />
+                                    </div>
+                                    <Input
+                                      placeholder="Link URL (optional)"
+                                      value={editingContent.link_url || ''}
+                                      onChange={(e) => setEditingContent({...editingContent, link_url: e.target.value})}
+                                    />
+                                    <Input
+                                      placeholder="Link Text (optional)"
+                                      value={editingContent.link_text || ''}
+                                      onChange={(e) => setEditingContent({...editingContent, link_text: e.target.value})}
+                                    />
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={editingContent.is_visible}
+                                        onChange={(e) => setEditingContent({...editingContent, is_visible: e.target.checked})}
+                                      />
+                                      <label className="text-sm">Visible on website</label>
+                                    </div>
+                                    <Button onClick={handleUpdateHomepageContent} disabled={uploading}>
+                                      {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                      Update Content
+                                    </Button>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
                           </div>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button size="sm" variant="outline" onClick={() => setEditingContent(content)}>
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
-                              <DialogHeader>
-                                <DialogTitle>Edit Homepage Content</DialogTitle>
-                              </DialogHeader>
-                              {editingContent && (
-                                <div className="space-y-4 max-h-96 overflow-y-auto">
-                                  <Input
-                                    placeholder="Title"
-                                    value={editingContent.title || ''}
-                                    onChange={(e) => setEditingContent({...editingContent, title: e.target.value})}
-                                  />
-                                  <Textarea
-                                    placeholder="Content"
-                                    rows={4}
-                                    value={editingContent.content || ''}
-                                    onChange={(e) => setEditingContent({...editingContent, content: e.target.value})}
-                                  />
-                                  <div>
-                                    <label className="text-sm font-medium mb-2 block">Image</label>
-                                    {editingContent.image_url && (
-                                      <img src={editingContent.image_url} alt="Preview" className="w-full h-32 object-cover rounded border mb-2" />
-                                    )}
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleContentImageUpload(file);
-                                      }}
-                                      className="block w-full text-sm"
-                                      disabled={uploading}
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      type="checkbox"
-                                      checked={editingContent.is_visible}
-                                      onChange={(e) => setEditingContent({...editingContent, is_visible: e.target.checked})}
-                                    />
-                                    <label className="text-sm">Visible on website</label>
-                                  </div>
-                                  <Button onClick={handleUpdateHomepageContent} disabled={uploading}>
-                                    Update Content
-                                  </Button>
-                                </div>
-                              )}
-                            </DialogContent>
-                          </Dialog>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
