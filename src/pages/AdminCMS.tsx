@@ -1030,11 +1030,12 @@ const AdminCMS = () => {
                     {teachers.map(teacher => (
                       <div key={teacher.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h4 className="font-semibold">{teacher.subject} - {teacher.department}</h4>
-                            <p className="text-sm text-muted-foreground">Employee ID: {teacher.employee_id}</p>
-                            <p className="text-xs text-muted-foreground">Hire Date: {new Date(teacher.hire_date).toLocaleDateString()}</p>
-                          </div>
+                           <div className="flex-1">
+                             <h4 className="font-semibold">{teacher.name || 'Unknown Teacher'}</h4>
+                             <p className="text-sm text-muted-foreground">{teacher.subject} - {teacher.department}</p>
+                             <p className="text-xs text-muted-foreground">Employee ID: {teacher.employee_id}</p>
+                             <p className="text-xs text-muted-foreground">Hire Date: {new Date(teacher.hire_date).toLocaleDateString()}</p>
+                           </div>
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline" onClick={() => handleEditTeacher(teacher)}>
                               <Edit className="h-3 w-3" />

@@ -521,6 +521,7 @@ export type Database = {
           experience_years: number | null
           hire_date: string | null
           id: string
+          name: string | null
           profile_id: string | null
           qualification: string | null
           subject: string | null
@@ -533,6 +534,7 @@ export type Database = {
           experience_years?: number | null
           hire_date?: string | null
           id?: string
+          name?: string | null
           profile_id?: string | null
           qualification?: string | null
           subject?: string | null
@@ -545,6 +547,7 @@ export type Database = {
           experience_years?: number | null
           hire_date?: string | null
           id?: string
+          name?: string | null
           profile_id?: string | null
           qualification?: string | null
           subject?: string | null
