@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import AuthGuard from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,9 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Users, 
   BookOpen, 
@@ -25,133 +27,315 @@ import {
   Eye
 } from "lucide-react";
 
+interface Profile {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  created_at: string;
+}
+
+interface Student {
+  id: string;
+  student_id: string;
+  class: string;
+  profiles: { full_name: string; email: string };
+  created_at: string;
+}
+
+interface Teacher {
+  id: string;
+  employee_id: string;
+  name: string;
+  subject: string;
+  department: string;
+  profiles: { full_name: string; email: string };
+}
+
 const AdminPortalContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeStudents, setActiveStudents] = useState([
-    { id: 1, name: "Adebayo Oladimeji", class: "JSS 1A", admissionNo: "2023/001", status: "Active" },
-    { id: 2, name: "Chinyere Okafor", class: "SSS 2B", admissionNo: "2021/045", status: "Active" },
-    { id: 3, name: "Emeka Nwankwo", class: "JSS 3C", admissionNo: "2022/023", status: "Suspended" }
-  ]);
-  const [staff, setStaff] = useState([
-    { id: 1, name: "Mrs. Folake Adebisi", position: "English Teacher", department: "Languages", status: "Active" },
-    { id: 2, name: "Mr. Chukwuma Okonkwo", position: "Mathematics Teacher", department: "Sciences", status: "Active" },
-    { id: 3, name: "Miss Aisha Bello", position: "Physics Teacher", department: "Sciences", status: "On Leave" }
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<Profile | null>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  
+  // Real data states
+  const [students, setStudents] = useState<Student[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
+  const [analytics, setAnalytics] = useState({
+    totalStudents: 0,
+    totalStaff: 0,
+    totalClasses: 0,
+    totalRevenue: 0,
+    pendingFees: 0
+  });
+  const [recentActivities, setRecentActivities] = useState<any[]>([]);
+  
+  // Form states
+  const [editingStudent, setEditingStudent] = useState<string | null>(null);
+  const [editingStaff, setEditingStaff] = useState<string | null>(null);
+  const [studentForm, setStudentForm] = useState({ name: "", class: "", student_id: "" });
+  const [staffForm, setStaffForm] = useState({ name: "", subject: "", department: "", employee_id: "" });
+  const [newAdminForm, setNewAdminForm] = useState({ 
+    email: "", 
+    full_name: "", 
+    role: "admin" as "admin" | "teacher" | "staff" 
+  });
+
   const { toast } = useToast();
 
-  const handleAction = (action: string, id?: number) => {
-    toast({
-      title: `${action} Successful`,
-      description: `Action "${action}" has been completed successfully.`,
-    });
+  useEffect(() => {
+    fetchCurrentUser();
+    fetchAllData();
+  }, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      setCurrentUser(profile);
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+    }
   };
 
-  const handleDeleteStudent = (id: number) => {
-    setActiveStudents(prev => prev.filter(student => student.id !== id));
-    toast({
-      title: "Student Removed",
-      description: "Student has been removed from the system.",
-    });
+  const fetchAllData = async () => {
+    setIsLoadingData(true);
+    try {
+      // Fetch students with profiles
+      const { data: studentsData } = await supabase
+        .from('students')
+        .select(`
+          *,
+          profiles(full_name, email)
+        `)
+        .order('created_at', { ascending: false });
+
+      // Fetch teachers with profiles  
+      const { data: teachersData } = await supabase
+        .from('teachers')
+        .select(`
+          *,
+          profiles(full_name, email)
+        `)
+        .order('created_at', { ascending: false });
+
+      // Fetch all profiles for user management
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // Fetch analytics data
+      const { data: feesData } = await supabase
+        .from('school_fees')
+        .select('amount, status');
+
+      // Calculate analytics
+      const totalStudents = studentsData?.length || 0;
+      const totalStaff = teachersData?.length || 0;
+      const totalClasses = new Set(studentsData?.map(s => s.class)).size || 0;
+      
+      const paidFees = feesData?.filter(f => f.status === 'paid').reduce((sum, f) => sum + Number(f.amount), 0) || 0;
+      const pendingFees = feesData?.filter(f => f.status === 'pending').reduce((sum, f) => sum + Number(f.amount), 0) || 0;
+
+      setStudents(studentsData || []);
+      setTeachers(teachersData || []);
+      setAllProfiles(profilesData || []);
+      setAnalytics({
+        totalStudents,
+        totalStaff,
+        totalClasses,
+        totalRevenue: paidFees,
+        pendingFees
+      });
+
+      // Generate recent activities from real data
+      const activities = [];
+      if (studentsData?.length > 0) {
+        activities.push({
+          action: "New student enrolled",
+          details: `${studentsData[0].profiles?.full_name} - ${studentsData[0].class}`,
+          time: new Date(studentsData[0].created_at).toLocaleDateString()
+        });
+      }
+      if (teachersData?.length > 0) {
+        activities.push({
+          action: "New staff added",
+          details: `${teachersData[0].profiles?.full_name} - ${teachersData[0].department}`,
+          time: new Date(teachersData[0].created_at).toLocaleDateString()
+        });
+      }
+      if (feesData?.some(f => f.status === 'paid')) {
+        activities.push({
+          action: "Fee payment received",
+          details: `₦${feesData.find(f => f.status === 'paid')?.amount.toLocaleString()}`,
+          time: "Today"
+        });
+      }
+      
+      setRecentActivities(activities);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoadingData(false);
+      setLoading(false);
+    }
   };
 
-  const handleDeleteStaff = (id: number) => {
-    setStaff(prev => prev.filter(member => member.id !== id));
-    toast({
-      title: "Staff Removed", 
-      description: "Staff member has been removed from the system.",
-    });
+  const handleAddAdmin = async () => {
+    if (!currentUser || currentUser.role !== 'super_admin') {
+      toast({
+        title: "Access Denied",
+        description: "Only super admins can add other admins.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!newAdminForm.email || !newAdminForm.full_name) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide email and full name.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Check if user already exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', newAdminForm.email)
+        .single();
+
+      if (existingProfile) {
+        // Update existing user's role
+        const { error } = await supabase
+          .from('profiles')
+          .update({ role: newAdminForm.role })
+          .eq('email', newAdminForm.email);
+
+        if (error) throw error;
+
+        toast({
+          title: "Admin Added",
+          description: `${newAdminForm.full_name} has been granted admin access.`
+        });
+      } else {
+        toast({
+          title: "User Not Found",
+          description: "User must create an account first before being granted admin access.",
+          variant: "destructive"
+        });
+      }
+
+      setNewAdminForm({ email: "", full_name: "", role: "admin" as "admin" });
+      fetchAllData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add admin.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const [editingStudent, setEditingStudent] = useState<number | null>(null);
-  const [editingStaff, setEditingStaff] = useState<number | null>(null);
-  const [studentForm, setStudentForm] = useState({ name: "", class: "", admissionNo: "", status: "" });
-  const [staffForm, setStaffForm] = useState({ name: "", position: "", department: "", status: "" });
+  const handleUpdateUserRole = async (userId: string, newRole: string) => {
+    if (!currentUser || currentUser.role !== 'super_admin') {
+      toast({
+        title: "Access Denied",
+        description: "Only super admins can modify user roles.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const handleAddStudent = () => {
-    const newStudent = {
-      id: Date.now(),
-      name: `Kemi Adeyemi`,
-      class: "JSS 1A",
-      admissionNo: `2025/${String(activeStudents.length + 1).padStart(3, '0')}`,
-      status: "Active"
-    };
-    setActiveStudents(prev => [...prev, newStudent]);
-    toast({
-      title: "Student Added",
-      description: "New student has been added to the system.",
-    });
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Role Updated",
+        description: "User role has been updated successfully."
+      });
+      
+      fetchAllData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update role.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleAddStaff = () => {
-    const newStaff = {
-      id: Date.now(),
-      name: `Dr. Musa Ibrahim`,
-      position: "Teacher",
-      department: "General",
-      status: "Active"
-    };
-    setStaff(prev => [...prev, newStaff]);
-    toast({
-      title: "Staff Added",
-      description: "New staff member has been added to the system.",
-    });
-  };
+  const handleDeleteUser = async (userId: string) => {
+    if (!currentUser || currentUser.role !== 'super_admin') {
+      toast({
+        title: "Access Denied",
+        description: "Only super admins can delete users.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const handleEditStudent = (student: any) => {
-    setEditingStudent(student.id);
-    setStudentForm({
-      name: student.name,
-      class: student.class,
-      admissionNo: student.admissionNo,
-      status: student.status
-    });
-  };
+    try {
+      // Note: This will cascade delete due to foreign key constraints
+      const { error } = await supabase.auth.admin.deleteUser(userId);
+      
+      if (error) throw error;
 
-  const handleSaveStudent = (id: number) => {
-    setActiveStudents(prev => prev.map(student => 
-      student.id === id ? { ...student, ...studentForm } : student
-    ));
-    setEditingStudent(null);
-    toast({
-      title: "Student Updated",
-      description: "Student information has been updated successfully.",
-    });
-  };
-
-  const handleEditStaff = (staffMember: any) => {
-    setEditingStaff(staffMember.id);
-    setStaffForm({
-      name: staffMember.name,
-      position: staffMember.position,
-      department: staffMember.department,
-      status: staffMember.status
-    });
-  };
-
-  const handleSaveStaff = (id: number) => {
-    setStaff(prev => prev.map(member => 
-      member.id === id ? { ...member, ...staffForm } : member
-    ));
-    setEditingStaff(null);
-    toast({
-      title: "Staff Updated",
-      description: "Staff information has been updated successfully.",
-    });
+      toast({
+        title: "User Deleted",
+        description: "User has been removed from the system."
+      });
+      
+      fetchAllData();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete user.",
+        variant: "destructive"
+      });
+    }
   };
 
   const quickStats = [
-    { label: "Total Students", value: "847", icon: Users, color: "text-primary" },
-    { label: "Total Staff", value: "42", icon: GraduationCap, color: "text-secondary" },
-    { label: "Classes", value: "24", icon: BookOpen, color: "text-accent" },
-    { label: "Revenue (Monthly)", value: "₦2.4M", icon: DollarSign, color: "text-navy" },
+    { label: "Total Students", value: analytics.totalStudents.toString(), icon: Users, color: "text-primary" },
+    { label: "Total Staff", value: analytics.totalStaff.toString(), icon: GraduationCap, color: "text-secondary" },
+    { label: "Classes", value: analytics.totalClasses.toString(), icon: BookOpen, color: "text-accent" },
+    { label: "Revenue (Total)", value: `₦${analytics.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-navy" },
   ];
 
-  const recentActivities = [
-    { action: "New student enrolled", details: "Adebayo Oladimeji - JSS 1A", time: "2 hours ago" },
-    { action: "Staff meeting scheduled", details: "Mathematics Department", time: "4 hours ago" },
-    { action: "Fee payment received", details: "₦45,000 from Chinyere Okafor", time: "6 hours ago" },
-    { action: "Report generated", details: "Monthly academic performance", time: "1 day ago" },
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Shield className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
+          <p className="text-muted-foreground">Loading admin portal...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -162,6 +346,11 @@ const AdminPortalContent = () => {
             <div>
               <h1 className="text-3xl font-bold">Admin Portal</h1>
               <p className="text-white/90">Comprehensive School Management System</p>
+              {currentUser && (
+                <p className="text-white/70 text-sm">
+                  Role: {currentUser.role} | {currentUser.full_name}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -186,10 +375,11 @@ const AdminPortalContent = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-7">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="staff">Staff</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="academics">Academics</TabsTrigger>
             <TabsTrigger value="finance">Finance</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -205,7 +395,7 @@ const AdminPortalContent = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recentActivities.map((activity, index) => (
+                  {recentActivities.length > 0 ? recentActivities.map((activity, index) => (
                     <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="w-2 h-2 rounded-full bg-primary mt-2"></div>
                       <div className="flex-1">
@@ -214,7 +404,9 @@ const AdminPortalContent = () => {
                         <p className="text-xs text-muted-foreground">{activity.time}</p>
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <p className="text-muted-foreground text-center py-4">No recent activities</p>
+                  )}
                 </CardContent>
               </Card>
 
@@ -241,12 +433,6 @@ const AdminPortalContent = () => {
                       Manage Gallery
                     </Button>
                   </Link>
-                  <Link to="/contact">
-                    <Button className="w-full justify-start" variant="outline">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      View Contact Messages
-                    </Button>
-                  </Link>
                   <Link to="/portals">
                     <Button className="w-full justify-start" variant="outline">
                       <BarChart3 className="h-4 w-4 mr-2" />
@@ -259,17 +445,9 @@ const AdminPortalContent = () => {
           </TabsContent>
 
           <TabsContent value="students">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-primary">Student Management</h2>
-              <Button onClick={handleAddStudent} className="flex items-center">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Student
-              </Button>
-            </div>
-            
             <Card>
               <CardHeader>
-                <CardTitle>All Students ({activeStudents.length})</CardTitle>
+                <CardTitle>Student Management ({analytics.totalStudents})</CardTitle>
                 <CardDescription>Manage student records and information</CardDescription>
                 <div className="flex space-x-2">
                   <Input 
@@ -278,214 +456,186 @@ const AdminPortalContent = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="max-w-xs"
                   />
-                  <Button onClick={() => handleAction("Search Students")}>Search</Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {activeStudents.filter(student => 
-                    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    student.class.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    student.admissionNo.toLowerCase().includes(searchTerm.toLowerCase())
-                  ).map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      {editingStudent === student.id ? (
-                        <div className="flex-1 space-y-2">
-                          <Input
-                            value={studentForm.name}
-                            onChange={(e) => setStudentForm(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Student Name"
-                          />
-                          <div className="flex space-x-2">
-                            <Input
-                              value={studentForm.class}
-                              onChange={(e) => setStudentForm(prev => ({ ...prev, class: e.target.value }))}
-                              placeholder="Class"
-                            />
-                            <Input
-                              value={studentForm.admissionNo}
-                              onChange={(e) => setStudentForm(prev => ({ ...prev, admissionNo: e.target.value }))}
-                              placeholder="Admission No"
-                            />
-                          </div>
-                        </div>
-                      ) : (
+                {isLoadingData ? (
+                  <p className="text-center py-4">Loading students...</p>
+                ) : (
+                  <div className="space-y-4">
+                    {students.filter(student => 
+                      student.profiles?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.class?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      student.student_id?.toLowerCase().includes(searchTerm.toLowerCase())
+                    ).map((student) => (
+                      <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                         <div>
-                          <h3 className="font-semibold">{student.name}</h3>
+                          <h3 className="font-semibold">{student.profiles?.full_name || 'Unknown'}</h3>
                           <p className="text-sm text-muted-foreground">
-                            Class: {student.class} | Admission No: {student.admissionNo}
+                            Class: {student.class || 'Not assigned'} | Student ID: {student.student_id || 'Not set'}
                           </p>
-                          <Badge variant={student.status === 'Active' ? 'default' : 'secondary'}>
-                            {student.status}
-                          </Badge>
+                          <p className="text-xs text-muted-foreground">Email: {student.profiles?.email}</p>
                         </div>
-                      )}
-                      <div className="flex space-x-2">
-                        {editingStudent === student.id ? (
-                          <>
-                            <Button size="sm" onClick={() => handleSaveStudent(student.id)}>
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => setEditingStudent(null)}>
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button size="sm" variant="outline" onClick={() => handleAction("View Student", student.id)}>
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleEditStudent(student)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleDeleteStudent(student.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                    {students.length === 0 && (
+                      <p className="text-center py-8 text-muted-foreground">No students found</p>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="staff">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-primary">Staff Management</h2>
-              <Button onClick={handleAddStaff} className="flex items-center">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Staff
-              </Button>
-            </div>
-            
             <Card>
               <CardHeader>
-                <CardTitle>All Staff Members ({staff.length})</CardTitle>
+                <CardTitle>Staff Management ({analytics.totalStaff})</CardTitle>
                 <CardDescription>Manage teaching and non-teaching staff</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="mb-4">
-                  <Input
-                    placeholder="Search staff..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                  />
-                </div>
-                <div className="space-y-4">
-                  {staff.filter(member => 
-                    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    member.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    member.department.toLowerCase().includes(searchTerm.toLowerCase())
-                  ).map((member) => (
-                    <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      {editingStaff === member.id ? (
-                        <div className="flex-1 space-y-2">
-                          <Input
-                            value={staffForm.name}
-                            onChange={(e) => setStaffForm(prev => ({ ...prev, name: e.target.value }))}
-                            placeholder="Staff Name"
-                          />
-                          <div className="flex space-x-2">
-                            <Input
-                              value={staffForm.position}
-                              onChange={(e) => setStaffForm(prev => ({ ...prev, position: e.target.value }))}
-                              placeholder="Position"
-                            />
-                            <Input
-                              value={staffForm.department}
-                              onChange={(e) => setStaffForm(prev => ({ ...prev, department: e.target.value }))}
-                              placeholder="Department"
-                            />
-                          </div>
-                        </div>
-                      ) : (
+                {isLoadingData ? (
+                  <p className="text-center py-4">Loading staff...</p>
+                ) : (
+                  <div className="space-y-4">
+                    {teachers.map((teacher) => (
+                      <div key={teacher.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                         <div>
-                          <h3 className="font-semibold">{member.name}</h3>
+                          <h3 className="font-semibold">{teacher.profiles?.full_name || teacher.name}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {member.position} | Department: {member.department}
+                            Subject: {teacher.subject || 'Not assigned'} | Department: {teacher.department || 'Not set'}
                           </p>
-                          <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
-                            {member.status}
-                          </Badge>
+                          <p className="text-xs text-muted-foreground">
+                            Employee ID: {teacher.employee_id} | Email: {teacher.profiles?.email}
+                          </p>
                         </div>
-                      )}
-                      <div className="flex space-x-2">
-                        {editingStaff === member.id ? (
-                          <>
-                            <Button size="sm" onClick={() => handleSaveStaff(member.id)}>
-                              Save
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => setEditingStaff(null)}>
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button size="sm" variant="outline" onClick={() => handleAction("View Staff", member.id)}>
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleEditStaff(member)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleDeleteStaff(member.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                    {teachers.length === 0 && (
+                      <p className="text-center py-8 text-muted-foreground">No staff found</p>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="users">
+            <div className="space-y-6">
+              {/* Add Admin Section (Only for Super Admins) */}
+              {currentUser?.role === 'super_admin' && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <UserPlus className="h-5 w-5 text-primary" />
+                      <span>Add Admin User</span>
+                    </CardTitle>
+                    <CardDescription>Grant admin access to existing users</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <Input
+                        placeholder="Email"
+                        value={newAdminForm.email}
+                        onChange={(e) => setNewAdminForm({...newAdminForm, email: e.target.value})}
+                      />
+                      <Input
+                        placeholder="Full Name"
+                        value={newAdminForm.full_name}
+                        onChange={(e) => setNewAdminForm({...newAdminForm, full_name: e.target.value})}
+                      />
+                      <Select value={newAdminForm.role} onValueChange={(value) => setNewAdminForm({...newAdminForm, role: value})}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="teacher">Teacher</SelectItem>
+                          <SelectItem value="staff">Staff</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button onClick={handleAddAdmin}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Admin
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* User Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>User Management ({allProfiles.length})</CardTitle>
+                  <CardDescription>Manage all system users and their roles</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {allProfiles.map((profile) => (
+                      <div key={profile.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div>
+                          <h3 className="font-semibold">{profile.full_name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Email: {profile.email}
+                          </p>
+                          <Badge variant={profile.role === 'super_admin' ? 'default' : profile.role === 'admin' ? 'secondary' : 'outline'}>
+                            {profile.role}
+                          </Badge>
+                        </div>
+                        {currentUser?.role === 'super_admin' && profile.id !== currentUser.id && (
+                          <div className="flex space-x-2">
+                            <Select value={profile.role} onValueChange={(value) => handleUpdateUserRole(profile.id, value)}>
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="user">User</SelectItem>
+                                <SelectItem value="student">Student</SelectItem>
+                                <SelectItem value="parent">Parent</SelectItem>
+                                <SelectItem value="teacher">Teacher</SelectItem>
+                                <SelectItem value="staff">Staff</SelectItem>
+                                <SelectItem value="admin">Admin</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(profile.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="academics">
             <Card>
               <CardHeader>
                 <CardTitle>Academic Management</CardTitle>
-                <CardDescription>Manage curriculum, assessments, and academic records</CardDescription>
+                <CardDescription>Manage courses, classes, and academic records</CardDescription>
               </CardHeader>
               <CardContent>
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Link to="/portal/staff">
-                    <Button 
-                      className="h-24 text-left flex-col items-start p-4 w-full"
-                    >
-                      <BookOpen className="h-6 w-6 mb-2" />
-                      <div>
-                        <div className="font-semibold">Staff Portal</div>
-                        <div className="text-xs opacity-75">Manage teaching</div>
-                      </div>
-                    </Button>
-                  </Link>
-                  <Link to="/library">
-                    <Button 
-                      className="h-24 text-left flex-col items-start p-4 w-full" 
-                      variant="outline"
-                    >
-                      <Calendar className="h-6 w-6 mb-2" />
-                      <div>
-                        <div className="font-semibold">Library</div>
-                        <div className="text-xs">Manage resources</div>
-                      </div>
-                    </Button>
-                  </Link>
-                  <Link to="/e-learning">
-                    <Button 
-                      className="h-24 text-left flex-col items-start p-4 w-full" 
-                      variant="outline"
-                    >
-                      <BarChart3 className="h-6 w-6 mb-2" />
-                      <div>
-                        <div className="font-semibold">E-Learning</div>
-                        <div className="text-xs">Online platform</div>
-                      </div>
-                    </Button>
-                  </Link>
+                <div className="text-center py-12">
+                  <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">Academic management features coming soon</p>
                 </div>
               </CardContent>
             </Card>
@@ -494,46 +644,37 @@ const AdminPortalContent = () => {
           <TabsContent value="finance">
             <Card>
               <CardHeader>
-                <CardTitle>Financial Management</CardTitle>
-                <CardDescription>Manage fees, payments, and financial records</CardDescription>
+                <CardTitle>Financial Overview</CardTitle>
+                <CardDescription>School fees and financial management</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Link to="/admin/school-fees">
-                    <Button 
-                      className="h-24 text-left flex-col items-start p-4 w-full"
-                    >
-                      <DollarSign className="h-6 w-6 mb-2" />
-                      <div>
-                        <div className="font-semibold">School Fees</div>
-                        <div className="text-xs opacity-75">Payment portal</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-muted-foreground text-sm">Total Revenue</p>
+                          <p className="text-2xl font-bold text-green-600">₦{analytics.totalRevenue.toLocaleString()}</p>
+                        </div>
+                        <DollarSign className="h-8 w-8 text-green-600" />
                       </div>
-                    </Button>
-                  </Link>
-                  <Link to="/portal/parent">
-                    <Button 
-                      className="h-24 text-left flex-col items-start p-4 w-full" 
-                      variant="outline"
-                    >
-                      <BarChart3 className="h-6 w-6 mb-2" />
-                      <div>
-                        <div className="font-semibold">Parent Portal</div>
-                        <div className="text-xs">Fee tracking</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-muted-foreground text-sm">Pending Fees</p>
+                          <p className="text-2xl font-bold text-orange-600">₦{analytics.pendingFees.toLocaleString()}</p>
+                        </div>
+                        <DollarSign className="h-8 w-8 text-orange-600" />
                       </div>
-                    </Button>
-                  </Link>
-                  <Button 
-                    onClick={() => handleAction("Generate Financial Report")}
-                    className="h-24 text-left flex-col items-start p-4" 
-                    variant="outline"
-                  >
-                    <BookOpen className="h-6 w-6 mb-2" />
-                    <div>
-                      <div className="font-semibold">Reports</div>
-                      <div className="text-xs">Financial data</div>
-                    </div>
-                  </Button>
+                    </CardContent>
+                  </Card>
                 </div>
+                <Link to="/admin/school-fees">
+                  <Button className="w-full">Manage School Fees</Button>
+                </Link>
               </CardContent>
             </Card>
           </TabsContent>
@@ -542,94 +683,17 @@ const AdminPortalContent = () => {
             <Card>
               <CardHeader>
                 <CardTitle>System Settings</CardTitle>
-                <CardDescription>Configure system preferences and security settings</CardDescription>
+                <CardDescription>Configure school management system</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-primary">Content Management</h3>
-                    <div className="space-y-3">
-                      <Link to="/admin-cms">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Settings className="h-4 w-4 mr-2" />
-                          CMS Dashboard
-                        </Button>
-                      </Link>
-                      <Link to="/gallery">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Calendar className="h-4 w-4 mr-2" />
-                          Gallery Management
-                        </Button>
-                      </Link>
-                      <Link to="/blog">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Bell className="h-4 w-4 mr-2" />
-                          Blog Posts
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="font-semibold text-primary">Portal Access</h3>
-                    <div className="space-y-3">
-                      <Link to="/portals">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Shield className="h-4 w-4 mr-2" />
-                          All Portals
-                        </Button>
-                      </Link>
-                      <Link to="/contact">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Shield className="h-4 w-4 mr-2" />
-                          Contact Messages
-                        </Button>
-                      </Link>
-                      <Link to="/about">
-                        <Button 
-                          className="w-full justify-start" 
-                          variant="outline"
-                        >
-                          <Settings className="h-4 w-4 mr-2" />
-                          About Page
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                <div className="text-center py-12">
+                  <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">System settings coming soon</p>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Backend Integration Notice */}
-        <Card className="mt-8 border-primary/20 bg-primary/5">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3">
-              <Shield className="h-6 w-6 text-primary" />
-              <div>
-                <h3 className="font-semibold text-primary">Admin Dashboard</h3>
-                <p className="text-muted-foreground">
-                  You have full access to all administrative functions. Use the tabs above to manage different aspects of the school system.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

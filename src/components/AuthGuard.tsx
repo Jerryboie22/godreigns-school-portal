@@ -25,17 +25,20 @@ interface UserProfile {
 
 // Helper function to check if user role is authorized for portal type
 const isUserAuthorized = (userRole: string, portalType: string): boolean => {
-  // Super admins and admins can access everything
-  if (userRole === 'admin' || userRole === 'super_admin') return true;
+  // Super admins can access everything
+  if (userRole === 'super_admin') return true;
 
-  // Admin portal is restricted
+  // Admins can access everything except can only add other admins if they're super admin
+  if (userRole === 'admin') return true;
+
+  // Admin portal is restricted to admins and super admins only
   if (portalType === 'admin') return userRole === 'admin' || userRole === 'super_admin';
 
-  // Treat "user" as a general authenticated role for non-admin portals
-  if (userRole === 'user') return true;
-
-  // Direct role match
-  if (userRole === portalType) return true;
+  // All authenticated users can access other portals (student, parent, staff)
+  // This allows cross-portal access as requested
+  if (portalType === 'student' || portalType === 'parent' || portalType === 'staff') {
+    return ['user', 'student', 'parent', 'staff', 'teacher', 'admin', 'super_admin'].includes(userRole);
+  }
 
   // Staff and teacher are equivalent
   if ((userRole === 'staff' || userRole === 'teacher') && 
@@ -419,6 +422,35 @@ useEffect(() => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* Cross-portal navigation for authenticated users */}
+            <div className="flex items-center space-x-1 mr-4">
+              {profile?.role !== 'user' && (
+                <>
+                  <Link to="/portals/student">
+                    <Button variant="ghost" size="sm" className={`text-xs ${portalType === 'student' ? 'bg-primary text-primary-foreground' : ''}`}>
+                      Student
+                    </Button>
+                  </Link>
+                  <Link to="/portals/parent">
+                    <Button variant="ghost" size="sm" className={`text-xs ${portalType === 'parent' ? 'bg-primary text-primary-foreground' : ''}`}>
+                      Parent
+                    </Button>
+                  </Link>
+                  <Link to="/portals/staff">
+                    <Button variant="ghost" size="sm" className={`text-xs ${portalType === 'staff' ? 'bg-primary text-primary-foreground' : ''}`}>
+                      Staff
+                    </Button>
+                  </Link>
+                  {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
+                    <Link to="/portals/admin">
+                      <Button variant="ghost" size="sm" className={`text-xs ${portalType === 'admin' ? 'bg-primary text-primary-foreground' : ''}`}>
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
             <Button variant="outline" size="sm" onClick={() => window.history.back()}>
               <ArrowLeft className="h-4 w-4 mr-1" />
               Back
