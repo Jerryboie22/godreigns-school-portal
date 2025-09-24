@@ -50,7 +50,7 @@ const Gallery = () => {
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
-          .eq('id', user.id)
+          .eq('user_id', user.id)
           .single();
         setIsAdmin(profile?.role === 'admin');
       }
@@ -102,7 +102,7 @@ const Gallery = () => {
           src: item.image_url,
           image_url: item.image_url,
           title: item.title,
-          category: item.category || "General",
+          category: "General", // Remove dynamic category access
           description: item.description || ""
         }));
         setGalleryImages(formattedData);

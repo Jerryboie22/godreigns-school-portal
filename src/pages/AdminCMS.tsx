@@ -430,7 +430,7 @@ const AdminCMS = () => {
       const { error: teacherError } = await supabase
         .from('teachers')
         .insert([{
-          user_id: null, // Will be linked later when user registers
+          name: newTeacher.name,
           subject: newTeacher.subject,
           department: newTeacher.department,
           employee_id: newTeacher.employee_id,

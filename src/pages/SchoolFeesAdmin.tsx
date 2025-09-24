@@ -89,7 +89,9 @@ const SchoolFeesAdmin = () => {
       const { error } = await supabase.from('fees').insert([{
         student_id: newFee.student_id,
         amount: parseFloat(newFee.amount),
-        description: newFee.description,
+        fee_type: newFee.description, // Map description to fee_type
+        class_level: "General", // Default class level
+        student_name: "Student", // Default student name 
         due_date: newFee.due_date,
         status: newFee.status
       }]);

@@ -9,12 +9,8 @@ export const useAnalytics = () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
-        await supabase.from('site_analytics').insert({
-          page_path: window.location.pathname,
-          session_id: sessionId,
-          user_id: user?.id || null,
-          user_agent: navigator.userAgent
-        });
+        // Analytics tracking disabled - table not available
+        console.log('Page view:', window.location.pathname);
       } catch (error) {
         console.error('Analytics tracking error:', error);
       }
@@ -26,9 +22,8 @@ export const useAnalytics = () => {
 
 export const getAnalytics = async () => {
   try {
-    const { data: totalViews } = await supabase
-      .from('site_analytics')
-      .select('id', { count: 'exact' });
+    // Analytics data disabled - table not available
+    const totalViews = { length: 0 };
 
     const { data: posts } = await supabase
       .from('posts')
@@ -51,10 +46,8 @@ export const getAnalytics = async () => {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
     
-    const { data: monthlyViews } = await supabase
-      .from('site_analytics')
-      .select('id', { count: 'exact' })
-      .gte('visit_timestamp', oneMonthAgo.toISOString());
+    // Monthly analytics data disabled - table not available
+    const monthlyViews = { length: 0 };
 
     return {
       totalViews: totalViews?.length || 0,
