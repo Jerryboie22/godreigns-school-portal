@@ -338,13 +338,13 @@ const AdminCMS = () => {
         if (bucket === 'gallery') {
           const { error: dbError } = await supabase
             .from('gallery_images')
-            .insert([{
-              title: file.name.split('.')[0] || 'Untitled',
-              image_url: data.publicUrl,
-              description: `Uploaded via admin panel`,
-              category: 'General',
-              uploaded_by: (await supabase.auth.getUser()).data.user?.id
-            }]);
+            .insert([
+              {
+                title: file.name.split('.')[0] || 'Untitled',
+                image_url: data.publicUrl,
+                description: 'Uploaded via admin panel'
+              }
+            ]);
 
           if (dbError) throw dbError;
         }

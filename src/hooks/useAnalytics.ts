@@ -27,20 +27,20 @@ export const getAnalytics = async () => {
 
     const { data: posts } = await supabase
       .from('posts')
-      .select('id', { count: 'exact' })
-      .eq('status', 'published');
+      .select('id')
+      .eq('published', true);
 
     const { data: galleryImages } = await supabase
       .from('gallery_images')
-      .select('id', { count: 'exact' });
+      .select('id');
 
     const { data: students } = await supabase
       .from('students')
-      .select('id', { count: 'exact' });
+      .select('id');
 
     const { data: teachers } = await supabase
       .from('teachers')
-      .select('id', { count: 'exact' });
+      .select('id');
 
     // Get monthly views
     const oneMonthAgo = new Date();
