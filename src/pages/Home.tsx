@@ -28,7 +28,8 @@ import {
   Lightbulb,
   Globe,
   CheckCircle,
-  Play
+  Play,
+  MessageCircle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -1035,7 +1036,201 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 8. Gallery */}
+      {/* 8. Portals & Contact Us Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Portals Section */}
+            <div className="mb-20">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-3 mb-6">
+                  <Shield className="h-5 w-5 text-primary mr-2" />
+                  <span className="text-primary font-semibold">Digital Access</span>
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">School Portals</h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  Access your dedicated dashboard for seamless school management and communication
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                {/* Admin Portal */}
+                <PortalCard
+                  title="Admin Portal"
+                  description="Comprehensive school management, student records, staff management, and system administration"
+                  icon={Shield}
+                  path="/portals/admin"
+                  color="primary"
+                />
+                
+                {/* Staff Portal */}
+                <PortalCard
+                  title="Staff Portal"
+                  description="Teacher resources, lesson plans, student management, and academic tools"
+                  icon={Users}
+                  path="/portals/staff"
+                  color="secondary"
+                />
+                
+                {/* Parent Portal */}
+                <PortalCard
+                  title="Parent Portal"
+                  description="Monitor your child's progress, communicate with teachers, and stay updated"
+                  icon={Heart}
+                  path="/portals/parent"
+                  color="accent"
+                />
+                
+                {/* Student Portal */}
+                <PortalCard
+                  title="Student Portal"
+                  description="Access assignments, grades, resources, and connect with classmates"
+                  icon={BookOpen}
+                  path="/portals/student"
+                  color="navy"
+                />
+              </div>
+
+              <div className="text-center">
+                <Link to="/portals">
+                  <Button size="lg" className="text-lg px-8 py-4">
+                    Explore All Portals
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Contact Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              {/* Contact Information */}
+              <div>
+                <div className="mb-8">
+                  <h3 className="text-3xl lg:text-4xl font-bold text-primary mb-6">Get in Touch</h3>
+                  <p className="text-lg text-muted-foreground">
+                    Have questions? We're here to help. Contact us through any of these channels.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <MapPin className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-primary mb-1">Visit Us</h4>
+                      <p className="text-muted-foreground">23, Bolanle Awosika Street, off Ilogbo Road, Borehole, Ota, Ogun State</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 rounded-full bg-secondary/10">
+                      <Phone className="h-6 w-6 text-secondary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-primary mb-1">Call Us</h4>
+                      <p className="text-muted-foreground">08027625129, 08033089735</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 rounded-full bg-accent/10">
+                      <Mail className="h-6 w-6 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-primary mb-1">Email Us</h4>
+                      <p className="text-muted-foreground">ogrcs@yahoo.com</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 rounded-full bg-navy/10">
+                      <Clock className="h-6 w-6 text-navy" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-primary mb-1">Office Hours</h4>
+                      <p className="text-muted-foreground">Monday - Friday: 8:00 AM - 4:00 PM<br />Saturday: 9:00 AM - 2:00 PM</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 space-y-4">
+                  <Link to="/contact">
+                    <Button size="lg" variant="outline" className="w-full text-lg">
+                      <MessageCircle className="h-5 w-5 mr-2" />
+                      Send us a Message
+                    </Button>
+                  </Link>
+                  <Link to="/admissions">
+                    <Button size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg">
+                      Apply for Admission
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Quick Contact Form */}
+              <div>
+                <Card className="shadow-elegant">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <MessageCircle className="h-6 w-6 text-primary" />
+                      <span>Quick Inquiry</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Send us a quick message and we'll get back to you soon.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <form className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-1 block">Name</label>
+                          <input
+                            type="text"
+                            placeholder="Your name"
+                            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-1 block">Phone</label>
+                          <input
+                            type="tel"
+                            placeholder="Your phone"
+                            className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-1 block">Email</label>
+                        <input
+                          type="email"
+                          placeholder="Your email"
+                          className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-1 block">Message</label>
+                        <textarea
+                          placeholder="Your message..."
+                          rows={4}
+                          className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        />
+                      </div>
+                      <Button type="submit" className="w-full">
+                        Send Message
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. Gallery */}
       <section className="py-20 bg-gradient-to-br from-background via-primary/5 to-accent/10 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
