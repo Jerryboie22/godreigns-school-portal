@@ -509,109 +509,161 @@ const AdminCMS = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-subtle p-6">
-      <div className="container mx-auto max-w-6xl">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-primary">Professional CMS Dashboard</h1>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => window.history.back()}>
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              Back
-            </Button>
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <Home className="h-4 w-4 mr-1" />
-                Home
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-primary shadow-elegant border-b border-border/50">
+        <div className="container mx-auto max-w-7xl px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">Content Management</h1>
+                <p className="text-white/80 text-sm">Manage your school's digital presence</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => window.history.back()}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
               </Button>
-            </Link>
-            <Badge className="bg-primary text-white">Administrator</Badge>
+              <Link to="/">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+                >
+                  <Home className="h-4 w-4 mr-2" />
+                  Home
+                </Button>
+              </Link>
+              <Badge className="bg-accent text-accent-foreground px-3 py-1 font-medium">
+                Administrator
+              </Badge>
+            </div>
           </div>
         </div>
+      </div>
 
-        <Tabs defaultValue="posts" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="posts" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Posts
-            </TabsTrigger>
-            <TabsTrigger value="gallery" className="flex items-center gap-2">
-              <Image className="h-4 w-4" />
-              Gallery
-            </TabsTrigger>
-            <TabsTrigger value="homepage" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Homepage
-            </TabsTrigger>
-            <TabsTrigger value="teachers" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Teachers
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
+      <div className="container mx-auto max-w-7xl px-6 py-8">
+        <Tabs defaultValue="posts" className="space-y-8">
+          {/* Enhanced Tab Navigation */}
+          <div className="bg-card border border-border/50 rounded-2xl p-2 shadow-soft">
+            <TabsList className="grid w-full grid-cols-6 gap-2 bg-transparent p-0">
+              <TabsTrigger 
+                value="posts" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <FileText className="h-4 w-4" />
+                <span className="font-medium">Posts</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="gallery" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <Image className="h-4 w-4" />
+                <span className="font-medium">Gallery</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="homepage" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <Settings className="h-4 w-4" />
+                <span className="font-medium">Homepage</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="teachers" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <GraduationCap className="h-4 w-4" />
+                <span className="font-medium">Teachers</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="users" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <Users className="h-4 w-4" />
+                <span className="font-medium">Users</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="analytics" 
+                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl py-3 px-4 transition-all duration-200 hover:bg-muted/50"
+              >
+                <BarChart className="h-4 w-4" />
+                <span className="font-medium">Analytics</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Posts Management */}
-          <TabsContent value="posts" className="space-y-6">
-            <div className="grid lg:grid-cols-2 gap-6">
+          <TabsContent value="posts" className="space-y-8">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Create New Post */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-5 w-5" />
+              <Card className="border-border/50 shadow-soft hover:shadow-elegant transition-shadow duration-300">
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <Plus className="h-5 w-5 text-primary" />
+                    </div>
                     Create New Post
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Title</label>
+                <CardContent className="space-y-6 p-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">Title</label>
                     <Input 
-                      placeholder="Post title..."
+                      placeholder="Enter your post title..."
                       value={newPost.title}
                       onChange={(e) => setNewPost({...newPost, title: e.target.value})}
+                      className="border-border/50 focus:border-primary/50 focus:ring-primary/20"
                     />
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">URL Slug</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">URL Slug</label>
                     <Input 
                       placeholder="post-url-slug"
                       value={newPost.slug}
                       onChange={(e) => setNewPost({...newPost, slug: e.target.value})}
+                      className="border-border/50 focus:border-primary/50 focus:ring-primary/20"
                     />
                   </div>
                   
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Excerpt</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">Excerpt</label>
                     <Textarea 
-                      placeholder="Short description..."
+                      placeholder="Write a compelling excerpt..."
                       rows={2}
                       value={newPost.excerpt}
                       onChange={(e) => setNewPost({...newPost, excerpt: e.target.value})}
+                      className="border-border/50 focus:border-primary/50 focus:ring-primary/20 resize-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Content</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">Content</label>
                     <Textarea 
-                      placeholder="Post content..."
+                      placeholder="Write your post content..."
                       rows={6}
                       value={newPost.content}
                       onChange={(e) => setNewPost({...newPost, content: e.target.value})}
+                      className="border-border/50 focus:border-primary/50 focus:ring-primary/20 resize-none"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Category</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">Category</label>
                     <Input 
                       placeholder="Post category..."
                       value={newPost.category}
                       onChange={(e) => setNewPost({...newPost, category: e.target.value})}
+                      className="border-border/50 focus:border-primary/50 focus:ring-primary/20"
                     />
                   </div>
                   
@@ -684,26 +736,41 @@ const AdminCMS = () => {
               </Card>
 
               {/* Posts List */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>All Posts ({posts.length})</CardTitle>
+              <Card className="border-border/50 shadow-soft hover:shadow-elegant transition-shadow duration-300">
+                <CardHeader className="bg-gradient-to-r from-secondary/5 to-secondary/10 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="h-10 w-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                      <FileText className="h-5 w-5 text-secondary" />
+                    </div>
+                    All Posts
+                    <Badge variant="secondary" className="ml-auto">
+                      {posts.length}
+                    </Badge>
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                <CardContent className="p-6">
+                  <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                     {posts.map(post => (
-                      <div key={post.id} className="border rounded-lg p-4">
+                      <div key={post.id} className="border border-border/50 rounded-xl p-5 hover:shadow-soft transition-all duration-200 hover:border-primary/20 bg-gradient-to-r from-background to-muted/20">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="font-semibold mb-1">{post.title}</h3>
-                            <p className="text-sm text-muted-foreground mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground text-base">{post.title}</h3>
+                            <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                               {post.excerpt || post.content.substring(0, 100)}...
                             </p>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                               <Badge variant={post.published ? 'default' : 'secondary'}>
-                                 {post.published ? 'published' : 'draft'}
-                               </Badge>
-                              <Badge variant="outline">{post.category}</Badge>
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="text-muted-foreground">
+                                {new Date(post.created_at).toLocaleDateString()}
+                              </span>
+                              <Badge 
+                                variant={post.published ? 'default' : 'secondary'}
+                                className={post.published ? 'bg-primary/10 text-primary border-primary/20' : ''}
+                              >
+                                {post.published ? 'Published' : 'Draft'}
+                              </Badge>
+                              <Badge variant="outline" className="border-border/50">
+                                {post.category}
+                              </Badge>
                             </div>
                           </div>
                           <div className="flex gap-2 ml-4">
@@ -804,20 +871,25 @@ const AdminCMS = () => {
           </TabsContent>
 
           {/* Gallery Management */}
-          <TabsContent value="gallery">
-            <div className="grid lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
+          <TabsContent value="gallery" className="space-y-8">
+            <div className="grid lg:grid-cols-2 gap-8">
+              <Card className="border-border/50 shadow-soft hover:shadow-elegant transition-shadow duration-300">
+                <CardHeader className="bg-gradient-to-r from-accent/5 to-accent/10 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="h-10 w-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                      <Upload className="h-5 w-5 text-accent-foreground" />
+                    </div>
                     Upload Gallery Images
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Upload multiple images to the gallery. They will appear instantly on the website.
+                <CardContent className="p-6">
+                  <div className="border-2 border-dashed border-primary/20 rounded-xl p-12 text-center bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-colors duration-200">
+                    <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Upload className="h-8 w-8 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2">Upload Images</h3>
+                    <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+                      Upload multiple images to the gallery. They will appear instantly on the website gallery section.
                     </p>
                     <input
                       type="file"
@@ -842,9 +914,17 @@ const AdminCMS = () => {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Gallery Images ({galleryImages.length})</CardTitle>
+              <Card className="border-border/50 shadow-soft hover:shadow-elegant transition-shadow duration-300">
+                <CardHeader className="bg-gradient-to-r from-secondary/5 to-secondary/10 rounded-t-lg">
+                  <CardTitle className="flex items-center gap-3 text-lg">
+                    <div className="h-10 w-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                      <Image className="h-5 w-5 text-secondary" />
+                    </div>
+                    Gallery Images
+                    <Badge variant="secondary" className="ml-auto">
+                      {galleryImages.length}
+                    </Badge>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4 max-h-96 overflow-y-auto">
