@@ -7,7 +7,7 @@ import { Calendar, Clock, User, ArrowLeft, ArrowRight, Share2, Heart } from "luc
 import { supabase } from "@/integrations/supabase/client";
 
 const BlogPost = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [post, setPost] = useState<any>(null);
   const [allPosts, setAllPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,35 +15,55 @@ const BlogPost = () => {
   useEffect(() => {
     fetchPost();
     fetchAllPosts();
-  }, [id]);
+  }, [slug]);
 
   const fetchPost = async () => {
     try {
-      const { data } = await supabase
+      // Try to fetch by slug first, then by id as fallback
+      let data = null;
+      let error = null;
+      
+      // First attempt: fetch by slug
+      const slugResult = await supabase
         .from('posts')
         .select('*')
-        .eq('id', id)
-        .eq('status', 'published')
-        .single();
+        .eq('slug', slug)
+        .eq('published', true)
+        .maybeSingle();
+      
+      if (slugResult.data) {
+        data = slugResult.data;
+      } else {
+        // Fallback: try to fetch by id (for backward compatibility)
+        const idResult = await supabase
+          .from('posts')
+          .select('*')
+          .eq('id', slug)
+          .eq('published', true)
+          .maybeSingle();
+        
+        data = idResult.data;
+        error = idResult.error;
+      }
       
       if (data) {
         // Get the public URL for the image if it exists
-        let imageUrl = data.image;
-        if (data.image && data.image.startsWith('http')) {
+        let imageUrl = data.featured_image;
+        if (data.featured_image && data.featured_image.startsWith('http')) {
           // If image is already a full URL, use it
-          imageUrl = data.image;
-        } else if (data.image && !data.image.startsWith('http')) {
+          imageUrl = data.featured_image;
+        } else if (data.featured_image && !data.featured_image.startsWith('http')) {
           // If image is a storage path, get the public URL
           const { data: publicUrlData } = supabase.storage
             .from('blog-images')
-            .getPublicUrl(data.image);
+            .getPublicUrl(data.featured_image);
           imageUrl = publicUrlData.publicUrl;
         }
         
         setPost({
           ...data,
           image: imageUrl,
-          author: 'School Administration', // Use default since posts don't have author field
+          author: 'School Administration',
           readTime: `${Math.max(1, Math.ceil(data.content.length / 200))} min read`,
           date: new Date(data.created_at).toISOString().split('T')[0]
         });
@@ -51,7 +71,7 @@ const BlogPost = () => {
     } catch (error) {
       console.error('Error fetching post:', error);
       // Fallback to static posts
-      setPost(staticBlogPosts.find(p => p.id === parseInt(id || '')));
+      setPost(staticBlogPosts.find(p => p.id === parseInt(slug || '') || p.id.toString() === slug));
     } finally {
       setLoading(false);
     }
@@ -61,14 +81,15 @@ const BlogPost = () => {
     try {
       const { data } = await supabase
         .from('posts')
-        .select('id, title, category, created_at')
-        .eq('status', 'published')
+        .select('id, title, slug, created_at')
+        .eq('published', true)
         .order('created_at', { ascending: false });
       
-      if (data) {
+      if (data && data.length > 0) {
         setAllPosts(data.map(p => ({
           ...p,
-          date: new Date(p.created_at).toISOString().split('T')[0]
+          date: new Date(p.created_at).toISOString().split('T')[0],
+          category: 'General' // Default category
         })));
       } else {
         setAllPosts(staticBlogPosts);
@@ -83,6 +104,7 @@ const BlogPost = () => {
     {
       id: 1,
       title: "Our God Reigns Crystal School Wins NECO Excellence Awards 2024",
+      slug: "neco-excellence-awards-2024",
       content: `We are proud to celebrate the outstanding achievements of our students at the 2024 NECO Excellence Awards. This recognition is a testament to the hard work, dedication, and excellence that defines Our God Reigns Crystal School.
 
 Our student, Miss Adeyemo Emmanuella Adedamola, was awarded the Best Female Senior School Certificate Examination (SSCE) candidate in Nigeria for 2024. This remarkable achievement highlights not only her personal dedication but also the quality of education we provide at Our God Reigns Crystal School.
@@ -134,6 +156,7 @@ We invite prospective students and parents to be part of this tradition of excel
     {
       id: 2,
       title: "Welcome to New Academic Session 2024/2025",
+      slug: "new-academic-session-2024-2025",
       content: `Welcome to the 2024/2025 academic session at Our God Reigns Crystal School! We are excited to begin another year of academic excellence and character development.
 
 This session brings new opportunities for learning, personal growth, and character development. We have introduced enhanced learning programs, updated our facilities, and welcomed new qualified teachers to our team.
@@ -175,7 +198,9 @@ We look forward to a productive and successful academic year together!`,
     }
   ];
 
-  const currentIndex = allPosts.findIndex(p => p.id === parseInt(id || '') || p.id === id);
+  const currentIndex = allPosts.findIndex(p => 
+    p.slug === slug || p.id === parseInt(slug || '') || p.id.toString() === slug
+  );
   const nextPost = allPosts[currentIndex + 1];
   const prevPost = allPosts[currentIndex - 1];
 
@@ -218,7 +243,7 @@ We look forward to a productive and successful academic year together!`,
               Back to Blog
             </Link>
             <Badge variant="secondary" className="mb-4">
-              {post.category}
+              {post.category || 'General'}
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{post.title}</h1>
             <div className="flex flex-wrap items-center space-x-6 text-white/80">
@@ -324,7 +349,7 @@ We look forward to a productive and successful academic year together!`,
                     Previous Post
                   </div>
                   <CardTitle className="text-lg">
-                    <Link to={`/blog/${prevPost.id}`} className="hover:text-primary transition-colors">
+                    <Link to={`/blog/${prevPost.slug || prevPost.id}`} className="hover:text-primary transition-colors">
                       {prevPost.title}
                     </Link>
                   </CardTitle>
@@ -346,7 +371,7 @@ We look forward to a productive and successful academic year together!`,
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </div>
                   <CardTitle className="text-lg text-right">
-                    <Link to={`/blog/${nextPost.id}`} className="hover:text-primary transition-colors">
+                    <Link to={`/blog/${nextPost.slug || nextPost.id}`} className="hover:text-primary transition-colors">
                       {nextPost.title}
                     </Link>
                   </CardTitle>

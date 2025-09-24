@@ -50,7 +50,7 @@ const Blog = () => {
       const { data, error } = await supabase
         .from('posts')
         .select('*')
-        .eq('status', 'published')
+        .eq('published', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -62,7 +62,7 @@ const Blog = () => {
           readTime: `${Math.max(1, Math.ceil(post.content.length / 200))} min read`,
           date: new Date(post.created_at).toISOString().split('T')[0],
           // Ensure image has fallback
-          image: post.image || placeholderImage
+          image: post.featured_image || placeholderImage
         }));
         setPosts(mappedPosts);
       } else {
@@ -179,7 +179,7 @@ const Blog = () => {
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold text-primary mb-4 hover:text-primary/80 transition-colors">
-                  <Link to={`/blog/${featuredPost.id}`}>
+                  <Link to={`/blog/${featuredPost.slug || featuredPost.id}`}>
                     {featuredPost.title}
                   </Link>
                 </h2>
@@ -195,7 +195,7 @@ const Blog = () => {
                       {featuredPost.readTime}
                     </div>
                   </div>
-                  <Link to={`/blog/${featuredPost.id}`}>
+                  <Link to={`/blog/${featuredPost.slug || featuredPost.id}`}>
                     <Button variant="outline">
                       Read More
                       <ArrowRight className="h-4 w-4 ml-2" />
@@ -232,7 +232,7 @@ const Blog = () => {
                     {post.readTime}
                   </div>
                   <h3 className="text-xl font-bold text-primary mb-3 hover:text-primary/80 transition-colors line-clamp-2">
-                    <Link to={`/blog/${post.id}`}>
+                    <Link to={`/blog/${post.slug || post.id}`}>
                       {post.title}
                     </Link>
                   </h3>
@@ -244,7 +244,7 @@ const Blog = () => {
                       <User className="h-4 w-4 mr-1" />
                       {post.author}
                     </div>
-                    <Link to={`/blog/${post.id}`}>
+                    <Link to={`/blog/${post.slug || post.id}`}>
                       <Button variant="ghost" size="sm">
                         Read More
                         <ArrowRight className="h-4 w-4 ml-1" />

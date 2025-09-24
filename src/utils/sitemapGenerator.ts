@@ -39,14 +39,14 @@ export const generateSitemap = async (): Promise<string> => {
     // Fetch published blog posts
     const { data: posts } = await supabase
       .from('posts')
-      .select('id, updated_at, created_at, title, category')
-      .eq('status', 'published')
+      .select('id, slug, updated_at, created_at, title')
+      .eq('published', true)
       .order('created_at', { ascending: false });
 
     if (posts) {
       posts.forEach(post => {
         urls.push({
-          loc: `${baseUrl}/blog/${post.id}`,
+          loc: `${baseUrl}/blog/${post.slug || post.id}`,
           lastmod: post.updated_at ? post.updated_at.split('T')[0] : post.created_at.split('T')[0],
           priority: 0.85,
           changefreq: 'weekly'
