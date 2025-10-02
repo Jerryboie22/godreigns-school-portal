@@ -79,7 +79,7 @@ const AdminPortalContent = () => {
   const [newAdminForm, setNewAdminForm] = useState({ 
     email: "", 
     full_name: "", 
-    role: "admin" as "admin" | "teacher" | "staff" 
+    role: "admin" as "admin" | "teacher" | "parent" | "student" | "user" | "super_admin"
   });
 
   const { toast } = useToast();
@@ -268,7 +268,7 @@ const AdminPortalContent = () => {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({ role: newRole })
+        .update({ role: newRole as any })
         .eq('id', userId);
 
       if (error) throw error;
@@ -560,16 +560,15 @@ const AdminPortalContent = () => {
                         value={newAdminForm.full_name}
                         onChange={(e) => setNewAdminForm({...newAdminForm, full_name: e.target.value})}
                       />
-                      <Select value={newAdminForm.role} onValueChange={(value) => setNewAdminForm({...newAdminForm, role: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="teacher">Teacher</SelectItem>
-                          <SelectItem value="staff">Staff</SelectItem>
-                        </SelectContent>
-                      </Select>
+                          <Select value={newAdminForm.role} onValueChange={(value: any) => setNewAdminForm({...newAdminForm, role: value})}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="admin">Admin</SelectItem>
+                              <SelectItem value="teacher">Teacher</SelectItem>
+                            </SelectContent>
+                          </Select>
                       <Button onClick={handleAddAdmin}>
                         <Plus className="h-4 w-4 mr-2" />
                         Add Admin
