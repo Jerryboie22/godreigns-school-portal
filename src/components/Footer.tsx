@@ -38,9 +38,9 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4 text-yellow-300">Portals</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/portals/admin" className="hover:text-yellow-300 transition-colors">Admin Portal</Link></li>
-              <li><Link to="/portals/staff" className="hover:text-yellow-300 transition-colors">Staff Portal</Link></li>
-              <li><Link to="/portals/parent" className="hover:text-yellow-300 transition-colors">Parent Portal</Link></li>
-              <li><Link to="/portals/student" className="hover:text-yellow-300 transition-colors">Student Portal</Link></li>
+              <li><a href="https://ogrcs.edutams.net/" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-300 transition-colors">Staff Portal</a></li>
+              <li><a href="https://ogrcs.edutams.net/" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-300 transition-colors">Parent Portal</a></li>
+              <li><a href="https://ogrcs.edutams.net/" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-300 transition-colors">Student Portal</a></li>
             </ul>
           </div>
 

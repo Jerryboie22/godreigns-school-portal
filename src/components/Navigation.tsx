@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Mail, MapPin, ChevronDown } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, ChevronDown, Shield, Users, Heart, BookOpen } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAboutDropdownOpen, setIsAboutDropdownOpen] = useState(false);
+  const [isPortalsDropdownOpen, setIsPortalsDropdownOpen] = useState(false);
   const location = useLocation();
   
   const navItems = [
@@ -24,7 +25,18 @@ const Navigation = () => {
     { label: "Admissions", path: "/admissions" },
     { label: "Library", path: "/library" },
     { label: "E-Learning", path: "/e-learning" },
-    { label: "Portals", path: "/portals" },
+    { 
+      label: "Portals", 
+      path: "#",
+      hasDropdown: true,
+      isPortalsDropdown: true,
+      subItems: [
+        { label: "Admin Portal", path: "/portals/admin", icon: Shield },
+        { label: "Staff Portal", path: "https://ogrcs.edutams.net/", icon: Users, isExternal: true },
+        { label: "Parent Portal", path: "https://ogrcs.edutams.net/", icon: Heart, isExternal: true },
+        { label: "Student Portal", path: "https://ogrcs.edutams.net/", icon: BookOpen, isExternal: true }
+      ]
+    },
     { label: "Gallery", path: "/gallery" },
     { label: "Blog", path: "/blog" },
     { label: "Contact", path: "/contact" }
@@ -78,33 +90,59 @@ const Navigation = () => {
                 <div 
                   key={item.path}
                   className="relative"
-                  onMouseEnter={() => setIsAboutDropdownOpen(true)}
-                  onMouseLeave={() => setIsAboutDropdownOpen(false)}
+                  onMouseEnter={() => item.isPortalsDropdown ? setIsPortalsDropdownOpen(true) : setIsAboutDropdownOpen(true)}
+                  onMouseLeave={() => item.isPortalsDropdown ? setIsPortalsDropdownOpen(false) : setIsAboutDropdownOpen(false)}
                 >
-                  <Link 
-                    to={item.path}
-                    className={`flex items-center space-x-1 transition-colors hover:text-primary font-medium text-sm xl:text-base ${
-                      isActive(item.path) || item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronDown className="h-3 w-3" />
-                  </Link>
+                  {item.path === "#" ? (
+                    <div 
+                      className={`flex items-center space-x-1 transition-colors hover:text-primary font-medium text-sm xl:text-base cursor-pointer ${
+                        item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown className="h-3 w-3" />
+                    </div>
+                  ) : (
+                    <Link 
+                      to={item.path}
+                      className={`flex items-center space-x-1 transition-colors hover:text-primary font-medium text-sm xl:text-base ${
+                        isActive(item.path) || item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown className="h-3 w-3" />
+                    </Link>
+                  )}
                   
                   {/* Dropdown Menu */}
-                  {isAboutDropdownOpen && (
+                  {((item.isPortalsDropdown && isPortalsDropdownOpen) || (!item.isPortalsDropdown && isAboutDropdownOpen)) && (
                     <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-border rounded-lg shadow-elegant z-50">
-                      {item.subItems?.map(subItem => (
-                        <Link
-                          key={subItem.path}
-                          to={subItem.path}
-                          className={`block px-4 py-3 text-sm transition-colors hover:bg-muted hover:text-primary rounded-lg ${
-                            isActive(subItem.path) ? "text-primary bg-muted" : "text-foreground"
-                          }`}
-                        >
-                          {subItem.label}
-                        </Link>
-                      ))}
+                      {item.subItems?.map(subItem => {
+                        const Icon = subItem.icon;
+                        return subItem.isExternal ? (
+                          <a
+                            key={subItem.path}
+                            href={subItem.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center px-4 py-3 text-sm transition-colors hover:bg-muted hover:text-primary rounded-lg text-foreground"
+                          >
+                            {Icon && <Icon className="h-4 w-4 mr-2" />}
+                            {subItem.label}
+                          </a>
+                        ) : (
+                          <Link
+                            key={subItem.path}
+                            to={subItem.path}
+                            className={`flex items-center px-4 py-3 text-sm transition-colors hover:bg-muted hover:text-primary rounded-lg ${
+                              isActive(subItem.path) ? "text-primary bg-muted" : "text-foreground"
+                            }`}
+                          >
+                            {Icon && <Icon className="h-4 w-4 mr-2" />}
+                            {subItem.label}
+                          </Link>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -135,29 +173,56 @@ const Navigation = () => {
               {navItems.map(item => (
                 item.hasDropdown ? (
                   <div key={item.path} className="space-y-2">
-                    <Link 
-                      to={item.path}
-                      className={`flex items-center justify-between transition-colors hover:text-primary font-medium ${
-                        isActive(item.path) || item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <span>{item.label}</span>
-                      <ChevronDown className="h-4 w-4" />
-                    </Link>
+                    {item.path === "#" ? (
+                      <div 
+                        className={`flex items-center justify-between transition-colors hover:text-primary font-medium ${
+                          item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </div>
+                    ) : (
+                      <Link 
+                        to={item.path}
+                        className={`flex items-center justify-between transition-colors hover:text-primary font-medium ${
+                          isActive(item.path) || item.subItems?.some(sub => isActive(sub.path)) ? "text-primary" : "text-foreground"
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown className="h-4 w-4" />
+                      </Link>
+                    )}
                     <div className="pl-4 space-y-2 border-l-2 border-border">
-                      {item.subItems?.map(subItem => (
-                        <Link
-                          key={subItem.path}
-                          to={subItem.path}
-                          className={`block transition-colors hover:text-primary text-sm ${
-                            isActive(subItem.path) ? "text-primary" : "text-muted-foreground"
-                          }`}
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {subItem.label}
-                        </Link>
-                      ))}
+                      {item.subItems?.map(subItem => {
+                        const Icon = subItem.icon;
+                        return subItem.isExternal ? (
+                          <a
+                            key={subItem.path}
+                            href={subItem.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center text-sm transition-colors hover:text-primary text-muted-foreground"
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {Icon && <Icon className="h-4 w-4 mr-2" />}
+                            {subItem.label}
+                          </a>
+                        ) : (
+                          <Link
+                            key={subItem.path}
+                            to={subItem.path}
+                            className={`flex items-center text-sm transition-colors hover:text-primary ${
+                              isActive(subItem.path) ? "text-primary" : "text-muted-foreground"
+                            }`}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            {Icon && <Icon className="h-4 w-4 mr-2" />}
+                            {subItem.label}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
