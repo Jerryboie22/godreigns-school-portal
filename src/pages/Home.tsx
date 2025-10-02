@@ -1036,71 +1036,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 8. Portals & Contact Us Section */}
+      {/* 8. Contact Us Section */}
       <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            {/* Portals Section */}
-            <div className="mb-20">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-3 mb-6">
-                  <Shield className="h-5 w-5 text-primary mr-2" />
-                  <span className="text-primary font-semibold">Digital Access</span>
-                </div>
-                <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">School Portals</h2>
-                <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  Access your dedicated dashboard for seamless school management and communication
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                {/* Admin Portal */}
-                <PortalCard
-                  title="Admin Portal"
-                  description="Comprehensive school management, student records, staff management, and system administration"
-                  icon={Shield}
-                  path="/portals/admin"
-                  color="primary"
-                />
-                
-                {/* Staff Portal */}
-                <PortalCard
-                  title="Staff Portal"
-                  description="Teacher resources, lesson plans, student management, and academic tools"
-                  icon={Users}
-                  path="/portals/staff"
-                  color="secondary"
-                />
-                
-                {/* Parent Portal */}
-                <PortalCard
-                  title="Parent Portal"
-                  description="Monitor your child's progress, communicate with teachers, and stay updated"
-                  icon={Heart}
-                  path="/portals/parent"
-                  color="accent"
-                />
-                
-                {/* Student Portal */}
-                <PortalCard
-                  title="Student Portal"
-                  description="Access assignments, grades, resources, and connect with classmates"
-                  icon={BookOpen}
-                  path="/portals/student"
-                  color="navy"
-                />
-              </div>
-
-              <div className="text-center">
-                <Link to="/portals">
-                  <Button size="lg" className="text-lg px-8 py-4">
-                    Explore All Portals
-                    <ArrowRight className="h-5 w-5 ml-2" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
             {/* Contact Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* Contact Information */}

@@ -25,8 +25,9 @@ const Portals = () => {
       title: "Staff Portal", 
       description: "Teacher resources, lesson plans, student management, and academic tools",
       icon: Users,
-      path: "/portals/staff",
+      path: "https://ogrcs.edutams.net/",
       color: "secondary",
+      isExternal: true,
       features: [
         "Student grade management",
         "Lesson plan creation and sharing",
@@ -40,8 +41,9 @@ const Portals = () => {
       title: "Parent Portal",
       description: "Monitor your child's progress, communicate with teachers, and stay updated",
       icon: Heart,
-      path: "/portals/parent",
+      path: "https://ogrcs.edutams.net/",
       color: "accent",
+      isExternal: true,
       features: [
         "Child's academic progress tracking",
         "Real-time attendance monitoring",
@@ -55,8 +57,9 @@ const Portals = () => {
       title: "Student Portal",
       description: "Access assignments, grades, resources, and connect with classmates",
       icon: BookOpen,
-      path: "/portals/student", 
+      path: "https://ogrcs.edutams.net/", 
       color: "navy",
+      isExternal: true,
       features: [
         "Assignment submission system",
         "Grade and performance tracking",
@@ -164,11 +167,19 @@ const Portals = () => {
                       </ul>
                     </div>
                     <div className="pt-4">
-                      <Link to={portal.path}>
-                        <Button className={`w-full ${colors.button} text-white`}>
-                          Access {portal.title}
-                        </Button>
-                      </Link>
+                      {portal.isExternal ? (
+                        <a href={portal.path} target="_blank" rel="noopener noreferrer">
+                          <Button className={`w-full ${colors.button} text-white`}>
+                            Access {portal.title}
+                          </Button>
+                        </a>
+                      ) : (
+                        <Link to={portal.path}>
+                          <Button className={`w-full ${colors.button} text-white`}>
+                            Access {portal.title}
+                          </Button>
+                        </Link>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
