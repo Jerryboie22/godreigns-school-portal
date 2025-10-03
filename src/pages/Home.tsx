@@ -33,6 +33,7 @@ import proprietress from "@/assets/proprietress.jpg";
 import schoolFlyer from "@/assets/school-flyer.jpg";
 import studentsGreenUniforms from "@/assets/students-green-uniforms.jpg";
 import libraryInterior from "@/assets/library-interior.jpg";
+import heroStudents from "@/assets/hero-students-performance.jpg";
 
 // Fallback images for gallery
 import gallery1 from "@/assets/gallery1.jpg";
@@ -183,63 +184,164 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* 1. Proprietress Welcome Section */}
-      <section className="relative py-20 overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary">
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:60px_60px] opacity-40"></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <Badge className="mb-4 bg-accent text-accent-foreground px-6 py-2 text-base">
-                Welcome Message
-              </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                Proprietress's Address
-              </h2>
+      {/* Hero Section */}
+      <section className="relative min-h-[600px] md:min-h-[700px] overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroStudents} 
+            alt="Our Students"
+            className="w-full h-full object-cover"
+            onError={handleImageError}
+          />
+          {/* Green Overlay */}
+          <div className="absolute inset-0 bg-primary/80"></div>
+        </div>
+
+        {/* Content */}
+        <div className="container mx-auto px-4 relative z-10 h-full">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-16 md:py-20 min-h-[600px] md:min-h-[700px]">
+            {/* Left Side - Badges and Buttons */}
+            <div className="flex-1 space-y-8">
+              {/* Quality Education Badge */}
+              <div className="inline-block">
+                <div className="bg-primary/40 backdrop-blur-sm border-2 border-accent/40 rounded-2xl p-6 hover:bg-primary/50 transition-all">
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="h-10 w-10 text-accent" />
+                    <div>
+                      <p className="text-accent font-bold text-lg uppercase tracking-wide">Quality</p>
+                      <p className="text-white text-sm">Education</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Caring Teachers Badge */}
+              <div className="inline-block ml-8">
+                <div className="bg-primary/40 backdrop-blur-sm border-2 border-accent/40 rounded-2xl p-6 hover:bg-primary/50 transition-all">
+                  <div className="flex items-center gap-3">
+                    <Users className="h-10 w-10 text-accent" />
+                    <div>
+                      <p className="text-accent font-bold text-lg uppercase tracking-wide">Caring</p>
+                      <p className="text-white text-sm">Teachers</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4 pt-6">
+                <Link to="/admissions">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 shadow-gold">
+                    <GraduationCap className="h-5 w-5 mr-2" />
+                    Apply Now
+                  </Button>
+                </Link>
+                <Link to="/about">
+                  <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary font-semibold px-8">
+                    <BookOpen className="h-5 w-5 mr-2" />
+                    Learn More
+                  </Button>
+                </Link>
+              </div>
             </div>
 
-            <Card className="overflow-hidden shadow-2xl bg-white/95 backdrop-blur">
+            {/* Right Side - Info Card */}
+            <div className="flex-1 flex justify-center lg:justify-end">
+              <Card className="bg-white/95 backdrop-blur-lg shadow-2xl border-4 border-accent/30 max-w-md w-full">
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <Badge className="bg-accent text-accent-foreground px-4 py-1 text-sm mb-3">
+                      2025/2026 Session
+                    </Badge>
+                    <h2 className="text-4xl md:text-5xl font-bold text-primary mb-2">
+                      JSS & SSS<br />CLASSES
+                    </h2>
+                    <p className="text-2xl text-red-600 italic font-serif">
+                      Light to the World
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <BookOpen className="h-5 w-5 text-primary" />
+                      <span>Junior & Senior Secondary Programs</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Award className="h-5 w-5 text-primary" />
+                      <span>WAEC/NECO Preparation</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      <Heart className="h-5 w-5 text-primary" />
+                      <span>Christian Values & Excellence</span>
+                    </div>
+                  </div>
+
+                  <Link to="/admissions" className="block mt-6">
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold">
+                      Enroll Today
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 1. Proprietress Welcome Section */}
+      <section className="py-20 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Proprietress' Welcome Address
+              </h2>
+              <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                First Term 2025/2026 Academic Session
+              </Badge>
+            </div>
+
+            <Card className="overflow-hidden shadow-xl bg-accent/5 border-2 border-accent/20">
               <CardContent className="p-8 md:p-12">
-                <div className="grid md:grid-cols-3 gap-8 items-center">
-                  <div className="md:col-span-1 flex justify-center">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
+                  <div className="flex-shrink-0 mx-auto md:mx-0">
                     <div className="relative">
-                      <div className="absolute -inset-4 bg-gradient-accent rounded-full opacity-20 blur-xl"></div>
+                      <div className="absolute -top-4 -left-4 w-20 h-20 bg-accent rounded-full opacity-20"></div>
                       <img 
                         src={proprietress} 
-                        alt="Proprietress"
-                        className="relative rounded-full w-48 h-48 object-cover border-8 border-accent/30 shadow-gold"
+                        alt="Pastor (Mrs) Kehinde Adetuberu"
+                        className="relative rounded-2xl w-48 h-56 object-cover border-4 border-accent shadow-lg"
                         onError={handleImageError}
                       />
-                      <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-accent rounded-full flex items-center justify-center shadow-lg">
-                        <Heart className="h-6 w-6 text-accent-foreground" />
+                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-4 py-1 rounded-full text-xs font-bold">
+                        99
                       </div>
                     </div>
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div className="flex-1">
                     <div className="prose prose-lg max-w-none">
-                      <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                      <p className="text-muted-foreground text-base leading-relaxed mb-6">
                         {showFullAddress ? proprietressAddress.full : proprietressAddress.short}
                       </p>
-                      
-                      <div className="flex items-center gap-4">
-                        <Button 
-                          onClick={() => setShowFullAddress(!showFullAddress)}
-                          variant="outline"
-                          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                        >
-                          {showFullAddress ? "Show Less" : "Read More"}
-                          <ArrowRight className="h-4 w-4 ml-2" />
-                        </Button>
-                      </div>
-
-                      <div className="mt-8 pt-6 border-t border-primary/20">
-                        <p className="font-semibold text-primary text-xl">
-                          Pastor (Mrs) Kehinde Adetuberu
-                        </p>
-                        <p className="text-muted-foreground">Proprietress</p>
-                      </div>
                     </div>
+
+                    <div className="mb-6">
+                      <p className="font-bold text-primary text-lg">
+                        Pastor (Mrs) Kehinde Adetuberu
+                      </p>
+                      <p className="text-muted-foreground text-sm">Proprietress</p>
+                    </div>
+                      
+                    <Button 
+                      onClick={() => setShowFullAddress(!showFullAddress)}
+                      variant="outline"
+                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                    >
+                      {showFullAddress ? "Show Less" : "Read Full Address"}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -248,73 +350,133 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. About Our School */}
-      <section className="py-20 bg-gradient-to-br from-background via-accent/5 to-background">
+      {/* 2. About Our School - Excellence in Education */}
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <Badge className="mb-4 bg-primary text-primary-foreground px-6 py-2 text-base">
-                About Us
-              </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                What Makes Us <span className="text-primary">Different</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Excellence in Education
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                A place for academic and moral excellence - Light to the World
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Our God Reigns Crystal School is a beacon of academic excellence and moral integrity, committed to nurturing young minds and shaping future leaders.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-              {/* Core Values */}
-              <div className="lg:col-span-1 space-y-6">
-                <h3 className="text-2xl font-bold text-primary mb-6 flex items-center">
-                  <Shield className="h-6 w-6 mr-3" />
-                  Our Core Values
-                </h3>
+            {/* Core Values */}
+            <div className="mb-16">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-10">
+                Our Core Values
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {coreValues.map((value, index) => (
-                  <Card key={index} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-1 border-primary/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-4">
-                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <value.icon className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-lg mb-2">{value.title}</h4>
-                          <p className="text-muted-foreground text-sm">{value.description}</p>
-                        </div>
+                  <div key={index} className="text-center">
+                    <div className="flex justify-center mb-4">
+                      <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center">
+                        <value.icon className="h-10 w-10 text-accent" />
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <h4 className="font-bold text-lg mb-2">{value.title}</h4>
+                    <p className="text-muted-foreground text-sm">{value.description}</p>
+                  </div>
                 ))}
               </div>
+            </div>
 
-              {/* Featured Image */}
-              <div className="lg:col-span-1 flex items-center justify-center">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-hero rounded-2xl opacity-20 blur-2xl"></div>
-                  <img 
-                    src={studentsGreenUniforms} 
-                    alt="Our Students"
-                    className="relative rounded-2xl shadow-2xl w-full max-w-md border-4 border-accent/30"
-                    onError={handleImageError}
-                  />
-                </div>
+            {/* What Makes Us Different */}
+            <div className="mb-12">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-10">
+                What Makes Us Different?
+              </h3>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left Side - Vision & Mission */}
+              <div className="space-y-6">
+                <Card className="bg-accent/5 border-accent/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-primary">
+                      <Target className="h-6 w-6" />
+                      Our Vision
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      To provide qualitative and affordable education. To raise God fearing leaders.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-accent/5 border-accent/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-primary">
+                      <Target className="h-6 w-6" />
+                      Our Mission
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      To maintain high standard at all times. To always ensure that our services are not overpriced. To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* What Makes Us Different */}
-              <div className="lg:col-span-1 space-y-6">
-                <h3 className="text-2xl font-bold text-primary mb-6 flex items-center">
-                  <Lightbulb className="h-6 w-6 mr-3" />
-                  Why Choose Us
-                </h3>
-                <Card className="border-accent/30 shadow-gold">
-                  <CardContent className="p-6 space-y-4">
-                    {differentiators.map((item, index) => (
-                      <div key={index} className="flex items-start space-x-3">
-                        <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                        <p className="text-muted-foreground">{item}</p>
-                      </div>
-                    ))}
+              {/* Right Side - Differentiators */}
+              <div className="space-y-4">
+                <Card className="bg-accent/10 border-accent/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-accent" />
+                      Complete Secondary Education
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Full JSS 1-3 and SSS 1-3 programs with WAEC/NECO preparation
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-accent/10 border-accent/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-accent" />
+                      Technology Integration
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Modern E-Note system and AI-enhanced learning experiences
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-accent/10 border-accent/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-accent" />
+                      Qualified Teaching Staff
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Experienced, dedicated educators committed to student success
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-accent/10 border-accent/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-accent" />
+                      Character Development
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Strong emphasis on moral values, discipline, and leadership skills
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -567,46 +729,134 @@ const Home = () => {
       </section>
 
       {/* 6. School Facilities */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 to-background">
+      <section className="py-20 bg-secondary/20">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <Badge className="mb-4 bg-primary text-primary-foreground px-6 py-2 text-base">
-                Facilities
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-primary text-primary-foreground px-4 py-1">
+                <MapPin className="h-4 w-4 inline mr-1" />
+                Our Campus
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                World-Class <span className="text-primary">Facilities</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                School Facilities
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Modern infrastructure designed to enhance the learning experience
-              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {facilities.map((facility, index) => (
-                <Card key={index} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-                  <div className="aspect-video overflow-hidden relative">
-                    <img
-                      src={facility.image}
-                      alt={facility.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      onError={handleImageError}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4">
-                      <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
-                        <facility.icon className="h-6 w-6 text-accent-foreground" />
-                      </div>
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left Side - Facilities List */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Library className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Well-Stocked Library</h3>
+                    <p className="text-sm text-muted-foreground">Over 5,000 books and digital resources</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Microscope className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">ICT Laboratory</h3>
+                    <p className="text-sm text-muted-foreground">30+ computers with high-speed internet</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Microscope className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Science Laboratories</h3>
+                    <p className="text-sm text-muted-foreground">Physics, Chemistry & Biology labs</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Trophy className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Sports Facilities</h3>
+                    <p className="text-sm text-muted-foreground">Football field, basketball court & athletics track</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Shield className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">24/7 Security System</h3>
+                    <p className="text-sm text-muted-foreground">CCTV monitoring and trained security personnel</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Users className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Digital Learning</h3>
+                    <p className="text-sm text-muted-foreground">Campus-wide Wi-Fi and E-Note system</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <Users className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Modern Classrooms</h3>
+                    <p className="text-sm text-muted-foreground">30+ spacious, well-ventilated classrooms</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-primary/20 hover:shadow-lg transition-all">
+                  <CardContent className="p-6">
+                    <GraduationCap className="h-8 w-8 text-primary mb-3" />
+                    <h3 className="font-bold text-lg mb-2">Administrative Block</h3>
+                    <p className="text-sm text-muted-foreground">Organized offices for efficient management</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Side - Image Collage */}
+              <div className="relative">
+                <div className="bg-foreground rounded-3xl p-2 shadow-2xl">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="col-span-2 rounded-2xl overflow-hidden">
+                      <img 
+                        src={libraryInterior} 
+                        alt="Library"
+                        className="w-full h-48 object-cover"
+                        onError={handleImageError}
+                      />
+                    </div>
+                    <div className="rounded-2xl overflow-hidden">
+                      <img 
+                        src={achievement} 
+                        alt="Laboratory"
+                        className="w-full h-40 object-cover"
+                        onError={handleImageError}
+                      />
+                    </div>
+                    <div className="rounded-2xl overflow-hidden">
+                      <img 
+                        src={culturalDance} 
+                        alt="Sports"
+                        className="w-full h-40 object-cover"
+                        onError={handleImageError}
+                      />
+                    </div>
+                    <div className="col-span-2 rounded-2xl overflow-hidden">
+                      <img 
+                        src={studentsGreenUniforms} 
+                        alt="Students"
+                        className="w-full h-48 object-cover"
+                        onError={handleImageError}
+                      />
                     </div>
                   </div>
-                  <CardHeader>
-                    <CardTitle className="group-hover:text-primary transition-colors">
-                      {facility.name}
-                    </CardTitle>
-                    <CardDescription>{facility.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center mt-12">
+              <Link to="/contact">
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold shadow-gold">
+                  Schedule Campus Tour
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

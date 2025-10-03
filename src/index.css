@@ -17,15 +17,15 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 24% 16%;
 
-    --primary: 143 77% 28%;
+    --primary: 156 82% 24%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 143 60% 85%;
+    --primary-light: 156 60% 85%;
 
-    --secondary: 143 50% 35%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 150 40% 92%;
+    --secondary-foreground: 156 82% 24%;
 
-    --accent: 45 100% 60%;
-    --accent-foreground: 210 24% 16%;
+    --accent: 45 93% 58%;
+    --accent-foreground: 26 83% 14%;
 
     --navy: 220 39% 11%;
     --navy-foreground: 0 0% 100%;
@@ -40,11 +40,11 @@ All colors MUST be HSL.
     --input: 214.3 31.8% 91.4%;
     --ring: 158 64% 30%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(143 77% 28%), hsl(143 77% 40%));
-    --gradient-accent: linear-gradient(135deg, hsl(45 100% 55%), hsl(45 100% 70%));
-    --gradient-hero: linear-gradient(135deg, hsl(143 77% 28%), hsl(45 100% 60%));
-    --shadow-elegant: 0 10px 30px -10px hsl(143 77% 28% / 0.3);
-    --shadow-gold: 0 8px 25px -8px hsl(45 100% 60% / 0.4);
+    --gradient-primary: linear-gradient(135deg, hsl(156 82% 24%) 0%, hsl(156 82% 20%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(45 93% 58%) 0%, hsl(45 93% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(156 82% 24%), hsl(45 93% 58%));
+    --shadow-elegant: 0 10px 30px -10px hsl(156 82% 24% / 0.3);
+    --shadow-gold: 0 8px 24px -8px hsl(45 93% 58% / 0.5);
     --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.1);
 
     --radius: 0.5rem;
