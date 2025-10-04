@@ -185,7 +185,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[600px] md:min-h-[700px] overflow-hidden">
+      <section className="relative min-h-[550px] md:min-h-[600px] overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
@@ -194,13 +194,13 @@ const Home = () => {
             className="w-full h-full object-cover"
             onError={handleImageError}
           />
-          {/* Green Overlay */}
-          <div className="absolute inset-0 bg-primary/80"></div>
+          {/* Very Transparent Overlay */}
+          <div className="absolute inset-0 bg-gradient-hero"></div>
         </div>
 
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 py-16 md:py-20 min-h-[600px] md:min-h-[700px]">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-12 md:py-16 min-h-[550px] md:min-h-[600px]">
             {/* Left Side - Text Content */}
             <div className="flex-1 space-y-6 text-left">
               <Badge className="bg-accent text-primary hover:bg-accent/90 text-lg px-6 py-2 font-bold inline-block">
@@ -208,28 +208,28 @@ const Home = () => {
                 ADMISSION OPEN 2025/2026
               </Badge>
               
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight drop-shadow-lg">
                 Our God Reigns<br />
                 <span className="text-accent">Crystal School</span>
               </h1>
               
-              <p className="text-2xl md:text-3xl text-accent font-semibold">
+              <p className="text-xl md:text-2xl text-accent font-bold drop-shadow-md">
                 Light to the World
               </p>
               
-              <p className="text-xl text-white/90">
+              <p className="text-lg text-navy/90 font-medium drop-shadow-sm">
                 ...a place for academic and moral excellence
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link to="/admissions">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary font-bold text-lg px-8">
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base px-6 shadow-elegant">
                     <GraduationCap className="mr-2 h-5 w-5" />
                     Apply Now
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-primary font-bold text-lg px-8">
+                  <Button size="lg" variant="outline" className="border-2 border-navy bg-card/80 backdrop-blur-sm text-navy hover:bg-navy hover:text-white font-bold text-base px-6 shadow-soft">
                     <BookOpen className="mr-2 h-5 w-5" />
                     Learn More
                   </Button>
@@ -253,7 +253,7 @@ const Home = () => {
       </section>
 
       {/* 1. Proprietress Welcome Section */}
-      <section className="py-20 bg-secondary/30">
+      <section className="py-16 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
@@ -313,7 +313,7 @@ const Home = () => {
       </section>
 
       {/* 2. About Our School - Excellence in Education */}
-      <section className="py-20 bg-background">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -448,7 +448,7 @@ const Home = () => {
       </section>
 
       {/* 3. Programs Offered */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -538,7 +538,7 @@ const Home = () => {
       </section>
 
       {/* 4. School Gallery */}
-      <section className="py-20 bg-background">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -612,7 +612,7 @@ const Home = () => {
       </section>
 
       {/* 5. School News & Updates */}
-      <section className="py-20 bg-gradient-to-br from-accent/5 via-background to-primary/5">
+      <section className="py-16 bg-gradient-to-br from-accent/5 via-background to-primary/5">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -691,7 +691,7 @@ const Home = () => {
       </section>
 
       {/* 6. School Facilities */}
-      <section className="py-20 bg-secondary/20">
+      <section className="py-16 bg-secondary/20">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
