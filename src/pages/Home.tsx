@@ -34,6 +34,7 @@ import schoolFlyer from "@/assets/school-flyer.jpg";
 import studentsGreenUniforms from "@/assets/students-green-uniforms.jpg";
 import libraryInterior from "@/assets/library-interior.jpg";
 import heroStudents from "@/assets/hero-students-performance.jpg";
+import admissionFlyer from "@/assets/admission-flyer.jpg";
 
 // Fallback images for gallery
 import gallery1 from "@/assets/gallery1.jpg";
@@ -200,91 +201,53 @@ const Home = () => {
 
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-16 md:py-20 min-h-[600px] md:min-h-[700px]">
-            {/* Left Side - Badges and Buttons */}
-            <div className="flex-1 space-y-8">
-              {/* Quality Education Badge */}
-              <div className="inline-block">
-                <div className="bg-primary/40 backdrop-blur-sm border-2 border-accent/40 rounded-2xl p-6 hover:bg-primary/50 transition-all">
-                  <div className="flex items-center gap-3">
-                    <GraduationCap className="h-10 w-10 text-accent" />
-                    <div>
-                      <p className="text-accent font-bold text-lg uppercase tracking-wide">Quality</p>
-                      <p className="text-white text-sm">Education</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 py-16 md:py-20 min-h-[600px] md:min-h-[700px]">
+            {/* Left Side - Text Content */}
+            <div className="flex-1 space-y-6 text-left">
+              <Badge className="bg-accent text-primary hover:bg-accent/90 text-lg px-6 py-2 font-bold inline-block">
+                <GraduationCap className="mr-2 h-5 w-5 inline" />
+                ADMISSION OPEN 2025/2026
+              </Badge>
+              
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                Our God Reigns<br />
+                <span className="text-accent">Crystal School</span>
+              </h1>
+              
+              <p className="text-2xl md:text-3xl text-accent font-semibold">
+                Light to the World
+              </p>
+              
+              <p className="text-xl text-white/90">
+                ...a place for academic and moral excellence
+              </p>
 
-              {/* Caring Teachers Badge */}
-              <div className="inline-block ml-8">
-                <div className="bg-primary/40 backdrop-blur-sm border-2 border-accent/40 rounded-2xl p-6 hover:bg-primary/50 transition-all">
-                  <div className="flex items-center gap-3">
-                    <Users className="h-10 w-10 text-accent" />
-                    <div>
-                      <p className="text-accent font-bold text-lg uppercase tracking-wide">Caring</p>
-                      <p className="text-white text-sm">Teachers</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 pt-6">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link to="/admissions">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold px-8 shadow-gold">
-                    <GraduationCap className="h-5 w-5 mr-2" />
+                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary font-bold text-lg px-8">
+                    <GraduationCap className="mr-2 h-5 w-5" />
                     Apply Now
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button size="lg" variant="outline" className="bg-white/10 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary font-semibold px-8">
-                    <BookOpen className="h-5 w-5 mr-2" />
+                  <Button size="lg" variant="outline" className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-primary font-bold text-lg px-8">
+                    <BookOpen className="mr-2 h-5 w-5" />
                     Learn More
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Right Side - Info Card */}
+            {/* Right Side - Admission Flyer */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <Card className="bg-white/95 backdrop-blur-lg shadow-2xl border-4 border-accent/30 max-w-md w-full">
-                <CardContent className="p-8">
-                  <div className="text-center mb-6">
-                    <Badge className="bg-accent text-accent-foreground px-4 py-1 text-sm mb-3">
-                      2025/2026 Session
-                    </Badge>
-                    <h2 className="text-4xl md:text-5xl font-bold text-primary mb-2">
-                      JSS & SSS<br />CLASSES
-                    </h2>
-                    <p className="text-2xl text-red-600 italic font-serif">
-                      Light to the World
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <BookOpen className="h-5 w-5 text-primary" />
-                      <span>Junior & Senior Secondary Programs</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <Award className="h-5 w-5 text-primary" />
-                      <span>WAEC/NECO Preparation</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-muted-foreground">
-                      <Heart className="h-5 w-5 text-primary" />
-                      <span>Christian Values & Excellence</span>
-                    </div>
-                  </div>
-
-                  <Link to="/admissions" className="block mt-6">
-                    <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold">
-                      Enroll Today
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <div className="relative">
+                <img 
+                  src={admissionFlyer} 
+                  alt="Our God Reigns Crystal School - Admission in Progress" 
+                  className="rounded-2xl shadow-2xl w-full max-w-lg"
+                  onError={handleImageError}
+                />
+              </div>
             </div>
           </div>
         </div>
