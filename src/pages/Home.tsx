@@ -34,7 +34,6 @@ import schoolFlyer from "@/assets/school-flyer.jpg";
 import studentsGreenUniforms from "@/assets/students-green-uniforms.jpg";
 import libraryInterior from "@/assets/library-interior.jpg";
 import heroStudents from "@/assets/hero-students-performance.jpg";
-import admissionFlyer from "@/assets/admission-flyer.jpg";
 
 // Fallback images for gallery
 import gallery1 from "@/assets/gallery1.jpg";
@@ -238,11 +237,11 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Right Side - Admission Flyer */}
+            {/* Right Side - School Flyer */}
             <div className="flex-1 flex justify-center lg:justify-end">
               <div className="relative">
                 <img 
-                  src={admissionFlyer} 
+                  src={schoolFlyer} 
                   alt="Our God Reigns Crystal School - Admission in Progress" 
                   className="rounded-2xl shadow-2xl w-full max-w-lg"
                   onError={handleImageError}
