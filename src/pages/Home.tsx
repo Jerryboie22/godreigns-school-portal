@@ -185,7 +185,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[550px] md:min-h-[600px] overflow-hidden">
+      <section className="relative min-h-[480px] md:min-h-[520px] overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
@@ -200,9 +200,9 @@ const Home = () => {
 
         {/* Content */}
         <div className="container mx-auto px-4 relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-12 md:py-16 min-h-[550px] md:min-h-[600px]">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 py-8 md:py-10 min-h-[480px] md:min-h-[520px]">
             {/* Left Side - Text Content */}
-            <div className="flex-1 space-y-6 text-left">
+            <div className="flex-1 space-y-4 text-left">
               <Badge className="bg-accent text-primary hover:bg-accent/90 text-lg px-6 py-2 font-bold inline-block">
                 <GraduationCap className="mr-2 h-5 w-5 inline" />
                 ADMISSION OPEN 2025/2026
@@ -253,11 +253,11 @@ const Home = () => {
       </section>
 
       {/* 1. Proprietress Welcome Section */}
-      <section className="py-16 bg-secondary/30">
+      <section className="py-10 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                 Proprietress' Welcome Address
               </h2>
               <Badge className="bg-primary text-primary-foreground px-4 py-1">
@@ -266,8 +266,8 @@ const Home = () => {
             </div>
 
             <Card className="overflow-hidden shadow-xl bg-accent/5 border-2 border-accent/20">
-              <CardContent className="p-8 md:p-12">
-                <div className="flex flex-col md:flex-row gap-8 items-start">
+              <CardContent className="p-6 md:p-8">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
                   <div className="flex-shrink-0 mx-auto md:mx-0">
                     <div className="relative">
                       <div className="absolute -top-4 -left-4 w-20 h-20 bg-accent rounded-full opacity-20"></div>
@@ -313,11 +313,11 @@ const Home = () => {
       </section>
 
       {/* 2. About Our School - Excellence in Education */}
-      <section className="py-16 bg-background">
+      <section className="py-10 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                 Excellence in Education
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
@@ -326,8 +326,8 @@ const Home = () => {
             </div>
 
             {/* Core Values */}
-            <div className="mb-16">
-              <h3 className="text-2xl font-bold text-center text-foreground mb-10">
+            <div className="mb-10">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-6">
                 Our Core Values
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -346,13 +346,13 @@ const Home = () => {
             </div>
 
             {/* What Makes Us Different */}
-            <div className="mb-12">
-              <h3 className="text-2xl font-bold text-center text-foreground mb-10">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-center text-foreground mb-6">
                 What Makes Us Different?
               </h3>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-6">
               {/* Left Side - Vision & Mission */}
               <div className="space-y-6">
                 <Card className="bg-accent/5 border-accent/30">
@@ -448,10 +448,10 @@ const Home = () => {
       </section>
 
       {/* 3. Programs Offered */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
+      <section className="py-10 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10">
               <Badge className="mb-4 bg-accent text-accent-foreground px-6 py-2 text-base">
                 Our Programs
               </Badge>
@@ -460,7 +460,7 @@ const Home = () => {
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/30">
                 <div className="h-2 bg-gradient-primary"></div>
                 <CardHeader className="bg-gradient-to-br from-primary/10 to-accent/5">
@@ -538,10 +538,10 @@ const Home = () => {
       </section>
 
       {/* 4. School Gallery */}
-      <section className="py-16 bg-background">
+      <section className="py-10 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10">
               <Badge className="mb-4 bg-primary text-primary-foreground px-6 py-2 text-base">
                 Gallery
               </Badge>
@@ -612,10 +612,10 @@ const Home = () => {
       </section>
 
       {/* 5. School News & Updates */}
-      <section className="py-16 bg-gradient-to-br from-accent/5 via-background to-primary/5">
+      <section className="py-10 bg-gradient-to-br from-accent/5 via-background to-primary/5">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10">
               <Badge className="mb-4 bg-accent text-accent-foreground px-6 py-2 text-base">
                 Latest Updates
               </Badge>
@@ -629,7 +629,7 @@ const Home = () => {
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               </div>
             ) : blogPosts.length > 0 ? (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogPosts.map((post) => (
                   <Card key={post.id} className="group hover:shadow-elegant transition-all duration-300 hover:-translate-y-2 overflow-hidden">
                     <div className="aspect-video overflow-hidden">
@@ -677,7 +677,7 @@ const Home = () => {
             )}
 
             {blogPosts.length > 0 && (
-              <div className="text-center mt-12">
+              <div className="text-center mt-8">
                 <Link to="/blog">
                   <Button size="lg" className="bg-primary hover:bg-primary/90">
                     View All News
@@ -691,10 +691,10 @@ const Home = () => {
       </section>
 
       {/* 6. School Facilities */}
-      <section className="py-16 bg-secondary/20">
+      <section className="py-10 bg-secondary/20">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
               <Badge className="mb-4 bg-primary text-primary-foreground px-4 py-1">
                 <MapPin className="h-4 w-4 inline mr-1" />
                 Our Campus
@@ -813,7 +813,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="text-center mt-12">
+            <div className="text-center mt-8">
               <Link to="/contact">
                 <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold shadow-gold">
                   Schedule Campus Tour
@@ -825,12 +825,12 @@ const Home = () => {
       </section>
 
       {/* 7. Get in Touch */}
-      <section className="py-20 bg-gradient-to-br from-primary via-primary to-secondary relative overflow-hidden">
+      <section className="py-12 bg-gradient-to-br from-primary via-primary to-secondary relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:60px_60px] opacity-40"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-10">
               <Badge className="mb-4 bg-accent text-accent-foreground px-6 py-2 text-base">
                 Contact Us
               </Badge>
@@ -842,7 +842,7 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-6">
               <Card className="bg-white/95 backdrop-blur shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-2xl">Contact Information</CardTitle>
