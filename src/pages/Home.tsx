@@ -183,101 +183,113 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative min-h-[480px] md:min-h-[520px] overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img 
-            src={heroStudents} 
-            alt="Our Students"
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-          />
-          {/* Very Transparent Overlay */}
-          <div className="absolute inset-0 bg-gradient-hero"></div>
-        </div>
-
+    <div className="min-h-screen bg-gradient-cream">
+      {/* Hero Section - Redesigned */}
+      <section className="relative min-h-[520px] md:min-h-[560px] overflow-hidden bg-gradient-to-br from-primary/5 via-secondary to-accent/10">
+        {/* Decorative Elements */}
+        <div className="absolute top-10 right-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+        
         {/* Content */}
-        <div className="container mx-auto px-4 relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 py-8 md:py-10 min-h-[480px] md:min-h-[520px]">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 py-12 md:py-16 min-h-[520px] md:min-h-[560px]">
             {/* Left Side - Text Content */}
-            <div className="flex-1 space-y-4 text-left">
-              <Badge className="bg-accent text-primary hover:bg-accent/90 text-lg px-6 py-2 font-bold inline-block">
-                <GraduationCap className="mr-2 h-5 w-5 inline" />
-                ADMISSION OPEN 2025/2026
-              </Badge>
+            <div className="flex-1 space-y-6 text-left max-w-2xl">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-accent/20 rounded-full border-2 border-accent/30 backdrop-blur-sm">
+                <GraduationCap className="h-6 w-6 text-accent animate-pulse" />
+                <span className="text-base md:text-lg font-black text-accent">ADMISSION OPEN 2025/2026</span>
+              </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight drop-shadow-lg">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-navy leading-tight">
                 Our God Reigns<br />
-                <span className="text-accent">Crystal School</span>
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Crystal School
+                </span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-accent font-bold drop-shadow-md">
-                Light to the World
-              </p>
+              <div className="flex items-center gap-3">
+                <div className="h-1 w-12 bg-accent rounded-full"></div>
+                <p className="text-2xl md:text-3xl text-primary font-black">
+                  Light to the World
+                </p>
+              </div>
               
-              <p className="text-lg text-navy/90 font-medium drop-shadow-sm">
+              <p className="text-lg md:text-xl text-navy/80 font-semibold">
                 ...a place for academic and moral excellence
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-6">
                 <Link to="/admissions">
-                  <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-base px-6 shadow-elegant">
-                    <GraduationCap className="mr-2 h-5 w-5" />
+                  <Button size="lg" className="bg-gradient-primary hover:opacity-90 text-white font-bold text-base px-8 py-6 rounded-2xl shadow-elegant hover:shadow-2xl transition-all hover:-translate-y-1">
+                    <GraduationCap className="mr-2 h-6 w-6" />
                     Apply Now
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button size="lg" variant="outline" className="border-2 border-navy bg-card/80 backdrop-blur-sm text-navy hover:bg-navy hover:text-white font-bold text-base px-6 shadow-soft">
-                    <BookOpen className="mr-2 h-5 w-5" />
+                  <Button size="lg" variant="outline" className="border-2 border-primary bg-white text-primary hover:bg-primary hover:text-white font-bold text-base px-8 py-6 rounded-2xl shadow-soft hover:shadow-elegant transition-all hover:-translate-y-1">
+                    <BookOpen className="mr-2 h-6 w-6" />
                     Learn More
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Right Side - School Flyer */}
+            {/* Right Side - School Flyer with Creative Frame */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <div className="relative">
-                <img 
-                  src={schoolFlyer} 
-                  alt="Our God Reigns Crystal School - Admission in Progress" 
-                  className="rounded-2xl shadow-2xl w-full max-w-lg"
-                  onError={handleImageError}
-                />
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-primary rounded-3xl opacity-30 group-hover:opacity-50 blur-xl transition-opacity"></div>
+                <div className="relative bg-white p-3 rounded-3xl shadow-2xl">
+                  <img 
+                    src={schoolFlyer} 
+                    alt="Our God Reigns Crystal School - Admission in Progress" 
+                    className="rounded-2xl w-full max-w-lg shadow-lg"
+                    onError={handleImageError}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 1. Proprietress Welcome Section */}
-      <section className="py-10 bg-secondary/30">
-        <div className="container mx-auto px-4">
+      {/* 1. Proprietress Welcome Section - Redesigned */}
+      <section className="py-12 relative overflow-hidden">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-background to-primary/5"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Proprietress' Welcome Address
-              </h2>
-              <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                First Term 2025/2026 Academic Session
-              </Badge>
+            {/* Header */}
+            <div className="text-center mb-10">
+              <div className="inline-flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-1 w-8 bg-primary rounded-full"></div>
+                  <Heart className="h-6 w-6 text-accent" />
+                  <div className="h-1 w-8 bg-primary rounded-full"></div>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black text-navy">
+                  Proprietress' <span className="text-primary">Welcome</span>
+                </h2>
+                <Badge className="bg-gradient-accent text-accent-foreground px-6 py-2 text-sm font-bold rounded-full shadow-gold">
+                  First Term 2025/2026 Academic Session
+                </Badge>
+              </div>
             </div>
 
-            <Card className="overflow-hidden shadow-xl bg-accent/5 border-2 border-accent/20">
-              <CardContent className="p-6 md:p-8">
-                <div className="flex flex-col md:flex-row gap-6 items-start">
+            <Card className="overflow-hidden shadow-2xl bg-white/80 backdrop-blur-sm border-2 border-primary/20 rounded-3xl">
+              <CardContent className="p-8 md:p-10">
+                <div className="flex flex-col md:flex-row gap-8 items-start">
                   <div className="flex-shrink-0 mx-auto md:mx-0">
-                    <div className="relative">
-                      <div className="absolute -top-4 -left-4 w-20 h-20 bg-accent rounded-full opacity-20"></div>
+                    <div className="relative group">
+                      <div className="absolute -inset-3 bg-gradient-primary rounded-3xl opacity-50 group-hover:opacity-75 blur-xl transition-opacity"></div>
                       <img 
                         src={proprietress} 
                         alt="Pastor (Mrs) Kehinde Adetuberu"
-                        className="relative rounded-2xl w-48 h-56 object-cover border-4 border-accent shadow-lg"
+                        className="relative rounded-3xl w-52 h-64 object-cover border-4 border-white shadow-elegant"
                         onError={handleImageError}
                       />
-                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-4 py-1 rounded-full text-xs font-bold">
+                      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-accent px-6 py-2 rounded-full text-sm font-black text-accent-foreground shadow-gold">
                         99
                       </div>
                     </div>
@@ -290,19 +302,20 @@ const Home = () => {
                       </p>
                     </div>
 
-                    <div className="mb-6">
-                      <p className="font-bold text-primary text-lg">
+                    <div className="mb-6 p-4 bg-primary/5 rounded-2xl border-l-4 border-primary">
+                      <p className="font-black text-primary text-xl">
                         Pastor (Mrs) Kehinde Adetuberu
                       </p>
-                      <p className="text-muted-foreground text-sm">Proprietress</p>
+                      <p className="text-muted-foreground text-sm font-semibold">Proprietress</p>
                     </div>
                       
                     <Button 
                       onClick={() => setShowFullAddress(!showFullAddress)}
                       variant="outline"
-                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                      className="border-2 border-primary text-primary hover:bg-primary hover:text-white rounded-xl font-bold px-6 transition-all hover:-translate-y-0.5 shadow-soft"
                     >
                       {showFullAddress ? "Show Less" : "Read Full Address"}
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -312,72 +325,89 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. About Our School - Excellence in Education */}
-      <section className="py-10 bg-background">
-        <div className="container mx-auto px-4">
+      {/* 2. About Our School - Excellence in Education - Redesigned */}
+      <section className="py-12 relative overflow-hidden bg-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(145_45%_55%_/_0.05),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,hsl(45_95%_60%_/_0.05),transparent_50%)]"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Excellence in Education
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Our God Reigns Crystal School is a beacon of academic excellence and moral integrity, committed to nurturing young minds and shaping future leaders.
-              </p>
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Target className="h-7 w-7 text-primary" />
+                  <div className="h-1 w-12 bg-gradient-primary rounded-full"></div>
+                  <Lightbulb className="h-7 w-7 text-accent" />
+                </div>
+                <h2 className="text-4xl md:text-5xl font-black text-navy">
+                  Excellence in <span className="text-primary">Education</span>
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl font-medium">
+                  A beacon of academic excellence and moral integrity, committed to nurturing young minds and shaping future leaders.
+                </p>
+              </div>
             </div>
 
             {/* Core Values */}
-            <div className="mb-10">
-              <h3 className="text-2xl font-bold text-center text-foreground mb-6">
-                Our Core Values
+            <div className="mb-12">
+              <h3 className="text-3xl font-black text-center text-navy mb-8">
+                Our Core <span className="text-primary">Values</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {coreValues.map((value, index) => (
-                  <div key={index} className="text-center">
-                    <div className="flex justify-center mb-4">
-                      <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center">
-                        <value.icon className="h-10 w-10 text-accent" />
+                  <Card key={index} className="text-center group hover:shadow-elegant transition-all hover:-translate-y-2 border-2 border-transparent hover:border-primary/20 rounded-2xl bg-gradient-to-br from-white to-primary/5">
+                    <CardContent className="p-6">
+                      <div className="flex justify-center mb-4">
+                        <div className="w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-elegant group-hover:scale-110 transition-transform">
+                          <value.icon className="h-10 w-10 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    <h4 className="font-bold text-lg mb-2">{value.title}</h4>
-                    <p className="text-muted-foreground text-sm">{value.description}</p>
-                  </div>
+                      <h4 className="font-black text-lg mb-2 text-navy">{value.title}</h4>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             </div>
 
             {/* What Makes Us Different */}
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-center text-foreground mb-6">
-                What Makes Us Different?
+              <h3 className="text-3xl font-black text-center text-navy mb-8">
+                What Makes Us <span className="text-primary">Different?</span>
               </h3>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-6">
+            <div className="grid lg:grid-cols-2 gap-8">
               {/* Left Side - Vision & Mission */}
               <div className="space-y-6">
-                <Card className="bg-accent/5 border-accent/30">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-primary">
-                      <Target className="h-6 w-6" />
+                <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20 rounded-2xl overflow-hidden shadow-elegant hover:shadow-2xl transition-all">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-3 text-primary text-2xl font-black">
+                      <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+                        <Target className="h-6 w-6 text-white" />
+                      </div>
                       Our Vision
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground leading-relaxed font-medium">
                       To provide qualitative and affordable education. To raise God fearing leaders.
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-accent/5 border-accent/30">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-primary">
-                      <Target className="h-6 w-6" />
+                <Card className="bg-gradient-to-br from-accent/5 to-accent/10 border-2 border-accent/30 rounded-2xl overflow-hidden shadow-elegant hover:shadow-2xl transition-all">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-3 text-accent text-2xl font-black">
+                      <div className="w-12 h-12 bg-gradient-accent rounded-xl flex items-center justify-center shadow-gold">
+                        <Lightbulb className="h-6 w-6 text-accent-foreground" />
+                      </div>
                       Our Mission
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground leading-relaxed font-medium">
                       To maintain high standard at all times. To always ensure that our services are not overpriced. To nurture our students in the way of the Lord. To mentor our students to occupy leadership positions.
                     </p>
                   </CardContent>
@@ -386,59 +416,67 @@ const Home = () => {
 
               {/* Right Side - Differentiators */}
               <div className="space-y-4">
-                <Card className="bg-accent/10 border-accent/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      Complete Secondary Education
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Full JSS 1-3 and SSS 1-3 programs with WAEC/NECO preparation
-                    </p>
+                <Card className="bg-white border-primary/20 hover:shadow-elegant transition-all hover:border-primary/40 rounded-xl">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-navy mb-1">Complete Secondary Education</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Full JSS 1-3 and SSS 1-3 programs with WAEC/NECO preparation
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-accent/10 border-accent/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      Technology Integration
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Modern E-Note system and AI-enhanced learning experiences
-                    </p>
+                <Card className="bg-white border-accent/20 hover:shadow-elegant transition-all hover:border-accent/40 rounded-xl">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-5 w-5 text-accent" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-navy mb-1">Technology Integration</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Modern E-Note system and AI-enhanced learning experiences
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-accent/10 border-accent/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      Qualified Teaching Staff
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Experienced, dedicated educators committed to student success
-                    </p>
+                <Card className="bg-white border-primary/20 hover:shadow-elegant transition-all hover:border-primary/40 rounded-xl">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-navy mb-1">Qualified Teaching Staff</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Experienced, dedicated educators committed to student success
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-accent/10 border-accent/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-accent" />
-                      Character Development
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      Strong emphasis on moral values, discipline, and leadership skills
-                    </p>
+                <Card className="bg-white border-accent/20 hover:shadow-elegant transition-all hover:border-accent/40 rounded-xl">
+                  <CardContent className="p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="h-5 w-5 text-accent" />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-navy mb-1">Character Development</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Strong emphasis on moral values, discipline, and leadership skills
+                        </p>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -447,23 +485,75 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. Programs Offered */}
-      <section className="py-10 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5">
-        <div className="container mx-auto px-4">
+      {/* 3. Programs Offered - Redesigned */}
+      <section className="py-12 relative overflow-hidden bg-gradient-to-br from-accent/5 via-secondary to-primary/5">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-10">
-              <Badge className="mb-4 bg-accent text-accent-foreground px-6 py-2 text-base">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <Badge className="mb-4 bg-gradient-accent text-accent-foreground px-8 py-3 text-base font-black rounded-full shadow-gold">
+                <GraduationCap className="inline h-5 w-5 mr-2" />
                 Our Programs
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+              <h2 className="text-4xl md:text-5xl font-black text-navy mb-4">
                 Academic <span className="text-primary">Programs</span>
               </h2>
+              <div className="flex items-center justify-center gap-2">
+                <div className="h-1 w-16 bg-primary rounded-full"></div>
+                <div className="h-1 w-8 bg-accent rounded-full"></div>
+              </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden border-primary/30">
-                <div className="h-2 bg-gradient-primary"></div>
-                <CardHeader className="bg-gradient-to-br from-primary/10 to-accent/5">
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* JSS Card */}
+              <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 overflow-hidden border-2 border-primary/20 rounded-3xl bg-white">
+                <div className="h-3 bg-gradient-primary"></div>
+                <CardHeader className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent pb-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="relative">
+                      <div className="absolute -inset-2 bg-gradient-primary rounded-2xl opacity-30 group-hover:opacity-50 blur transition-opacity"></div>
+                      <div className="relative w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-elegant group-hover:scale-110 transition-transform">
+                        <BookOpen className="h-10 w-10 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-black text-navy">Junior Secondary (JSS)</CardTitle>
+                      <CardDescription className="text-base font-bold text-primary">JSS 1 - JSS 3</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <ul className="space-y-4 mb-8">
+                    {[
+                      "Comprehensive curriculum aligned with national standards",
+                      "Strong foundation in core subjects",
+                      "Character development and moral education",
+                      "Co-curricular activities and sports"
+                    ].map((item, index) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <CheckCircle className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-muted-foreground font-medium leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/admissions">
+                    <Button className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold py-6 rounded-xl shadow-elegant hover:shadow-2xl transition-all hover:-translate-y-1">
+                      Apply for JSS
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* SSS Card */}
+              <Card className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 overflow-hidden border-2 border-accent/30 rounded-3xl bg-white">
+                <div className="h-3 bg-gradient-accent"></div>
+                <CardHeader className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent pb-6">
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <BookOpen className="h-8 w-8 text-primary-foreground" />
@@ -501,17 +591,20 @@ const Home = () => {
                 <div className="h-2 bg-gradient-accent"></div>
                 <CardHeader className="bg-gradient-to-br from-accent/10 to-primary/5">
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-accent rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <GraduationCap className="h-8 w-8 text-accent-foreground" />
+                    <div className="relative">
+                      <div className="absolute -inset-2 bg-gradient-accent rounded-2xl opacity-30 group-hover:opacity-50 blur transition-opacity"></div>
+                      <div className="relative w-20 h-20 bg-gradient-accent rounded-2xl flex items-center justify-center shadow-gold group-hover:scale-110 transition-transform">
+                        <GraduationCap className="h-10 w-10 text-accent-foreground" />
+                      </div>
                     </div>
                     <div>
-                      <CardTitle className="text-2xl">Senior Secondary (SSS)</CardTitle>
-                      <CardDescription className="text-base">SSS 1 - SSS 3</CardDescription>
+                      <CardTitle className="text-2xl font-black text-navy">Senior Secondary (SSS)</CardTitle>
+                      <CardDescription className="text-base font-bold text-accent">SSS 1 - SSS 3</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-8">
-                  <ul className="space-y-3">
+                  <ul className="space-y-4 mb-8">
                     {[
                       "WAEC and NECO exam preparation",
                       "Science, Arts, and Commercial streams",
@@ -519,15 +612,17 @@ const Home = () => {
                       "Leadership and career development"
                     ].map((item, index) => (
                       <li key={index} className="flex items-start space-x-3">
-                        <CheckCircle className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{item}</span>
+                        <div className="w-6 h-6 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <CheckCircle className="h-4 w-4 text-accent" />
+                        </div>
+                        <span className="text-muted-foreground font-medium leading-relaxed">{item}</span>
                       </li>
                     ))}
                   </ul>
                   <Link to="/admissions">
-                    <Button className="w-full mt-6 bg-accent hover:bg-accent/90 text-accent-foreground">
+                    <Button className="w-full bg-gradient-accent hover:opacity-90 text-accent-foreground font-bold py-6 rounded-xl shadow-gold hover:shadow-2xl transition-all hover:-translate-y-1">
                       Apply for SSS
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                      <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
                   </Link>
                 </CardContent>
