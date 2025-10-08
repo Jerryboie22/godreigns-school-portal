@@ -23,6 +23,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        heading: ['Poppins', 'Nunito Sans', 'sans-serif'],
+        body: ['Open Sans', 'Lora', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
