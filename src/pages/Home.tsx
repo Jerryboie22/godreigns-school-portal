@@ -153,8 +153,8 @@ const Home = () => {
   };
 
   const proprietressAddress = {
-    short: "Welcome to Our God Reigns Crystal School, where academic excellence meets moral integrity. We are committed to nurturing future leaders through quality education grounded in Christian values. Our dedicated staff ensures every child receives personalized attention in a safe, inspiring environment.",
-    full: "Welcome to Our God Reigns Crystal School, where academic excellence meets moral integrity. We are committed to nurturing future leaders through quality education grounded in Christian values. Our dedicated staff ensures every child receives personalized attention in a safe, inspiring environment.\n\nAt OGRCS, we believe in developing the whole child - academically, spiritually, morally, and socially. Our modern facilities and experienced educators work together to create an atmosphere where students can thrive and discover their God-given potential.\n\nWe invite you to join our growing family of excellence, where every child is valued and equipped for a bright future. Together, we are building tomorrow's leaders with integrity, knowledge, and divine purpose."
+    short: "Distinguished Parents, Guardians, Staff, and Beloved Students,\n\nIt is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session.\n\nTo our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome.",
+    full: "PROPRIETRESS' WELCOME ADDRESS FOR THE FIRST TERM OF 2025/2026 ACADEMIC SESSION\n\nDistinguished Parents, Guardians, Staff, and Beloved Students,\n\nIt is with great joy and gratitude to God Almighty that I warmly and sincerely welcome you all to the first term of the 2025/2026 academic session.\n\nTo our returning students, welcome back! We are delighted to see your bright faces again, and we trust you had a refreshing holiday. To our new students and parents joining our school family for the first time, we say a heartfelt welcome. You are now part of a nurturing community where excellence, discipline, and character-building remain our watchwords.\n\nThe start of a new academic year is always a season of fresh opportunities. It is a time to set new goals, embrace new challenges, and strive for greater achievements. In Our God Reigns Crystal School, we remain committed to providing a safe, stimulating, and supportive environment where every child can discover and develop their unique potential.\n\nTo our dear teachers and staff, I commend your tireless dedication and commitment. Together, let us continue to inspire, mentor, and guide our students towards academic excellence and moral uprightness. To our parents and guardians, we deeply appreciate your trust and partnership. Your cooperation and support are invaluable as we work hand in hand to shape the future of our children.\n\nMy admonition to our students this term is simple: be focused, be diligent, and be disciplined. Remember, success comes through hard work, respect, and consistency.\n\nOn behalf of the school management, I wish us all a fruitful, productive, and successful academic session ahead. With God on our side, this year will be filled with testimonies of growth and achievement.\n\nOnce again, welcome to the 2025/2026 academic session.\n\nThank you, and God bless you all.\n\nPastor (Mrs) Kehinde Adetuberu\nProprietress"
   };
 
   const coreValues = [
@@ -239,44 +239,48 @@ const Home = () => {
       </section>
 
       {/* Proprietress Welcome Section */}
-      <section className="py-12 bg-white">
+      <section className="py-16 bg-secondary">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-10">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-4">
                 Welcome from the Proprietress
               </h2>
               <div className="w-24 h-1 bg-accent mx-auto"></div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div className="order-2 md:order-1">
-                <Card className="bg-white/80 backdrop-blur-sm shadow-elegant rounded-2xl overflow-hidden">
-                  <CardContent className="p-8">
-                    <p className="text-foreground font-body leading-relaxed text-lg mb-4 whitespace-pre-line">
-                      {showFullAddress ? proprietressAddress.full : proprietressAddress.short}
-                    </p>
-                    <Button
-                      variant="link"
-                      className="text-primary hover:text-accent font-heading font-semibold p-0"
-                      onClick={() => setShowFullAddress(!showFullAddress)}
-                    >
-                      {showFullAddress ? "Read Less" : "Read More"} 
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+            <div className="bg-white rounded-2xl shadow-elegant p-8 md:p-12">
+              <div className="flex flex-col md:flex-row gap-8 items-start">
+                {/* Address Text - Left Side */}
+                <div className="flex-1 order-2 md:order-1">
+                  <p className="text-foreground font-body leading-relaxed text-base mb-6 whitespace-pre-line">
+                    {showFullAddress ? proprietressAddress.full : proprietressAddress.short}
+                  </p>
+                  <Button
+                    variant="link"
+                    className="text-primary hover:text-accent font-heading font-semibold p-0 text-base"
+                    onClick={() => setShowFullAddress(!showFullAddress)}
+                  >
+                    {showFullAddress ? "Read Less" : "Read More"} 
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
 
-              <div className="order-1 md:order-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl transform rotate-3"></div>
-                  <img
-                    src={proprietress}
-                    alt="Proprietress of Our God Reigns Crystal School"
-                    className="relative rounded-2xl shadow-2xl w-full object-cover aspect-[3/4]"
-                    onError={handleImageError}
-                  />
+                {/* Circular Image - Right Side */}
+                <div className="order-1 md:order-2 flex-shrink-0 mx-auto md:mx-0">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-xl"></div>
+                    <img
+                      src={proprietress}
+                      alt="Pastor (Mrs) Kehinde Adetuberu - Proprietress"
+                      className="relative rounded-full w-40 h-40 md:w-48 md:h-48 object-cover border-4 border-white shadow-2xl"
+                      onError={handleImageError}
+                    />
+                  </div>
+                  <div className="text-center mt-4">
+                    <p className="font-heading font-bold text-primary text-sm">Pastor (Mrs) Kehinde Adetuberu</p>
+                    <p className="font-body text-muted-foreground text-xs">Proprietress</p>
+                  </div>
                 </div>
               </div>
             </div>

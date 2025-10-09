@@ -18,13 +18,13 @@ const Navigation = () => {
       hasDropdown: true,
       subItems: [
         { label: "About Us", path: "/about" },
+        { label: "E-Learning", path: "/e-learning" },
         { label: "Achievements", path: "/gallery" },
         { label: "School Fees", path: "/school-fees" }
       ]
     },
     { label: "Admissions", path: "/admissions" },
     { label: "Library", path: "/library" },
-    { label: "E-Learning", path: "/e-learning" },
     { 
       label: "Portals", 
       path: "#",
@@ -172,11 +172,6 @@ const Navigation = () => {
                 </Link>
               )
             ))}
-            <Link to="/admissions">
-              <Button className="bg-accent hover:bg-accent/90 text-navy font-heading font-bold text-sm px-6 py-2 rounded-md ml-2">
-                Apply for Admission
-              </Button>
-            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
