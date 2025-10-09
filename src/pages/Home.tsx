@@ -238,6 +238,52 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Proprietress Welcome Section */}
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-4">
+                Welcome from the Proprietress
+              </h2>
+              <div className="w-24 h-1 bg-accent mx-auto"></div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-10 items-center">
+              <div className="order-2 md:order-1">
+                <Card className="bg-white/80 backdrop-blur-sm shadow-elegant rounded-2xl overflow-hidden">
+                  <CardContent className="p-8">
+                    <p className="text-foreground font-body leading-relaxed text-lg mb-4 whitespace-pre-line">
+                      {showFullAddress ? proprietressAddress.full : proprietressAddress.short}
+                    </p>
+                    <Button
+                      variant="link"
+                      className="text-primary hover:text-accent font-heading font-semibold p-0"
+                      onClick={() => setShowFullAddress(!showFullAddress)}
+                    >
+                      {showFullAddress ? "Read Less" : "Read More"} 
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="order-1 md:order-2">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl transform rotate-3"></div>
+                  <img
+                    src={proprietress}
+                    alt="Proprietress of Our God Reigns Crystal School"
+                    className="relative rounded-2xl shadow-2xl w-full object-cover aspect-[3/4]"
+                    onError={handleImageError}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Core Values Section */}
       <section className="py-12 bg-secondary">
         <div className="container mx-auto px-4">
